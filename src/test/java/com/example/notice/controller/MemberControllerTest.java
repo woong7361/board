@@ -13,12 +13,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @WebMvcTest(MemberController.class)
 class MemberControllerTest {
+    public static final String REGISTER_URI = "/api/member";
+
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -46,13 +49,14 @@ class MemberControllerTest {
             //then
             mockMvc
                     .perform(MockMvcRequestBuilders
-                            .post("/api/member")
+                            .post(REGISTER_URI)
                             .content(body)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(
                             MockMvcResultMatchers.status().isOk()
                     );
         }
+
         @Nested
         @DisplayName("회원 아이디 검증")
         class TestMemberLoginId{
@@ -60,7 +64,7 @@ class MemberControllerTest {
             @DisplayName("회원 아이디가 null일때")
             @Test
             public void nullMemberName() throws Exception{
-                loginIdTest(null);
+                loginIdTest(null, MethodArgumentNotValidException.class, MockMvcResultMatchers.status().isBadRequest());
             }
 
 
@@ -68,10 +72,10 @@ class MemberControllerTest {
             @Test
             public void notQualifiedIdLength() throws Exception{
                 String lessThan4Letter = "1a";
-                loginIdTest(lessThan4Letter);
+                loginIdTest(lessThan4Letter, MethodArgumentNotValidException.class, MockMvcResultMatchers.status().isBadRequest());
 
                 String greaterThan12Letter = "1a1a1a1a1a1a1a1aa12";
-                loginIdTest(greaterThan12Letter);
+                loginIdTest(greaterThan12Letter, MethodArgumentNotValidException.class, MockMvcResultMatchers.status().isBadRequest());
             }
 
 
@@ -79,9 +83,9 @@ class MemberControllerTest {
             @Test
             public void notAllowedCharacterInLoginId() throws Exception{
                 //given
-                loginIdTest("//abc13");
-                loginIdTest("...abc13");
-                loginIdTest("abc13../");
+                loginIdTest("//abc13", MethodArgumentNotValidException.class, MockMvcResultMatchers.status().isBadRequest());
+                loginIdTest("...abc13", MethodArgumentNotValidException.class, MockMvcResultMatchers.status().isBadRequest());
+                loginIdTest("abc13../", MethodArgumentNotValidException.class, MockMvcResultMatchers.status().isBadRequest());
             }
         }
 
@@ -91,27 +95,52 @@ class MemberControllerTest {
             @DisplayName("비밀번호 null 일때")
             @Test
             public void nullPassword() throws Exception{
-                passwordTest(null);
+                passwordTest(null, MethodArgumentNotValidException.class, MockMvcResultMatchers.status().isBadRequest());
             }
 
             @DisplayName("비밀번호가 요청 길이를 만족하지 못할때")
             @Test
             public void test() throws Exception{
                 String lessThan4Letter = "2b";
-                passwordTest(lessThan4Letter);
+                passwordTest(lessThan4Letter, MethodArgumentNotValidException.class, MockMvcResultMatchers.status().isBadRequest());
 
                 String greaterThan12Letter = "2b2b2b2b2b2b2b2b2b";
-                passwordTest(greaterThan12Letter);
+                passwordTest(greaterThan12Letter, MethodArgumentNotValidException.class, MockMvcResultMatchers.status().isBadRequest());
             }
 
             @DisplayName("비밀번호에 연속된 문자가 3번 나올때")
             @Test
             public void successive3Letter() throws Exception{
                 String successiveCharacters = "1a2bccc";
-                passwordTest(successiveCharacters);
+                passwordTest(successiveCharacters, MethodArgumentNotValidException.class, MockMvcResultMatchers.status().isBadRequest());
 
                 String successiveDigits = "222ab2a3";
-                passwordTest(successiveDigits);
+                passwordTest(successiveDigits, MethodArgumentNotValidException.class, MockMvcResultMatchers.status().isBadRequest());
+            }
+
+            @DisplayName("비밀번호가 아이디와 같을때")
+            @Test
+            public void loginIdSameAsPassword() throws Exception{
+                //given
+                String sameString = "same123";
+                Member member = Member
+                        .builder()
+                        .loginId(sameString)
+                        .password(sameString)
+                        .name("name")
+                        .build();
+                String body = mapper.writeValueAsString(member);
+
+                //then
+                mockMvc
+                        .perform(MockMvcRequestBuilders
+                                .post(REGISTER_URI)
+                                .content(body)
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(result -> Assertions
+                                .assertThat(result.getResolvedException())
+                                .isInstanceOf(IllegalArgumentException.class))
+                        .andExpect(MockMvcResultMatchers.status().isBadRequest());
             }
         }
 
@@ -122,71 +151,43 @@ class MemberControllerTest {
             @Test
             public void notQualifiedRequestLengthName() throws Exception{
                 String LessThan2Letters = "a";
-                nameTest(LessThan2Letters);
+                nameTest(LessThan2Letters,
+                        MethodArgumentNotValidException.class,
+                        MockMvcResultMatchers.status().isBadRequest());
 
                 String greaterThan5Letters = "five5";
-                nameTest(greaterThan5Letters);
+                nameTest(greaterThan5Letters,
+                        MethodArgumentNotValidException.class,
+                        MockMvcResultMatchers.status().isBadRequest());
             }
         }
 
-        private void loginIdTest(String loginId) throws Exception {
-            String successPassword = "456abc";
-            String successName = "name";
+        private void loginIdTest(String loginId, Class<?> exceptionClass, ResultMatcher statusMatcher) throws Exception {
+            registerTest(loginId, "password123", "name",
+                    exceptionClass,
+                    statusMatcher);
+        }
 
+        private void passwordTest(String password, Class<?> exceptionClass, ResultMatcher statusMatcher) throws Exception {
+            registerTest("loginId123", password, "name",
+                    exceptionClass,
+                    statusMatcher);
+        }
+
+        private void nameTest(String name, Class<?> exceptionClass, ResultMatcher statusMatcher) throws Exception {
+            registerTest("loginId123", "password123", name,
+                    exceptionClass,
+                    statusMatcher);
+        }
+
+        private void registerTest(
+                String loginId, String password, String name,
+                Class<?> exceptionClass, ResultMatcher statusMatcher
+        ) throws Exception {
             Member notAllowedCharacterName = Member
                     .builder()
                     .loginId(loginId)
-                    .password(successPassword)
-                    .name(successName)
-                    .build();
-            String notAllowedCharacterNameBody = mapper.writeValueAsString(notAllowedCharacterName);
-
-            //then
-            mockMvc.perform(
-                            MockMvcRequestBuilders
-                                    .post("/api/member")
-                                    .content(notAllowedCharacterNameBody)
-                                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(result -> Assertions
-                            .assertThat(result.getResolvedException())
-                            .isInstanceOf(MethodArgumentNotValidException.class)
-                    )
-                    .andExpect(MockMvcResultMatchers.status().is4xxClientError());
-        }
-
-        private void passwordTest(String password) throws Exception {
-            String successLoginId = "456abc";
-            String successName = "name";
-
-            Member notAllowedCharacterName = Member
-                    .builder()
-                    .loginId(successLoginId)
                     .password(password)
-                    .name(successName)
-                    .build();
-            String notAllowedCharacterNameBody = mapper.writeValueAsString(notAllowedCharacterName);
-
-            //then
-            mockMvc.perform(
-                            MockMvcRequestBuilders
-                                    .post("/api/member")
-                                    .content(notAllowedCharacterNameBody)
-                                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(result -> Assertions
-                            .assertThat(result.getResolvedException())
-                            .isInstanceOf(MethodArgumentNotValidException.class)
-                    )
-                    .andExpect(MockMvcResultMatchers.status().is4xxClientError());
-        }
-
-        private void nameTest(String name) throws Exception {
-            String successLoginId = "456abc";
-            String successPassword = "123abc";
-
-            Member notAllowedCharacterName = Member
-                    .builder()
-                    .loginId(successLoginId)
-                    .password(successPassword)
                     .name(name)
                     .build();
             String notAllowedCharacterNameBody = mapper.writeValueAsString(notAllowedCharacterName);
@@ -194,14 +195,14 @@ class MemberControllerTest {
             //then
             mockMvc.perform(
                             MockMvcRequestBuilders
-                                    .post("/api/member")
+                                    .post(REGISTER_URI)
                                     .content(notAllowedCharacterNameBody)
                                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(result -> Assertions
                             .assertThat(result.getResolvedException())
-                            .isInstanceOf(MethodArgumentNotValidException.class)
+                            .isInstanceOf(exceptionClass)
                     )
-                    .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+                    .andExpect(statusMatcher);
         }
     }
 
