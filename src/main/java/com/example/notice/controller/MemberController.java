@@ -24,11 +24,20 @@ public class MemberController {
      */
     @PostMapping("/api/member")
     public ResponseEntity<Object> register(@Valid @RequestBody Member member) {
+        checkLoginIdSameAsPassword(member);
         memberService.isDuplicateMemberName(member.getName());
         memberService.createUserRoleMember(member);
 
         return ResponseEntity
                 .ok()
                 .build();
+    }
+
+    private void checkLoginIdSameAsPassword(Member member) {
+        if (member.getLoginId().equals(member.getPassword())) {
+            //TODO custom Exception
+            throw new IllegalArgumentException("no!");
+
+        }
     }
 }

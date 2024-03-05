@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @WebMvcTest(MemberController.class)
 class MemberControllerTest {
@@ -148,7 +149,7 @@ class MemberControllerTest {
                                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(result -> Assertions
                             .assertThat(result.getResolvedException())
-                            .isInstanceOf(Exception.class)
+                            .isInstanceOf(MethodArgumentNotValidException.class)
                     )
                     .andExpect(MockMvcResultMatchers.status().is4xxClientError());
         }
@@ -173,7 +174,7 @@ class MemberControllerTest {
                                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(result -> Assertions
                             .assertThat(result.getResolvedException())
-                            .isInstanceOf(Exception.class)
+                            .isInstanceOf(MethodArgumentNotValidException.class)
                     )
                     .andExpect(MockMvcResultMatchers.status().is4xxClientError());
         }
@@ -198,7 +199,7 @@ class MemberControllerTest {
                                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(result -> Assertions
                             .assertThat(result.getResolvedException())
-                            .isInstanceOf(Exception.class)
+                            .isInstanceOf(MethodArgumentNotValidException.class)
                     )
                     .andExpect(MockMvcResultMatchers.status().is4xxClientError());
         }
