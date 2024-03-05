@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+#       [local port] : [container port]
+      - "9999:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: woong7361
+      TZ: Asia/Seoul
+      MYSQL_DATABASE: new
+      MYSQL_USER: woong
+      MYSQL_PASSWORD: woong7361
+    command:
+      - --character-set-server=UTF8MB4
+      - --collation-server=UTF8MB4_UNICODE_CI
+    volumes:
+      - ./db/mysql/data:/var/lib/mysql
+
+#       //외부 접속을 위한 파일이 저장되는 저장경로
+#      - ./db/mysql/config:/etc/mysql/conf.d
+#       //도커가 처음 실행될 당시에만 실행되는 초기 세팅 파일
+#      - ./db/mysql/init:/docker-entrypoint-initdb.d
+

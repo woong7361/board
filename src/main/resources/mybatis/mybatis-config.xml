@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+<!--        jdbcTypeForNull : 쿼리에 보내는 파라메터가 null인 경우, 오류 발생하는 것 방지  예) #{search.user}-->
+<!--        <setting name="jdbcTypeForNull" value="NULL"/>-->
+
+    </settings>
+    <mappers>
+        <mapper resource="mybatis/mapper/member-mapper.xml"/>
+<!--        <mapper resource="mybatis/mapper/boardMapper.xml"/>-->
+<!--        <mapper resource="mybatis/mapper/fileMapper.xml"/>-->
+<!--        <mapper resource="mybatis/mapper/commentMapper.xml"/>-->
+    </mappers>
+</configuration>

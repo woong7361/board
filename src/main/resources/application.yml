@@ -1,0 +1,30 @@
+spring:
+
+  #  dataSource:
+  #    driver-class-name: com.mysql.cj.jdbc.Driver
+  #    url: jdbc:mysql://localhost:9999/study
+  #    username: woong
+  #    password: woong7361
+
+  dataSource:
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:mysql://localhost:9999/new
+    username: woong
+    password: woong7361
+
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+mybatis:
+  config-location: classpath:/mybatis/mybatis-config.xml
+
+server:
+  port: 8888
+
+setting:
+  page-size: 3
+  file-path: /home/woong/workspace/project/notice/file
+
