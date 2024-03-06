@@ -2,11 +2,17 @@ package com.example.notice.mock.repository;
 
 import com.example.notice.entity.Member;
 import com.example.notice.repository.MemberRepository;
-import org.opentest4j.TestAbortedException;
+
+import java.util.Optional;
 
 public class MockMemberRepository implements MemberRepository {
 
-    public static String DUPLICATE_NAME = "dup";
+    public static Member SAVED_MEMBER = Member.builder()
+            .memberId(30)
+            .loginId("qwer")
+            .password("asdf")
+            .name("zxcv")
+            .build();
 
     /**
      * @implSpec 아무런 행동을 하지 않음
@@ -17,16 +23,28 @@ public class MockMemberRepository implements MemberRepository {
     }
 
     /**
-     * @implSpec  memberName이 if("duplicate") -> true, else -> false
+     * @implSpec SAVED MEMBER와 이름이 같다면 참, 다르다면 거짓 반환
      */
     @Override
     public boolean isDuplicateMemberName(String memberName) {
-        if (memberName.equals(DUPLICATE_NAME)) {
-            return true;
-        } else {
-            return false;
-        }
+        return SAVED_MEMBER.getName().equals(memberName);
+    }
 
+    /**
+     * @implSpec SAVED MEMBER의 아이디와 비밀번호가 같다면 MEMBER 반환
+     */
+    @Override
+    public Optional<Member> findMemberByLoginIdAndPassword(Member member) {
+        if (SAVED_MEMBER.getLoginId().equals(member.getLoginId()) && SAVED_MEMBER.getPassword().equals(member.getPassword())) {
+            return Optional.of(Member.builder()
+                    .memberId(1)
+                    .loginId(member.getLoginId())
+                    .password(member.getPassword())
+                    .name(member.getName())
+                    .build());
+        } else {
+            return Optional.empty();
+        }
     }
 
 }

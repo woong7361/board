@@ -32,6 +32,7 @@ public class JwtAuthProvider implements AuthProvider {
 
         return Jwts.builder()
                 .setSubject(SUBJECT)
+                .claim("memberId", member.getMemberId())
                 .claim("name", member.getName())
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(date)

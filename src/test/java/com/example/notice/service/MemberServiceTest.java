@@ -3,7 +3,6 @@ package com.example.notice.service;
 import com.example.notice.entity.Member;
 import com.example.notice.entity.MemberRole;
 import com.example.notice.mock.repository.MockMemberRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -40,7 +39,7 @@ class MemberServiceTest {
             Member member = Member.builder()
                     .loginId("abc123")
                     .password("bdf123")
-                    .name(MockMemberRepository.DUPLICATE_NAME)
+                    .name(MockMemberRepository.SAVED_MEMBER.getName())
                     .build();
             // then
             assertThatThrownBy(() -> memberService.createUserRoleMember(member))

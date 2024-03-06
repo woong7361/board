@@ -2,9 +2,11 @@ package com.example.notice.controller;
 
 import com.example.notice.entity.Member;
 import com.example.notice.service.MemberService;
+import com.example.notice.validate.group.MemberRegisterValidationGroup;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +25,7 @@ public class MemberController {
      * @return 200 ok
      */
     @PostMapping("/api/member")
-    public ResponseEntity<Object> register(@Valid @RequestBody Member member) {
+    public ResponseEntity<Object> register(@Validated(MemberRegisterValidationGroup.class) @RequestBody Member member) {
         checkLoginIdSameAsPassword(member);
         memberService.createUserRoleMember(member);
 

@@ -2,8 +2,10 @@ package com.example.notice.controller;
 
 import com.example.notice.entity.Member;
 import com.example.notice.service.AuthService;
+import com.example.notice.validate.group.MemberLoginValidationGroup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +29,7 @@ public class AuthController {
      */
     //TODO URI 디자인?
     @PostMapping("/api/auth/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody Member member) {
+    public ResponseEntity<Map<String, String>> login(@Validated(MemberLoginValidationGroup.class) @RequestBody Member member) {
         String token = authService.login(member);
 
         Map<String, String> body = new HashMap<>();
