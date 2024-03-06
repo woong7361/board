@@ -16,6 +16,9 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void createUserRoleMember(Member member) {
+        //TODO 위치가 고민
+        isDuplicateMemberName(member.getName());
+
         member.setUserRole();
         memberRepository.save(member);
     }

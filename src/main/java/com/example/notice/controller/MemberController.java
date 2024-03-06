@@ -25,7 +25,6 @@ public class MemberController {
     @PostMapping("/api/member")
     public ResponseEntity<Object> register(@Valid @RequestBody Member member) {
         checkLoginIdSameAsPassword(member);
-        memberService.isDuplicateMemberName(member.getName());
         memberService.createUserRoleMember(member);
 
         return ResponseEntity

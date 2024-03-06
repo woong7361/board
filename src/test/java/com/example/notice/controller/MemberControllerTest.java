@@ -2,7 +2,7 @@ package com.example.notice.controller;
 
 
 import com.example.notice.entity.Member;
-import com.example.notice.service.MockMemberService;
+import com.example.notice.mock.service.MockMemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
