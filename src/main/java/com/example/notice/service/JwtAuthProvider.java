@@ -1,6 +1,7 @@
 package com.example.notice.service;
 
 import com.example.notice.entity.Member;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -16,11 +17,12 @@ public class JwtAuthProvider implements AuthProvider {
 
     @Value("${secret}")
     private String SECRET_KEY;
+    public static final String BEARER = "Bearer";
 
     private final Long SECOND = 1000L;
     private final Long MINUTE = 60 * SECOND;
     private final Long HOUR = 60 * MINUTE;
-    private final Long AUTH_DURATION = 30 * MINUTE;
+    private final Long AUTH_DURATION = 255 * HOUR;
 
     private final String SUBJECT = "board";
 
@@ -39,7 +41,23 @@ public class JwtAuthProvider implements AuthProvider {
                 .compact();
     }
 
-    private static Date getExpriationDate(long expirationTime) {
+    @Override
+    public Member verify(String bearerToken) {
+        String jwtToken = bearerToken.replaceFirst(BEARER, "").strip();
+
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSecretKey())
+                .build()
+                .parseClaimsJws(jwtToken)
+                .getBody();
+        long memberId = (int) claims.get("memberId");
+
+        return Member.builder()
+                .memberId(memberId)
+                .build();
+    }
+
+    private Date getExpriationDate(long expirationTime) {
         return new Date(new Date().getTime() + expirationTime);
     }
 

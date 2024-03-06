@@ -14,4 +14,10 @@ public class MockAuthProvider implements AuthProvider {
     public String createAuthentication(Member member) {
         return AUTHENTICATION;
     }
+
+    // TODO 작성 해야함
+    @Override
+    public Member verify(String authentication) {
+        return Member.builder().build();
+    }
 }

@@ -14,4 +14,10 @@ public interface AuthProvider {
      */
     public String createAuthentication(Member member);
 
+    /**
+     * 인증 객체를 인증한다.
+     * @param authentication 인증 문자열
+     * @return 인증 객체를 해독해 Member 정보를 가져온다.
+     */
+    Member verify(String authentication);
 }
