@@ -1,7 +1,8 @@
-package com.example.notice.filter;
+package com.example.notice.auth.filter;
 
+import com.example.notice.auth.AuthenticationHolder;
 import com.example.notice.entity.Member;
-import com.example.notice.service.AuthProvider;
+import com.example.notice.auth.AuthProvider;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +24,15 @@ public class JwtTokenAuthFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String bearerToken = request.getHeader(AUTHORIZATION);
 
+        // TODO filter에서 error 발생시 globalHandler 불가능, but. java Servlet 기술이라는 범용성
+        // 인터셉터와 필터 어떤것을 사용할 것인가 생각해보기
         Member member = authProvider.verify(bearerToken);
 
+        AuthenticationHolder.clear();
         try {
             AuthenticationHolder.setMember(member);
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
-            //TODO remove 도중 에러가 발생한다면? -> 여러번 삭제시도?
             AuthenticationHolder.clear();
         }
     }

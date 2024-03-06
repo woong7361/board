@@ -1,0 +1,90 @@
+package com.example.notice.auth.filter;
+
+import com.example.notice.auth.AuthProvider;
+import com.example.notice.auth.AuthenticationHolder;
+import com.example.notice.auth.JwtAuthProvider;
+import com.example.notice.entity.Member;
+import com.example.notice.mock.auth.MockAuthProvider;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+
+class JwtTokenAuthFilterTest {
+
+    Filter filter = new JwtTokenAuthFilter(new MockAuthProvider());
+
+    @Nested
+    @DisplayName("인증 필터 테스트")
+    public class AuthFilterTest {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+            ServletResponse response = Mockito.mock(MockHttpServletResponse.class);
+            FilterChain filterChain = Mockito.mock(FilterChain.class);
+
+//            HashMap<String, String> headers = new HashMap<>();
+//            headers.put(AUTHORIZATION, "Bearer jwtToken");
+//            Mockito.when(request.getHeader(AUTHORIZATION)).thenReturn(headers.get(AUTHORIZATION));
+
+            //when
+            //then
+            filter.doFilter(request, response, filterChain);
+        }
+
+
+        //TODO AuthenticationHolder 가 dirty read가 되지 않는지 thread 나누어서 테스트 해보아야 한다.
+        @DisplayName("인증 객체가 dirty read가 되는지 확인")
+        @Test
+        public void isDirtyRead() throws Exception{
+            //given
+            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+            ServletResponse response = new MockHttpServletResponse();
+            FilterChain filterChain = Mockito.mock(FilterChain.class);
+
+            ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+            int threadCount = 100;
+            CountDownLatch latch = new CountDownLatch(threadCount);
+            //when
+            //then
+            for (int i = 0; i < threadCount; i++) {
+                String temp = String.valueOf(i);
+
+                executorService.submit(() -> {
+                    try {
+                        // 항상 filter를 들어가기 전 인증객체 보관소는 null로 초기화 되어있어야 한다
+                        Assertions.assertThat(AuthenticationHolder.getMemberId()).isEqualTo(null);
+
+                        Mockito.when(request.getHeader("Authorization")).thenReturn(temp);
+                        filter.doFilter(request, response, filterChain);
+                    } catch (ServletException e) {
+                        throw new RuntimeException(e);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+            }
+            latch.await();
+
+        }
+    }
+
+}

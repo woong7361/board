@@ -1,7 +1,7 @@
 package com.example.notice.config;
 
-import com.example.notice.filter.JwtTokenAuthFilter;
-import com.example.notice.service.AuthProvider;
+import com.example.notice.auth.filter.JwtTokenAuthFilter;
+import com.example.notice.auth.AuthProvider;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

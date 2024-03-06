@@ -1,22 +1,24 @@
-package com.example.notice.service;
+package com.example.notice.auth;
 
+import com.example.notice.config.ConfigurationService;
 import com.example.notice.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthProvider implements AuthProvider {
 
-    @Value("${secret}")
-    private String SECRET_KEY;
+    private final ConfigurationService configurationService;
+
     public static final String BEARER = "Bearer";
 
     private final Long SECOND = 1000L;
@@ -50,10 +52,12 @@ public class JwtAuthProvider implements AuthProvider {
                 .build()
                 .parseClaimsJws(jwtToken)
                 .getBody();
-        long memberId = (int) claims.get("memberId");
 
+        long memberId = (int) claims.get("memberId");
+        String name = (String) claims.get("name");
         return Member.builder()
                 .memberId(memberId)
+                .name(name)
                 .build();
     }
 
@@ -63,7 +67,7 @@ public class JwtAuthProvider implements AuthProvider {
 
 
     private SecretKey getSecretKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(configurationService.getSecretKey());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

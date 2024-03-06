@@ -1,9 +1,10 @@
 package com.example.notice.mock.auth;
 
+import com.example.notice.auth.JwtAuthProvider;
 import com.example.notice.entity.Member;
-import com.example.notice.service.AuthProvider;
+import com.example.notice.auth.AuthProvider;
 
-public class MockAuthProvider implements AuthProvider {
+public class MockAuthProvider implements AuthProvider{
 
     public static final String AUTHENTICATION = "authentication";
 
@@ -15,9 +16,19 @@ public class MockAuthProvider implements AuthProvider {
         return AUTHENTICATION;
     }
 
-    // TODO 작성 해야함
+    /**
+     * @implSpec 검증
+     */
     @Override
     public Member verify(String authentication) {
-        return Member.builder().build();
+        if (authentication == null) {
+            return null;
+        }
+
+        return Member.builder()
+                .memberId(Integer.parseInt(authentication))
+                .build();
     }
+
+
 }
