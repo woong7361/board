@@ -28,3 +28,4 @@ setting:
   page-size: 3
   file-path: /home/woong/workspace/project/notice/file
 
+secret: "secret123456789123456789123456789asdfbfcdsafgfdsg"

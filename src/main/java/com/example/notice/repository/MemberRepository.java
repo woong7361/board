@@ -4,6 +4,8 @@ import com.example.notice.entity.Member;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Optional;
+
 /**
  * 회원 repository
  */
@@ -22,4 +24,11 @@ public interface MemberRepository {
      * @return 참/거짓
      */
     boolean isDuplicateMemberName(@Param("name") String memberName);
+
+    /**
+     * 회원 아이디와 비밀번호를 통해 회원 검색
+     * @param member 회원 정보
+     * @return nullable 회원
+     */
+    Optional<Member> findMemberByLoginIdAndPassword(@Param("member") Member member);
 }

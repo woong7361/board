@@ -15,4 +15,12 @@
         WHERE member.name = #{name}
     </select>
 
+    <select id="findMemberByLoginIdAndPassword" resultType="com.example.notice.entity.Member" >
+        SELECT *
+        FROM member
+        WHERE
+            member.login_id = #{member.loginId}
+            AND member.password = SHA2(#{member.password}, 256)
+    </select>
+
 </mapper>
