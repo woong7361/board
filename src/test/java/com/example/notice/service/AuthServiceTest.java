@@ -24,7 +24,7 @@ class AuthServiceTest {
             //given
             Member member = MockMemberRepository.SAVED_MEMBER;
             //when
-            String authentication = authService.login(member);
+            String authentication = authService.userAuthentication(member);
             //then
             assertThat(authentication).isEqualTo(MockAuthProvider.AUTHENTICATION);
         }
@@ -39,7 +39,7 @@ class AuthServiceTest {
                     .build();
             //when
             //then
-            assertThatThrownBy(() -> authService.login(member)).isInstanceOf(MemberNotExistException.class);
+            assertThatThrownBy(() -> authService.userAuthentication(member)).isInstanceOf(MemberNotExistException.class);
         }
 
         @DisplayName("회원의 비밀번호가 불일치 할때")
@@ -52,7 +52,7 @@ class AuthServiceTest {
                     .build();
             //when
             //then
-            assertThatThrownBy(() -> authService.login(member)).isInstanceOf(MemberNotExistException.class);
+            assertThatThrownBy(() -> authService.userAuthentication(member)).isInstanceOf(MemberNotExistException.class);
         }
     }
 }

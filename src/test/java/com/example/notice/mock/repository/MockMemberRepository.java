@@ -47,4 +47,9 @@ public class MockMemberRepository implements MemberRepository {
         }
     }
 
+    @Override
+    public Optional<Member> findAdminMemberByLoginIdAndPassword(Member member) {
+        return Optional.empty();
+    }
+
 }

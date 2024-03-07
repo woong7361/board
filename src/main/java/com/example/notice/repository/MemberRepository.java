@@ -31,4 +31,11 @@ public interface MemberRepository {
      * @return nullable 회원
      */
     Optional<Member> findMemberByLoginIdAndPassword(@Param("member") Member member);
+
+    /**
+     *관리자 아이디와 비밀번호를 통해 관리자 검색
+     * @param member 관리자 정보
+     * @return nullable 관리자
+     */
+    Optional<Member> findAdminMemberByLoginIdAndPassword(@Param("member") Member member);
 }

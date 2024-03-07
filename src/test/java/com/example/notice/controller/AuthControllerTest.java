@@ -4,23 +4,29 @@ import com.example.notice.entity.Member;
 import com.example.notice.mock.auth.MockAuthProvider;
 import com.example.notice.mock.service.MockAuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpSession;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
+
 @WebMvcTest(AuthController.class)
 class AuthControllerTest {
     public static final String LOGIN_URI = "/api/auth/login";
+    public static final String ADMIN_LOGIN_URI = "/admin/auth/login";
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,7 +42,7 @@ class AuthControllerTest {
     private ObjectMapper mapper = new ObjectMapper();
 
     @Nested
-    @DisplayName("로그인 테스트")
+    @DisplayName("일반 유저 로그인 테스트")
     public class LoginTest {
 
         @DisplayName("정상 처리")
@@ -96,5 +102,33 @@ class AuthControllerTest {
                     )
                     .andExpect(MockMvcResultMatchers.status().isBadRequest());
         }
+    }
+
+    @Nested
+    @DisplayName("관리자 로그인 테스트")
+    public class AdminLogin {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            Member member = Member.builder()
+                    .memberId(10)
+                    .loginId("id123")
+                    .password("pw123")
+                    .build();
+            String body = mapper.writeValueAsString(member);
+            MockHttpSession mockHttpSession = new MockHttpSession();
+            //when
+            //then
+            mockMvc.perform(
+                            MockMvcRequestBuilders.post(ADMIN_LOGIN_URI)
+                                    .session(mockHttpSession)
+                                    .content(body)
+                                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+
+            Assertions.assertThat(mockHttpSession.getAttribute(ADMIN_SESSION_KEY)).isEqualTo(10L);
+        }
+
     }
 }

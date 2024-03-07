@@ -18,11 +18,18 @@ public class AuthServiceImpl implements AuthService{
     private final AuthProvider authProvider;
 
     @Override
-    public String login(Member member) {
+    public String userAuthentication(Member member) {
         //TODO 에러 메시지 상수화
         Member findMember = memberRepository.findMemberByLoginIdAndPassword(member)
                 .orElseThrow(() -> new MemberNotExistException("해당하는 멤버 존재 X", member));
 
         return authProvider.createAuthentication(findMember);
+    }
+
+    @Override
+    public Member adminAuthentication(Member member) {
+        return memberRepository.findAdminMemberByLoginIdAndPassword(member)
+                .orElseThrow(() -> new MemberNotExistException("해당하는 멤버 존재 X", member));
+
     }
 }

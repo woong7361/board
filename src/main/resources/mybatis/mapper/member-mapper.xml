@@ -9,6 +9,13 @@
             (#{member.loginId}, SHA2(#{member.password}, 256), #{member.name}, #{member.role})
     </insert>
 
+    <insert id="saveAdmin">
+        INSERT INTO member
+            (login_id, password, name, role)
+        VALUES
+            (#{member.loginId}, SHA2(#{member.password}, 256), #{member.name}, 'ADMIN')
+    </insert>
+
     <select id="isDuplicateMemberName" resultType="boolean">
         SELECT (count(*) >= 1) AS duplicate_name_count
         FROM member
@@ -21,6 +28,15 @@
         WHERE
             member.login_id = #{member.loginId}
             AND member.password = SHA2(#{member.password}, 256)
+    </select>
+
+    <select id="findAdminMemberByLoginIdAndPassword" resultType="com.example.notice.entity.Member" >
+        SELECT *
+        FROM member
+        WHERE
+            member.login_id = #{member.loginId}
+            AND member.password = SHA2(#{member.password}, 256)
+            AND member.role = 'ADMIN'
     </select>
 
 </mapper>
