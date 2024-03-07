@@ -1,6 +1,8 @@
 package com.example.notice.auth.filter;
 
 import com.example.notice.auth.AuthenticationHolder;
+import com.example.notice.auth.principal.MemberPrincipal;
+import com.example.notice.auth.principal.Principal;
 import com.example.notice.entity.Member;
 import com.example.notice.auth.AuthProvider;
 import jakarta.servlet.*;
@@ -30,7 +32,8 @@ public class JwtTokenAuthFilter implements Filter {
 
         AuthenticationHolder.clear();
         try {
-            AuthenticationHolder.setMember(member);
+            Principal<Member> principal = new MemberPrincipal(member);
+            AuthenticationHolder.setPrincipal(principal);
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
             AuthenticationHolder.clear();

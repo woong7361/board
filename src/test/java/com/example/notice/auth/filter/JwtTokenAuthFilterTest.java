@@ -1,9 +1,6 @@
 package com.example.notice.auth.filter;
 
-import com.example.notice.auth.AuthProvider;
 import com.example.notice.auth.AuthenticationHolder;
-import com.example.notice.auth.JwtAuthProvider;
-import com.example.notice.entity.Member;
 import com.example.notice.mock.auth.MockAuthProvider;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -57,9 +54,9 @@ class JwtTokenAuthFilterTest {
             ServletResponse response = new MockHttpServletResponse();
             FilterChain filterChain = Mockito.mock(FilterChain.class);
 
-            ExecutorService executorService = Executors.newFixedThreadPool(10);
+            ExecutorService executorService = Executors.newFixedThreadPool(100);
 
-            int threadCount = 100;
+            int threadCount = 5000;
             CountDownLatch latch = new CountDownLatch(threadCount);
             //when
             //then
@@ -69,7 +66,7 @@ class JwtTokenAuthFilterTest {
                 executorService.submit(() -> {
                     try {
                         // 항상 filter를 들어가기 전 인증객체 보관소는 null로 초기화 되어있어야 한다
-                        Assertions.assertThat(AuthenticationHolder.getMemberId()).isEqualTo(null);
+                        Assertions.assertThat(AuthenticationHolder.getPrincipal()).isEqualTo(null);
 
                         Mockito.when(request.getHeader("Authorization")).thenReturn(temp);
                         filter.doFilter(request, response, filterChain);

@@ -1,9 +1,8 @@
 package com.example.notice.controller;
 
 import com.example.notice.entity.Member;
+import com.example.notice.mock.auth.MockAuthProvider;
 import com.example.notice.mock.service.MockAuthService;
-import com.example.notice.mock.service.MockMemberService;
-import com.example.notice.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +28,10 @@ class AuthControllerTest {
     //TODO mockBean? 이미 controller test는 webMvcTest로 spring에 종속되어있는데 mocking 라이브러리의 도움을 받는편이 좋다?
     @SpyBean
     private MockAuthService authService;
+
+    // WebMvcConfigure에서 필요
+    @MockBean
+    private MockAuthProvider authProvider;
 
     private ObjectMapper mapper = new ObjectMapper();
 

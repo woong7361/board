@@ -1,7 +1,8 @@
 package com.example.notice.auth;
 
+import com.example.notice.auth.principal.MemberPrincipal;
+import com.example.notice.auth.principal.Principal;
 import com.example.notice.entity.Member;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,11 +29,14 @@ class AuthenticationHolderTest {
             Member member = Member.builder()
                     .memberId(1)
                     .build();
-            //when
-            AuthenticationHolder.setMember(member);
-            Long savedMemberId = AuthenticationHolder.getMemberId();
-            //then
+            Principal<Member> principal = new MemberPrincipal(member);
 
+            //when
+            AuthenticationHolder.setPrincipal(principal);
+
+            //then
+            Principal<Member> savedPrincipal = AuthenticationHolder.getPrincipal();
+            long savedMemberId = savedPrincipal.getAuthentication().getMemberId();
             assertThat(member.getMemberId()).isEqualTo(savedMemberId);
         }
 
@@ -43,11 +47,14 @@ class AuthenticationHolderTest {
             Member member = Member.builder()
                     .memberId(1)
                     .build();
+            Principal<Member> principal = new MemberPrincipal(member);
+
             //when
-            AuthenticationHolder.setMember(member);
+            AuthenticationHolder.setPrincipal(principal);
             AuthenticationHolder.clear();
+
             //then
-            assertThat(AuthenticationHolder.getMemberId()).isEqualTo(null);
+            assertThat(AuthenticationHolder.getPrincipal()).isEqualTo(null);
         }
 
         //TODO 테스트 실패 - why?
@@ -74,11 +81,15 @@ class AuthenticationHolderTest {
                 Member member = Member.builder()
                         .memberId(i)
                         .build();
+                Principal<Member> principal = new MemberPrincipal(member);
 
                 executorService.submit(() -> {
                     try {
-                        AuthenticationHolder.setMember(member);
-                        results.add(AuthenticationHolder.getMemberId());
+                        AuthenticationHolder.setPrincipal(principal);
+                        Principal<Member> savedPrincipal = AuthenticationHolder.getPrincipal();
+                        long savedMemberId = savedPrincipal.getAuthentication().getMemberId();
+
+                        results.add(savedMemberId);
 //                        System.out.println(member.getMemberId() + "    " + AuthenticationHolder.getMemberId() + "  " + (member.getMemberId() == AuthenticationHolder.getMemberId()));
                     } finally {
                         latch.countDown();

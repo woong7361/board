@@ -1,5 +1,7 @@
 package com.example.notice.controller;
 
+import com.example.notice.auth.AuthenticationPrincipal;
+import com.example.notice.auth.principal.Principal;
 import com.example.notice.entity.Member;
 import com.example.notice.service.AuthService;
 import com.example.notice.validate.group.MemberLoginValidationGroup;
@@ -29,7 +31,8 @@ public class AuthController {
      */
     //TODO URI 디자인?
     @PostMapping("/api/auth/login")
-    public ResponseEntity<Map<String, String>> login(@Validated(MemberLoginValidationGroup.class) @RequestBody Member member) {
+    public ResponseEntity<Map<String, String>> login(
+            @Validated(MemberLoginValidationGroup.class) @RequestBody Member member) {
         String token = authService.login(member);
 
         Map<String, String> body = new HashMap<>();
