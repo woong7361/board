@@ -26,7 +26,7 @@ class AuthServiceTest {
             //when
             String authentication = authService.userAuthentication(member);
             //then
-            assertThat(authentication).isEqualTo(MockAuthProvider.AUTHENTICATION);
+            assertThat(authentication).isNotNull();
         }
 
         @DisplayName("회원가입된 회원이 아닐때 - (저장된 아이디가 없을때)")
@@ -53,6 +53,19 @@ class AuthServiceTest {
             //when
             //then
             assertThatThrownBy(() -> authService.userAuthentication(member)).isInstanceOf(MemberNotExistException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("관리자 인증 서비스")
+    public class AdminAuthenticationTest {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            //when
+            authService.adminAuthentication(MockMemberRepository.SAVED_ADMIN_MEMBER);
+            //then
         }
     }
 }

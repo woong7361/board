@@ -3,17 +3,25 @@ package com.example.notice.mock.auth;
 import com.example.notice.auth.JwtAuthProvider;
 import com.example.notice.entity.Member;
 import com.example.notice.auth.AuthProvider;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MockAuthProvider implements AuthProvider{
 
     public static final String AUTHENTICATION = "authentication";
+
+    public static final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * @implSpec 인증 객체 반환
      */
     @Override
     public String createAuthentication(Member member) {
-        return AUTHENTICATION;
+        try {
+            return String.valueOf(mapper.writeValueAsString(member));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -25,9 +33,11 @@ public class MockAuthProvider implements AuthProvider{
             return null;
         }
 
-        return Member.builder()
-                .memberId(Integer.parseInt(authentication))
-                .build();
+        try {
+            return mapper.readValue(authentication, Member.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

@@ -30,6 +30,5 @@ public class AuthServiceImpl implements AuthService{
     public Member adminAuthentication(Member member) {
         return memberRepository.findAdminMemberByLoginIdAndPassword(member)
                 .orElseThrow(() -> new MemberNotExistException("해당하는 멤버 존재 X", member));
-
     }
 }

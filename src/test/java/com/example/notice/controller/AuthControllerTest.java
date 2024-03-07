@@ -56,6 +56,8 @@ class AuthControllerTest {
             String body = mapper.writeValueAsString(member);
             //when
             //then
+
+            //TODO 이런 애들 mock 라이브러리를 써야 하는지... 혹은 service mocking을 어떻게 할 것인지
             mockMvc.perform(
                             MockMvcRequestBuilders.post(LOGIN_URI)
                                     .content(body)
@@ -111,13 +113,15 @@ class AuthControllerTest {
         @Test
         public void success() throws Exception {
             //given
+            long memberId = 10L;
             Member member = Member.builder()
-                    .memberId(10)
+                    .memberId(memberId)
                     .loginId("id123")
                     .password("pw123")
                     .build();
             String body = mapper.writeValueAsString(member);
             MockHttpSession mockHttpSession = new MockHttpSession();
+
             //when
             //then
             mockMvc.perform(
@@ -127,7 +131,7 @@ class AuthControllerTest {
                                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isOk());
 
-            Assertions.assertThat(mockHttpSession.getAttribute(ADMIN_SESSION_KEY)).isEqualTo(10L);
+            Assertions.assertThat(mockHttpSession.getAttribute(ADMIN_SESSION_KEY)).isEqualTo(memberId);
         }
 
     }

@@ -8,17 +8,17 @@ import com.example.notice.entity.Member;
 public interface AuthService {
 
     /**
-     * 사용자 로그인 서비스
+     * 사용자 인증 서비스
      * @param member 회원 정보
      * @return 성공시 jwt token을 반환한다
      */
     String userAuthentication(Member member);
 
     /**
-     * 관리자 로그인 서비스
+     * 관리자 인증 서비스
      *
      * @param member 관리자 정보
-     * @return
+     * @return 관리자 정보
      */
     Member adminAuthentication(Member member);
 }
