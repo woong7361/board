@@ -27,6 +27,8 @@ public class SpringControllerAdvice {
             log.debug("field error - field: {}, message: {}",  fieldError.getField(), fieldError.getDefaultMessage());
         }
 
+        log.info("{}", exception);
+
         return ResponseEntity
                 .badRequest()
                 .body(ErrorResponse.builder()

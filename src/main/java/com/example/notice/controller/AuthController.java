@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.notice.constant.ResponseConstant.TOKEN_PARAM;
 import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
 
 /**
@@ -31,14 +32,13 @@ public class AuthController {
      * @param member 회원 정보
      * @return 인증된 jwt token
      */
-    //TODO URI 디자인?
     @PostMapping("/api/auth/login")
     public ResponseEntity<Map<String, String>> userLogin(
             @Validated(MemberLoginValidationGroup.class) @RequestBody Member member) {
         String token = authService.userAuthentication(member);
 
         Map<String, String> body = new HashMap<>();
-        body.put("token", token);
+        body.put(TOKEN_PARAM, token);
 
         return ResponseEntity
                 .ok(body);

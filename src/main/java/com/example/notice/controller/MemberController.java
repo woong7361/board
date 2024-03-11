@@ -1,6 +1,7 @@
 package com.example.notice.controller;
 
 import com.example.notice.entity.Member;
+import com.example.notice.exception.BadRequestParamException;
 import com.example.notice.service.MemberService;
 import com.example.notice.validate.group.MemberRegisterValidationGroup;
 import jakarta.validation.Valid;
@@ -34,11 +35,10 @@ public class MemberController {
                 .build();
     }
 
+
     private void checkLoginIdSameAsPassword(Member member) {
         if (member.getLoginId().equals(member.getPassword())) {
-            //TODO custom Exception
-            throw new IllegalArgumentException("no!");
-
+            throw new BadRequestParamException("login Id should not be same as password");
         }
     }
 }

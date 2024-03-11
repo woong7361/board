@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.notice.repository.FreeBoardRepository">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="freeBoardId">
+        INSERT INTO free_board
+        (
+            title, content, views,
+            member_id, created_at,
+            category_id
+        )
+        VALUES
+        (
+            #{freeBoard.title}, #{freeBoard.content}, 0,
+            #{freeBoard.memberId}, NOW(),
+            (
+                SELECT category.category_id
+                FROM category
+                WHERE category.value = #{freeBoard.category} AND category.board_type = 'free'
+            )
+        )
+    </insert>
+
+
+</mapper>

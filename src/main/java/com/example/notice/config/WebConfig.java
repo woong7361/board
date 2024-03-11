@@ -13,6 +13,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
+/**
+ * webMVC관련 설정 클래스
+ * WebMvcConfigurer는 Web설정이므로 WebMvcTest시 로딩되어 bean not Found Exception이 일어날 수 있다.
+ */
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {

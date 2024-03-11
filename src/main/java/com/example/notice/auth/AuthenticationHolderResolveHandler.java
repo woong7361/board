@@ -8,8 +8,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-//TODO handlerMethodArgumentResolver 없이 만들기?
-
 /**
  * AuthenticationHolder 에서 인증객체를 가져오는 역할을 한다.
  */

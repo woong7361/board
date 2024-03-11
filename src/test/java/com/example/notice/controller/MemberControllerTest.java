@@ -2,6 +2,7 @@ package com.example.notice.controller;
 
 
 import com.example.notice.entity.Member;
+import com.example.notice.exception.BadRequestParamException;
 import com.example.notice.mock.service.MockMemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -24,6 +25,9 @@ class MemberControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    //TODO mockBean을 쓰는 것으로?
+
     @SpyBean
     private MockMemberService memberService;
     private ObjectMapper mapper = new ObjectMapper();
@@ -139,7 +143,7 @@ class MemberControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(result -> Assertions
                                 .assertThat(result.getResolvedException())
-                                .isInstanceOf(IllegalArgumentException.class))
+                                .isInstanceOf(BadRequestParamException.class))
                         .andExpect(MockMvcResultMatchers.status().isBadRequest());
             }
         }

@@ -8,7 +8,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-//TODO webMvcTest 에서 WebMvcConfig를 implements 하면 authProvider bean이 필요
 /**
  * 필터 설정 클래스
  */

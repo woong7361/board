@@ -9,7 +9,8 @@
     </settings>
     <mappers>
         <mapper resource="mybatis/mapper/member-mapper.xml"/>
-<!--        <mapper resource="mybatis/mapper/boardMapper.xml"/>-->
+        <mapper resource="mybatis/mapper/free-board-mapper.xml"/>
+        <mapper resource="mybatis/mapper/file-mapper.xml"/>
 <!--        <mapper resource="mybatis/mapper/fileMapper.xml"/>-->
 <!--        <mapper resource="mybatis/mapper/commentMapper.xml"/>-->
     </mappers>

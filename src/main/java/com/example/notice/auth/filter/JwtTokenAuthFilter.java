@@ -21,19 +21,19 @@ public class JwtTokenAuthFilter implements Filter {
 
     public static final String AUTHORIZATION = "Authorization";
 
+    /**
+     * 인증 필터 - JWT token을 통해 인증객체를 받아온다.
+     */
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String bearerToken = request.getHeader(AUTHORIZATION);
 
-        // TODO filter에서 error 발생시 globalHandler 불가능, but. java Servlet 기술이라는 범용성
-        // 인터셉터와 필터 어떤것을 사용할 것인가 생각해보기
         Member member = authProvider.verify(bearerToken);
 
         AuthenticationHolder.clear();
         try {
-            Principal<Member> principal = new MemberPrincipal(member);
-            AuthenticationHolder.setPrincipal(principal);
+            AuthenticationHolder.setPrincipal(new MemberPrincipal(member));
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
             AuthenticationHolder.clear();

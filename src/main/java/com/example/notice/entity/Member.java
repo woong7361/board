@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class Member {
-    private long memberId;
+    private Long memberId;
 
     @Pattern(
             regexp = "(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-z0-9-_]{4,11}",
