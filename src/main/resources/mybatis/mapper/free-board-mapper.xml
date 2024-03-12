@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.notice.repository.FreeBoardRepository">
+    <sql id="searchCondition">
+        WHERE
+            ((fd.created_at BETWEEN #{search.startDate} AND #{search.endDate})
+                OR
+            (fd.modified_at BETWEEN #{search.startDate} AND #{search.endDate}))
+            <if test="search.category != null and search.category != 'ALL'">
+                AND
+                    #{search.category} = ct.value
+            </if>
+            <if test="search.keyword != null and search.keyword != ''">
+                AND (
+                    fd.title LIKE CONCAT('%', #{search.keyword}, '%')
+                    OR fd.content LIKE CONCAT('%', #{search.keyword}, '%')
+                    OR m.`name` LIKE CONCAT('%', #{search.keyword}, '%'))
+            </if>
+    </sql>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="freeBoardId">
         INSERT INTO free_board
@@ -30,6 +46,42 @@
             LEFT JOIN category ct on fd.category_id = ct.category_id
             LEFT JOIN member m on m.member_id = fd.member_id
         WHERE free_board_id = #{freeBoardId}
+    </select>
+
+    <update id="increaseViewsByBoardId">
+        UPDATE free_board
+        SET views = views + 1
+        WHERE free_board_id = #{freeBoardId}
+    </update>
+
+
+    <select id="findBoardsBySearchParam" resultType="com.example.notice.entity.FreeBoard">
+        SELECT
+            free_board_id, title, views, created_at,
+            ct.value as 'category',
+            m.name as 'member.name', m.member_id as 'member.memberId',
+            (SELECT count(*) > 0 from file) as have_file
+        FROM free_board fd
+            LEFT JOIN category ct on fd.category_id = ct.category_id
+            LEFT JOIN member m on m.member_id = fd.member_id
+        <include refid="searchCondition"/>
+        <choose>
+            <when test="page.orderColumn != null and page.orderType != null">
+                ORDER BY ${page.orderColumn} ${page.orderType}
+            </when>
+            <otherwise>
+                ORDER BY fd.created_at DESC
+            </otherwise>
+        </choose>
+        LIMIT #{page.offset}, #{page.size}
+    </select>
+
+    <select id="getTotalCountBySearchParam" resultType="int">
+        SELECT count(*)
+        FROM free_board fd
+            LEFT JOIN category ct on fd.category_id = ct.category_id
+            LEFT JOIN member m on m.member_id = fd.member_id
+        <include refid="searchCondition"/>
     </select>
 
 

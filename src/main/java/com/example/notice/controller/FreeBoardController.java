@@ -3,22 +3,21 @@ package com.example.notice.controller;
 import com.example.notice.auth.AuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
 import com.example.notice.constant.ResponseConstant;
-import com.example.notice.dto.FreeBoardCreateRequest;
-import com.example.notice.entity.AttachmentFile;
+import com.example.notice.dto.FreeBoardSearchParam;
+import com.example.notice.exception.BadRequestParamException;
+import com.example.notice.page.PageRequest;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
+import com.example.notice.page.PageResponse;
 import com.example.notice.service.FreeBoardService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 /**
@@ -66,4 +65,42 @@ public class FreeBoardController {
         return ResponseEntity
                 .ok(freeBoard);
     }
+
+    /**
+     * 자유게시판 게시글 리스트 조회/검색
+     * @param freeBoardSearchParam 게시글 검색 파라미터
+     * @param pageRequest 페이지네이션 요청 파라미터
+     * @return 게시글 페이지
+     */
+    @GetMapping("/api/boards/free")
+    public ResponseEntity<PageResponse<FreeBoard>> getFreeBoards(
+            @ModelAttribute FreeBoardSearchParam freeBoardSearchParam,
+            @Valid @ModelAttribute PageRequest pageRequest
+    ) {
+        if (ChronoUnit.YEARS.between(freeBoardSearchParam.getStartDate(), freeBoardSearchParam.getEndDate()) > 0) {
+            throw new BadRequestParamException("최대 날짜 범위는 1년 이하 입니다.");
+        }
+
+        PageResponse<FreeBoard> boards = freeBoardService.getBoardsBySearchParams(freeBoardSearchParam, pageRequest);
+
+        return ResponseEntity.ok(boards);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,8 +1,10 @@
 package com.example.notice.mock.repository;
 
+import com.example.notice.dto.FreeBoardSearchParam;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.entity.MemberRole;
+import com.example.notice.page.PageRequest;
 import com.example.notice.repository.FreeBoardRepository;
 import com.example.notice.repository.MemberRepository;
 
@@ -39,6 +41,11 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
         return repository.stream()
                 .filter((fd) -> fd.getFreeBoardId().equals(freeBoardId))
                 .findFirst();
+    }
+
+    @Override
+    public List<FreeBoard> findBoardsBySearchParam(FreeBoardSearchParam freeBoardSearchParam, PageRequest pageRequest) {
+        throw new RuntimeException("mock 만들어야 한다.");
     }
 
 }

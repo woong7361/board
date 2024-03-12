@@ -1,7 +1,10 @@
 package com.example.notice.service;
 
 import com.example.notice.dto.FreeBoardCreateRequest;
+import com.example.notice.dto.FreeBoardSearchParam;
 import com.example.notice.entity.FreeBoard;
+import com.example.notice.page.PageRequest;
+import com.example.notice.page.PageResponse;
 
 import java.util.List;
 
@@ -23,4 +26,12 @@ public interface FreeBoardService {
      * @return 게시글 내용
      */
     FreeBoard getBoardById(Long freeBoardId);
+
+    /**
+     * 검색조건에 해당하는 게시글을 가져온다.
+     * @param freeBoardSearchParam 게시글 검색 파라미터
+     * @param pageRequest 게시글 페이지네이션 파라미터
+     * @return 게시글 페이지
+     */
+    PageResponse<FreeBoard> getBoardsBySearchParams(FreeBoardSearchParam freeBoardSearchParam, PageRequest pageRequest);
 }
