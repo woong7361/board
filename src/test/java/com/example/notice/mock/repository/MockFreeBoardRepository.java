@@ -108,4 +108,39 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
                 });
     }
 
+    @Override
+    public boolean hasCommentByBoardId(Long freeBoardId) {
+        return false;
+    }
+
+    @Override
+    public void deleteContentAndMemberByBoardId(Long freeBoardId) {
+        findBoardById(freeBoardId)
+                .map((fd) -> FreeBoard.builder()
+                        .member(Member.builder()
+                                .memberId(fd.getMemberId())
+                                .name(fd.getMemberName())
+                                .build())
+                        .modifiedAt(fd.getModifiedAt())
+                        .createdAt(fd.getCreatedAt())
+                        .title(fd.getTitle())
+                        .content(fd.getContent())
+                        .category(fd.getCategory())
+                        .views(fd.getViews())
+                        .build());
+                }
+
+    @Override
+    public void deleteByBoardId(Long freeBoardId) {
+        repository
+                .removeIf((fd) -> fd.getFreeBoardId().equals(freeBoardId));
+    }
+
+    @Override
+    public Optional<FreeBoard> findBoardByIdAndMemberId(Long freeBoardId, Long memberId) {
+        return repository.stream()
+                .filter((fd) -> fd.getFreeBoardId().equals(freeBoardId) && fd.getMemberId().equals(memberId))
+                .findFirst();
+    }
+
 }

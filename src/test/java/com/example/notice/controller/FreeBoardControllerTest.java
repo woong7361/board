@@ -228,15 +228,27 @@ class FreeBoardControllerTest {
     @Nested
     @DisplayName("자유게시판 게시글 삭제 테스트")
     public class NestedClass {
+
+        private static final String BOARD_DELETE_URI = "/api/boards/free";
+        @BeforeEach
+        public void insertMember() {
+            Member member = Member.builder()
+                    .memberId(1L)
+                    .name("name")
+                    .build();
+
+            AuthenticationHolder.setPrincipal(new MemberPrincipal(member));
+        }
+
         @DisplayName("정상 처리")
         @Test
-
-        public void test() throws Exception {
+        public void success() throws Exception {
             //given
-
+            String boardId = "1";
             //when
-
             //then
+            mockMvc.perform(MockMvcRequestBuilders.delete(BOARD_DELETE_URI + "/" + boardId))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
         }
     }
 }
