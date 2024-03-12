@@ -1,14 +1,11 @@
 package com.example.notice.service;
 
 import com.example.notice.entity.FreeBoard;
-import com.example.notice.files.PhysicalFileRepository;
-import com.example.notice.repository.AttachmentFileRepository;
+import com.example.notice.exception.BoardNotExistException;
 import com.example.notice.repository.FreeBoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * 자유 게시판 서비스 로직
@@ -31,6 +28,17 @@ public class FreeBoardServiceImpl implements FreeBoardService{
         freeBoardRepository.save(freeBoard);
 
         return freeBoard.getFreeBoardId();
+    }
+
+    /**
+     * 자유게시판의 게시글을 게시글 식별자로 검색하여 가져온다.
+     * @param freeBoardId 게시글 식별자
+     * @return 게시글
+     */
+    @Override
+    public FreeBoard getBoardById(Long freeBoardId) {
+        return freeBoardRepository.findBoardById(freeBoardId)
+                .orElseThrow(() -> new BoardNotExistException("not exist board"));
     }
 
 }

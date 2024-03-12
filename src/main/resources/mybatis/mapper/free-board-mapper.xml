@@ -21,5 +21,16 @@
         )
     </insert>
 
+    <select id="findBoardById" resultType="com.example.notice.entity.FreeBoard">
+        SELECT
+            free_board_id, title, content, views, created_at, modified_at,
+            ct.value as 'category',
+            m.name as 'member.name', m.member_id as 'member.memberId'
+        FROM free_board fd
+            LEFT JOIN category ct on fd.category_id = ct.category_id
+            LEFT JOIN member m on m.member_id = fd.member_id
+        WHERE free_board_id = #{freeBoardId}
+    </select>
+
 
 </mapper>

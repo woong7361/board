@@ -7,6 +7,7 @@ import com.example.notice.dto.FreeBoardCreateRequest;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.exception.BadRequestParamException;
+import com.example.notice.mock.repository.MockFreeBoardRepository;
 import com.example.notice.service.FreeBoardService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -17,11 +18,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,6 +34,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
+import static com.example.notice.mock.repository.MockFreeBoardRepository.SAVED_FREE_BOARD;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -129,6 +133,30 @@ class FreeBoardControllerTest {
         }
 
 
+    }
+
+    @Nested
+    @DisplayName("자유게시판 게시글 조회 테스트")
+    public class getFreeBoardTest {
+        private final String GET_FREE_BOARD_URI = "/api/boards/free";
+
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            String freeBoardId = String.valueOf(1L);
+            //when
+            Mockito.when(freeBoardService.getBoardById(Long.valueOf(freeBoardId)))
+                    .thenReturn(SAVED_FREE_BOARD);
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.get(GET_FREE_BOARD_URI + "/" + freeBoardId))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.freeBoardId").value(SAVED_FREE_BOARD.getFreeBoardId()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(SAVED_FREE_BOARD.getTitle()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.content").value(SAVED_FREE_BOARD.getContent()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.category").value(SAVED_FREE_BOARD.getCategory()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.memberName").value(SAVED_FREE_BOARD.getMemberName()));
+        }
     }
 
 }

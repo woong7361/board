@@ -4,7 +4,7 @@ import com.example.notice.entity.FreeBoard;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
  * 자유 게시판 repository
@@ -17,10 +17,5 @@ public interface FreeBoardRepository {
      */
     void save(@Param("freeBoard") FreeBoard freeBoard);
 
-    /**
-     * 게시글의 첨부파일 연관관계 저장
-     * @param freeBoardId 게시글 식별자
-     * @param fileIds 첨부파일 식별자들
-     */
-    void saveFileIds(@Param("freeBoardId") Long freeBoardId, @Param("fileId") Long fileIds);
+    Optional<FreeBoard> findBoardById(@Param("freeBoardId") Long freeBoardId);
 }

@@ -8,13 +8,19 @@ import java.time.LocalDateTime;
 /**
  * 자유 게시판 엔티티
  */
-@Getter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@Getter
 public class FreeBoard {
     private Long freeBoardId;
-    private Long memberId;
+
+    //TODO 식별자(FK)인 memberId 대신 연관 객체 Member를 대신 사용
+    // private Getter로 민감한값 유출 방지 (password, ...)
+    // public getter로 외부 노출값 설정 getMemberName(), ...
+    // 컨트롤러에서 엔티티 타입으로 반환값 예측이 어려워진다는 단점?
+    @Getter(AccessLevel.PRIVATE)
+    private Member member;
 
     @NotBlank
     private String category;
@@ -32,7 +38,16 @@ public class FreeBoard {
     private LocalDateTime modifiedAt;
 
     public void setOwner(Member member) {
-        this.memberId = member.getMemberId();
+        this.member = member;
     }
+
+    public Long getMemberId() {
+        return this.member != null ? this.member.getMemberId() : null;
+    }
+
+    public String getMemberName() {
+        return this.member != null ? this.member.getName() : null;
+    }
+
 
 }

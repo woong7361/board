@@ -24,6 +24,7 @@ import java.util.Map;
 /**
  * 자유 게시판 컨트롤러
  */
+// TODO MSA의 transactional 처리?
 @RestController
 @RequiredArgsConstructor
 public class FreeBoardController {
@@ -32,6 +33,7 @@ public class FreeBoardController {
 
     /**
      * 자유게시판 게시글 생성
+     *
      * @param freeBoard 게시글 요청 인자
      * @param principal 인증된 사용자
      * @return 게시글 식별자
@@ -50,4 +52,18 @@ public class FreeBoardController {
                 .ok(Map.of(ResponseConstant.FREE_BOARD_ID_PARAM, freeBoardId));
     }
 
+    /**
+     * 자유게시판 게시글 조회
+     * @param freeBoardId 게시글 식별자
+     * @return 게시글 내용
+     */
+    @GetMapping("/api/boards/free/{freeBoardId}")
+    public ResponseEntity<FreeBoard> getFreeBoard(
+            @PathVariable(name = "freeBoardId") Long freeBoardId
+    ) {
+        FreeBoard freeBoard = freeBoardService.getBoardById(freeBoardId);
+
+        return ResponseEntity
+                .ok(freeBoard);
+    }
 }
