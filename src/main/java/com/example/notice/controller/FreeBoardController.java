@@ -77,13 +77,22 @@ public class FreeBoardController {
             @ModelAttribute FreeBoardSearchParam freeBoardSearchParam,
             @Valid @ModelAttribute PageRequest pageRequest
     ) {
-        if (ChronoUnit.YEARS.between(freeBoardSearchParam.getStartDate(), freeBoardSearchParam.getEndDate()) > 0) {
-            throw new BadRequestParamException("최대 날짜 범위는 1년 이하 입니다.");
-        }
+        checkSearchRange(freeBoardSearchParam);
 
         PageResponse<FreeBoard> boards = freeBoardService.getBoardsBySearchParams(freeBoardSearchParam, pageRequest);
 
         return ResponseEntity.ok(boards);
+    }
+
+
+    private static void checkSearchRange(FreeBoardSearchParam freeBoardSearchParam) {
+        if (isSearchRangeMoreThan1Year(freeBoardSearchParam)) {
+            throw new BadRequestParamException("최대 날짜 범위는 1년 이하 입니다.");
+        }
+    }
+
+    private static boolean isSearchRangeMoreThan1Year(FreeBoardSearchParam freeBoardSearchParam) {
+        return ChronoUnit.YEARS.between(freeBoardSearchParam.getStartDate(), freeBoardSearchParam.getEndDate()) > 0;
     }
 }
 

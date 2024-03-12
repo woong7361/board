@@ -3,14 +3,11 @@ package com.example.notice.controller;
 import com.example.notice.auth.AuthenticationHolder;
 import com.example.notice.auth.principal.MemberPrincipal;
 import com.example.notice.auth.principal.Principal;
-import com.example.notice.dto.FreeBoardCreateRequest;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.exception.BadRequestParamException;
-import com.example.notice.mock.repository.MockFreeBoardRepository;
 import com.example.notice.service.FreeBoardService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,19 +21,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
 import static com.example.notice.mock.repository.MockFreeBoardRepository.SAVED_FREE_BOARD;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 
@@ -110,8 +106,7 @@ class FreeBoardControllerTest {
                 mockMvc.perform(MockMvcRequestBuilders.post(FREE_BOARD_CREATE_URI)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(board)))
-                        .andExpect(result -> Assertions
-                                .assertThat(result.getResolvedException())
+                        .andExpect(result -> assertThat(result.getResolvedException())
                                 .isInstanceOf(MethodArgumentNotValidException.class))
                         .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
@@ -156,6 +151,77 @@ class FreeBoardControllerTest {
                     .andExpect(MockMvcResultMatchers.jsonPath("$.content").value(SAVED_FREE_BOARD.getContent()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.category").value(SAVED_FREE_BOARD.getCategory()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.memberName").value(SAVED_FREE_BOARD.getMemberName()));
+        }
+    }
+
+    @Nested
+    @DisplayName("자유게시판 게시글 검색 테스트")
+    public class SearchTest {
+        private static final String GET_BOARDS_URI = "/api/boards/free";
+
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("startDate", LocalDateTime.now().minusMonths(2L).toString());
+            params.add("endDate", LocalDateTime.now().toString());
+            params.add("category", "category");
+            params.add("keyword", "keyword");
+            params.add("size", "5");
+            params.add("currentPage", "0");
+
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.get(GET_BOARDS_URI)
+                            .params(params))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+
+        }
+
+        @DisplayName("설정한 최대 기간(1year)을 넘어갈때")
+        @Test
+        public void exceedMaxDuration() throws Exception{
+            //given
+            LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("startDate", LocalDateTime.now().minusYears(2L).minusDays(1L).toString());
+            params.add("endDate", LocalDateTime.now().toString());
+
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.get(GET_BOARDS_URI)
+                            .params(params))
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect((result -> assertThat(result
+                            .getResolvedException())
+                            .isInstanceOf(BadRequestParamException.class)));
+        }
+
+        @DisplayName("정렬 인자에 특수문자가 들어갈때")
+        @ParameterizedTest
+        @MethodSource("specialWordSortParams")
+        public void specialWordInSortParam(String orderColumn, String orderType) throws Exception{
+            //given
+            LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("orderColumn", orderColumn);
+            params.add("orderType", orderType);
+
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.get(GET_BOARDS_URI)
+                            .params(params))
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect((result -> assertThat(result
+                            .getResolvedException())
+                            .isInstanceOf(MethodArgumentNotValidException.class)));
+        }
+
+        public static Stream<Arguments> specialWordSortParams() {
+            return Stream.of(
+                    Arguments.of("aaa", "a;b"),
+                    Arguments.of("dsaf;", "abc"),
+                    Arguments.of("dsa//z,,.", "abc"),
+                    Arguments.of("dsaf;", "fdsa;;,./.,/"));
         }
     }
 

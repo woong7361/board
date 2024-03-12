@@ -23,6 +23,6 @@ public class FreeBoardSearchParam {
     }
 
     public LocalDateTime getEndDate() {
-        return endDate == null ? LocalDateTime.now() : startDate;
+        return endDate == null ? LocalDateTime.now() : endDate;
     }
 }

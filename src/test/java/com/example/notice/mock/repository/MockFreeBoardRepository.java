@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MockFreeBoardRepository implements FreeBoardRepository {
 
@@ -20,7 +21,7 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
     public static FreeBoard SAVED_FREE_BOARD = FreeBoard.builder()
             .freeBoardId(1L)
             .title("title")
-            .views(10L)
+            .views(11L)
             .content("content111")
             .category("CATEGORY")
             .createdAt(LocalDateTime.now())
@@ -45,7 +46,66 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
 
     @Override
     public List<FreeBoard> findBoardsBySearchParam(FreeBoardSearchParam freeBoardSearchParam, PageRequest pageRequest) {
-        throw new RuntimeException("mock 만들어야 한다.");
+        return repository.stream()
+                .filter((fd) -> {
+                    boolean result = true;
+                    if (freeBoardSearchParam.getCategory() != null) {
+                        result = result && fd.getCategory().equals(freeBoardSearchParam.getCategory());
+                    }
+                    if (freeBoardSearchParam.getKeyWord() != null) {
+                        result = result && fd.getContent().contains(freeBoardSearchParam.getKeyWord());
+                        result = result && fd.getTitle().contains(freeBoardSearchParam.getKeyWord());
+                        result = result && fd.getMemberName().contains(freeBoardSearchParam.getKeyWord());
+                    }
+                    if (freeBoardSearchParam.getStartDate() != null && freeBoardSearchParam.getEndDate() != null) {
+                        result = result && fd.getCreatedAt().isBefore(freeBoardSearchParam.getEndDate());
+                        result = result && fd.getCreatedAt().isAfter(freeBoardSearchParam.getStartDate());
+                    }
+                    return result;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Integer getTotalCountBySearchParam(FreeBoardSearchParam freeBoardSearchParam) {
+        return (int) repository.stream()
+                .filter((fd) -> {
+                    boolean result = true;
+                    if (freeBoardSearchParam.getCategory() != null) {
+                        result = result && fd.getCategory().equals(freeBoardSearchParam.getCategory());
+                    }
+                    if (freeBoardSearchParam.getKeyWord() != null) {
+                        result = result && fd.getContent().contains(freeBoardSearchParam.getKeyWord());
+                        result = result && fd.getTitle().contains(freeBoardSearchParam.getKeyWord());
+                        result = result && fd.getMemberName().contains(freeBoardSearchParam.getKeyWord());
+                    }
+                    if (freeBoardSearchParam.getStartDate() != null && freeBoardSearchParam.getEndDate() != null) {
+                        result = result && fd.getCreatedAt().isBefore(freeBoardSearchParam.getEndDate());
+                        result = result && fd.getCreatedAt().isAfter(freeBoardSearchParam.getStartDate());
+                    }
+                    return result;
+                })
+                .count();
+    }
+
+    @Override
+    public void increaseViewsByBoardId(Long freeBoardId) {
+        findBoardById(freeBoardId)
+                .ifPresent((fd) -> {
+                    repository.remove(fd);
+                    FreeBoard increaseBoard = FreeBoard.builder()
+                            .member(Member.builder().memberId(fd.getMemberId()).name(fd.getMemberName()).build())
+                            .createdAt(fd.getCreatedAt())
+                            .modifiedAt(fd.getModifiedAt())
+                            .views(fd.getViews() + 1)
+                            .title(fd.getTitle())
+                            .content(fd.getContent())
+                            .category(fd.getCategory())
+                            .freeBoardId(fd.getFreeBoardId())
+                            .build();
+
+                    repository.add(increaseBoard);
+                });
     }
 
 }
