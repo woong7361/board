@@ -15,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
@@ -84,8 +82,22 @@ public class FreeBoardController {
         return ResponseEntity.ok(boards);
     }
 
+    /**
+     * 자유게시판 게시글 삭제
+     * @return 200 ok
+     */
+    @DeleteMapping("/api/boards/free/{freeBoardId}")
+    public ResponseEntity<Object> deleteFreeBoard(
+            @PathVariable(name = "freeBoardId") Long freeBoardId,
+            @AuthenticationPrincipal Principal<Member> principal) {
+        Member member = principal.getAuthentication();
+
+        freeBoardService.deleteFreeBoard(freeBoardId, member);
+        return ResponseEntity.ok().build();
+    }
 
     private static void checkSearchRange(FreeBoardSearchParam freeBoardSearchParam) {
+
         if (isSearchRangeMoreThan1Year(freeBoardSearchParam)) {
             throw new BadRequestParamException("최대 날짜 범위는 1년 이하 입니다.");
         }

@@ -47,4 +47,30 @@ public interface FreeBoardRepository {
      * @param freeBoardId 게시글 식별자
      */
     void increaseViewsByBoardId(@Param("freeBoardId") Long freeBoardId);
+
+    /**
+     * 게시글에 댓글이 있는지 확인한다.
+     * @param freeBoardId 게시글 식별자
+     */
+    boolean hasCommentByBoardId(@Param("freeBoardId") Long freeBoardId);
+
+    /**
+     * 내용과 작성자를 게시글에서 삭제한다.
+     * @param freeBoardId 게시글 식별자
+     */
+    void deleteContentAndMemberByBoardId(@Param("freeBoardId")Long freeBoardId);
+
+    /**
+     * 게시글을 삭제한다.
+     * @param freeBoardId 게시글 식별자
+     */
+    void deleteByBoardId(@Param("freeBoardId")Long freeBoardId);
+
+    /**
+     * 게시글을 작성한 사용자가 맞는지 검색한다.
+     * @param freeBoardId 게시글 식별자
+     * @param memberId 사용자 식별자
+     * @return 게시글
+     */
+    Optional<FreeBoard> findBoardByIdAndMemberId(@Param("freeBoardId") Long freeBoardId, @Param("memberId") Long memberId);
 }

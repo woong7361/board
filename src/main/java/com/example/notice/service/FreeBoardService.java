@@ -1,12 +1,10 @@
 package com.example.notice.service;
 
-import com.example.notice.dto.FreeBoardCreateRequest;
 import com.example.notice.dto.FreeBoardSearchParam;
 import com.example.notice.entity.FreeBoard;
+import com.example.notice.entity.Member;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
-
-import java.util.List;
 
 /**
  * 자유게시판 서비스
@@ -34,4 +32,12 @@ public interface FreeBoardService {
      * @return 게시글 페이지
      */
     PageResponse<FreeBoard> getBoardsBySearchParams(FreeBoardSearchParam freeBoardSearchParam, PageRequest pageRequest);
+
+    /**
+     * 자유게시판의 게시글 삭제
+     *
+     * @param freeBoardId 게시글 식별자
+     * @param member 삭제를 요청한 사용자
+     */
+    void deleteFreeBoard(Long freeBoardId, Member member);
 }

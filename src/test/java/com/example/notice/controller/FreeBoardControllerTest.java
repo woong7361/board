@@ -225,4 +225,18 @@ class FreeBoardControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("자유게시판 게시글 삭제 테스트")
+    public class NestedClass {
+        @DisplayName("정상 처리")
+        @Test
+
+        public void test() throws Exception {
+            //given
+
+            //when
+
+            //then
+        }
+    }
 }
