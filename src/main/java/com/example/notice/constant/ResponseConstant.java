@@ -7,4 +7,6 @@ public class ResponseConstant {
     public static final String FREE_BOARD_ID_PARAM = "freeBoardId";
     public static final String TOKEN_PARAM = "token";
 
+    public static final String COMMENTS_PARAM = "comments";
+
 }
