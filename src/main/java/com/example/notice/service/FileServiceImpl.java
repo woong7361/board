@@ -1,8 +1,10 @@
 package com.example.notice.service;
 
 import com.example.notice.config.ConfigurationService;
+import com.example.notice.dto.IdList;
 import com.example.notice.dto.SuccessesAndFails;
 import com.example.notice.entity.AttachmentFile;
+import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.FileSaveCheckedException;
 import com.example.notice.exception.FileSaveException;
 import com.example.notice.files.PhysicalFileRepository;
@@ -30,6 +32,34 @@ public class FileServiceImpl implements FileService{
         SuccessesAndFails<AttachmentFile> successesAndFails = saveFiles(files, boardId);
 
         return successesAndFails;
+    }
+
+    @Transactional
+    @Override
+    public void delete(IdList fileIds) {
+        deleteFiles(fileIds);
+    }
+
+    @Override
+    public void checkFilesAuthorization(IdList fileIds, Long memberId) {
+        for (Long fileId : fileIds.getIds()) {
+            fileRepository.findByFileIdAndMemberId(fileId, memberId)
+                    .orElseThrow(() -> new AuthorizationException("파일 삭제 권한이 없는 사용자"));
+        }
+    }
+
+    private void deleteFiles(IdList fileIds) {
+        for (Long fileId : fileIds.getIds()) {
+            deleteFile(fileId);
+        }
+    }
+
+    private void deleteFile(Long fileId) {
+        fileRepository.findByFileId(fileId)
+                .ifPresent((file) -> {
+                    fileRepository.deleteByFileId(fileId);
+                    physicalFileRepository.delete(file.getPath() + "/" + file.getPhysicalName());
+                });
     }
 
 

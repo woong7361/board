@@ -9,6 +9,25 @@
         (#{file.physicalName}, #{file.originalName}, #{file.path}, #{file.extension}, #{freeBoardId})
     </insert>
 
+    <select id="findByFileId" resultType="com.example.notice.entity.AttachmentFile">
+        SELECT *
+        FROM file
+        WHERE file_id = #{fileId}
+    </select>
+
+    <delete id="deleteByFileId">
+        DELETE FROM file
+        WHERE file_id = #{fileId}
+    </delete>
+
+    <select id="findByFileIdAndMemberId" resultType="com.example.notice.entity.AttachmentFile">
+        SELECT *
+        FROM file
+            LEFT JOIN free_board fb on fb.free_board_id = file.free_board_id
+        WHERE
+            file.file_id = #{fileId}
+            AND fb.member_id = #{memberId}
+    </select>
 
 
 
