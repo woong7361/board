@@ -10,6 +10,7 @@ import com.example.notice.exception.FileSaveException;
 import com.example.notice.files.PhysicalFileRepository;
 import com.example.notice.repository.AttachmentFileRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class FileServiceImpl implements FileService{
 
@@ -67,13 +69,14 @@ public class FileServiceImpl implements FileService{
         SuccessesAndFails<AttachmentFile> results = SuccessesAndFails.emptyList();
 
         for (MultipartFile multipartFile : multipartFiles) {
-
             try {
                 checkAllowedExtensionFile(multipartFile);
                 AttachmentFile attachmentFile = saveFile(multipartFile, boardId);
 
                 results.addSuccess(attachmentFile);
             } catch (FileSaveCheckedException e) {
+                log.info("file save fail - cause: {}", e.getMessage());
+
                 results.addFail(AttachmentFile.builder()
                         .originalName(multipartFile.getOriginalFilename())
                         .build());

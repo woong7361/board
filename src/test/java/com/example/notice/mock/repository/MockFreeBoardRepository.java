@@ -3,18 +3,20 @@ package com.example.notice.mock.repository;
 import com.example.notice.dto.FreeBoardSearchParam;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
+import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.page.PageRequest;
 import com.example.notice.repository.FreeBoardRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.notice.mock.database.MemoryDataBase.freeBoardRepository;
+
 public class MockFreeBoardRepository implements FreeBoardRepository {
 
-    private static final List<FreeBoard> repository = new ArrayList<>();
+//    private final List<FreeBoard> freeBoardRepository = MemoryDataBase.freeBoardRepository;
 
     public static FreeBoard SAVED_FREE_BOARD = FreeBoard.builder()
             .freeBoardId(1L)
@@ -26,27 +28,23 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
             .member(MockMemberRepository.SAVED_MEMBER)
             .build();
 
-    static{
-        repository.add(SAVED_FREE_BOARD);
-    }
-
     @Override
     public void save(FreeBoard freeBoard) {
-        repository.add(freeBoard);
+        freeBoardRepository.add(freeBoard);
     }
 
     @Override
     public Optional<FreeBoard> findBoardById(Long freeBoardId) {
-        List<FreeBoard> repository1 = repository;
+        List<FreeBoard> repository1 = freeBoardRepository;
         System.out.println("repository1 = " + repository1);
-        return repository.stream()
+        return freeBoardRepository.stream()
                 .filter((fd) -> fd.getFreeBoardId().equals(freeBoardId))
                 .findFirst();
     }
 
     @Override
     public List<FreeBoard> findBoardsBySearchParam(FreeBoardSearchParam freeBoardSearchParam, PageRequest pageRequest) {
-        return repository.stream()
+        return freeBoardRepository.stream()
                 .filter((fd) -> {
                     boolean result = true;
                     if (freeBoardSearchParam.getCategory() != null) {
@@ -68,7 +66,7 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
 
     @Override
     public Integer getTotalCountBySearchParam(FreeBoardSearchParam freeBoardSearchParam) {
-        return (int) repository.stream()
+        return (int) freeBoardRepository.stream()
                 .filter((fd) -> {
                     boolean result = true;
                     if (freeBoardSearchParam.getCategory() != null) {
@@ -92,19 +90,19 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
     public void increaseViewsByBoardId(Long freeBoardId) {
         findBoardById(freeBoardId)
                 .ifPresent((fd) -> {
-                    repository.remove(fd);
+                    freeBoardRepository.remove(fd);
                     FreeBoard increaseBoard = FreeBoard.builder()
                             .member(Member.builder().memberId(fd.getMemberId()).name(fd.getMemberName()).build())
                             .createdAt(fd.getCreatedAt())
                             .modifiedAt(fd.getModifiedAt())
-                            .views(fd.getViews() + 1)
+                            .views(fd.getViews() + 1L)
                             .title(fd.getTitle())
                             .content(fd.getContent())
                             .category(fd.getCategory())
                             .freeBoardId(fd.getFreeBoardId())
                             .build();
 
-                    repository.add(increaseBoard);
+                    freeBoardRepository.add(increaseBoard);
                 });
     }
 
@@ -132,13 +130,13 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
 
     @Override
     public void deleteByBoardId(Long freeBoardId) {
-        repository
+        freeBoardRepository
                 .removeIf((fd) -> fd.getFreeBoardId().equals(freeBoardId));
     }
 
     @Override
     public Optional<FreeBoard> findBoardByIdAndMemberId(Long freeBoardId, Long memberId) {
-        return repository.stream()
+        return freeBoardRepository.stream()
                 .filter((fd) -> fd.getFreeBoardId().equals(freeBoardId) && fd.getMemberId().equals(memberId))
                 .findFirst();
     }

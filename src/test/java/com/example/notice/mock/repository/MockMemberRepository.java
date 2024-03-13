@@ -4,14 +4,13 @@ import com.example.notice.entity.Member;
 import com.example.notice.entity.MemberRole;
 import com.example.notice.repository.MemberRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+
+import static com.example.notice.mock.database.MemoryDataBase.memberRepository;
 
 public class MockMemberRepository implements MemberRepository {
 
-    private static final List<Member> repository = new ArrayList<>();
+//    private final List<Member> memberRepository = MemoryDataBase.memberRepository;
 
     public static Member SAVED_MEMBER = Member.builder()
             .memberId(30L)
@@ -29,17 +28,12 @@ public class MockMemberRepository implements MemberRepository {
             .role(MemberRole.ADMIN)
             .build();
 
-    static {
-        repository.add(SAVED_MEMBER);
-        repository.add(SAVED_ADMIN_MEMBER);
-    }
-
     /**
      * @implSpec 아무런 행동을 하지 않음
      */
     @Override
     public void save(Member member) {
-        repository.add(member);
+        memberRepository.add(member);
     }
 
     /**
@@ -47,7 +41,7 @@ public class MockMemberRepository implements MemberRepository {
      */
     @Override
     public boolean isDuplicateMemberName(String memberName) {
-        return repository.stream()
+        return memberRepository.stream()
                 .anyMatch((member) -> member.getName().equals(memberName));
     }
 
@@ -56,7 +50,7 @@ public class MockMemberRepository implements MemberRepository {
      */
     @Override
     public Optional<Member> findMemberByLoginIdAndPassword(Member member) {
-        return repository.stream()
+        return memberRepository.stream()
                 .filter((savedMember) -> {
                     return savedMember.getLoginId().equals(member.getLoginId()) &&
                             savedMember.getPassword().equals(member.getPassword()) &&
@@ -67,7 +61,7 @@ public class MockMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findAdminMemberByLoginIdAndPassword(Member member) {
-        return repository.stream()
+        return memberRepository.stream()
                 .filter((savedMember) -> {
                     return savedMember.getLoginId().equals(member.getLoginId()) &&
                             savedMember.getPassword().equals(member.getPassword()) &&
