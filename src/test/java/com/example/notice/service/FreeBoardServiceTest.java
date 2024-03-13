@@ -102,49 +102,18 @@ class FreeBoardServiceTest {
         @Test
         public void success() throws Exception {
             //given
-            Member member = Member.builder()
-                    .memberId(888L)
-                    .build();
             FreeBoard board = FreeBoard.builder()
                     .freeBoardId(999L)
-                    .member(member)
                     .build();
             freeBoardRepository.save(board);
 
 
             //when
-            freeBoardService.deleteFreeBoard(board.getFreeBoardId(), member);
+            freeBoardService.deleteFreeBoard(board.getFreeBoardId());
 
             //then
             Assertions.assertThat(freeBoardRepository.findBoardById(board.getFreeBoardId()))
                     .isEqualTo(Optional.empty());
-        }
-
-        @DisplayName("owner가 아닌 사용자가 삭제를 요청할때")
-        @Test
-        public void notBoardOwner() throws Exception{
-            //given
-            Member member = Member.builder()
-                    .memberId(888L)
-                    .build();
-            FreeBoard board = FreeBoard.builder()
-                    .freeBoardId(999L)
-                    .member(member)
-                    .build();
-
-            Member notOwnerMember = Member.builder()
-                    .memberId(10L)
-                    .build();
-
-            freeBoardRepository.save(board);
-
-            //when
-            //then
-            Assertions.assertThatThrownBy(() -> freeBoardService.deleteFreeBoard(board.getFreeBoardId(), notOwnerMember))
-                    .isInstanceOf(AuthorizationException.class);
-
-            //last process
-            freeBoardService.deleteFreeBoard(board.getFreeBoardId(),member);
         }
 
         @Disabled
@@ -156,6 +125,79 @@ class FreeBoardServiceTest {
             //when
 
             //then
+        }
+    }
+
+    @Nested
+    @DisplayName("게시글 수정 서비스 테스트")
+    public class FreeBoardUpdateTest {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            FreeBoard oldBoard = FreeBoard.builder()
+                    .freeBoardId(9999L)
+                    .member(Member.builder()
+                            .memberId(10L)
+                            .build())
+                    .category("category")
+                    .title("title")
+                    .content("content")
+                    .build();
+
+            FreeBoard newBoard = FreeBoard.builder()
+                    .freeBoardId(9999L)
+                    .category("new category")
+                    .title("new title")
+                    .content("new content")
+                    .build();
+
+            //when
+            freeBoardRepository.save(oldBoard);
+            freeBoardRepository.update(newBoard, oldBoard.getFreeBoardId());
+            FreeBoard findBoard = freeBoardRepository.findBoardById(oldBoard.getFreeBoardId())
+                    .get();
+
+            //then
+
+            Assertions.assertThat(findBoard.getCategory()).isEqualTo(newBoard.getCategory());
+            Assertions.assertThat(findBoard.getTitle()).isEqualTo(newBoard.getTitle());
+            Assertions.assertThat(findBoard.getContent()).isEqualTo(newBoard.getContent());
+
+            //finally
+            freeBoardRepository.deleteByBoardId(oldBoard.getFreeBoardId());
+
+        }
+    }
+
+    @Nested
+    @DisplayName("게시글 권한 인증 테스트")
+    public class FreeBoardAuthorizationTest {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            //when
+            //then
+            freeBoardService.checkFreeBoardAuthorization(
+                    SAVED_FREE_BOARD.getFreeBoardId(),
+                    SAVED_FREE_BOARD.getMemberId());
+        }
+
+        @DisplayName("게시글의 작성자가 아닌 다른 사용자가 접근할때")
+        @Test
+        public void anotherUser() throws Exception{
+            //given
+            Long anotherMemberId = 1561653L;
+            if (SAVED_FREE_BOARD.getMemberId().equals(anotherMemberId)) {
+                throw new AssertionError("같은 사용자아이디를 사용하는 테스트가 아니다.");
+            }
+            //when
+            //then
+            Assertions.assertThatThrownBy(() -> freeBoardService.checkFreeBoardAuthorization(
+                            SAVED_FREE_BOARD.getFreeBoardId(),
+                            anotherMemberId))
+                    .isInstanceOf(AuthorizationException.class);
         }
     }
 }

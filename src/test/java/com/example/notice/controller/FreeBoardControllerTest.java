@@ -3,6 +3,7 @@ package com.example.notice.controller;
 import com.example.notice.auth.AuthenticationHolder;
 import com.example.notice.auth.principal.MemberPrincipal;
 import com.example.notice.auth.principal.Principal;
+import com.example.notice.constant.ResponseConstant;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.exception.BadRequestParamException;
@@ -227,7 +228,7 @@ class FreeBoardControllerTest {
 
     @Nested
     @DisplayName("자유게시판 게시글 삭제 테스트")
-    public class NestedClass {
+    public class FreeBoardDeleteTest {
 
         private static final String BOARD_DELETE_URI = "/api/boards/free";
         @BeforeEach
@@ -249,6 +250,78 @@ class FreeBoardControllerTest {
             //then
             mockMvc.perform(MockMvcRequestBuilders.delete(BOARD_DELETE_URI + "/" + boardId))
                     .andExpect(MockMvcResultMatchers.status().isOk());
+        }
+    }
+
+    @Nested
+    @DisplayName("자유게시판 게시글 수정 테스트")
+    public class FreeBoardUpdateTest {
+
+        @BeforeEach
+        public void createMember() {
+            Member member = Member.builder()
+                    .memberId(153L)
+                    .name("nane")
+                    .build();
+
+            AuthenticationHolder.setPrincipal(new MemberPrincipal(member));
+        }
+        private static final String FREE_BOARD_UPDATE_URI = "/api/boards/free";
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            Long freeBoardId = 11L;
+            FreeBoard board = FreeBoard.builder()
+                    .freeBoardId(freeBoardId)
+                    .category("category222")
+                    .title("title222")
+                    .content("content123")
+                    .build();
+            //when
+
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.put(FREE_BOARD_UPDATE_URI + "/" + freeBoardId.toString())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(board)))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.%s".formatted(FREE_BOARD_ID_PARAM)).value(freeBoardId));
+        }
+
+        @DisplayName("게시글 인자 테스트")
+        @ParameterizedTest
+        @MethodSource("invalidFreeBoardParam")
+        public void invalidUpdateInput(String title, String content, String category) throws Exception {
+            //given
+            FreeBoard board = FreeBoard.builder()
+                    .title(title)
+                    .content(content)
+                    .category(category)
+                    .build();
+
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.put(FREE_BOARD_UPDATE_URI + "/" + 10L)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(board)))
+                    .andExpect(result -> assertThat(result.getResolvedException())
+                            .isInstanceOf(MethodArgumentNotValidException.class))
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        }
+
+        //TODO 반복되는 @Valid test 해결을 어떻게? -> spring docs같은 api문서를 test로 만들때도?
+        private static Stream<Arguments> invalidFreeBoardParam() {
+            return Stream.of(
+                    Arguments.of(null, "content", "category"), // null일때
+                    Arguments.of("title", null, "category"),
+                    Arguments.of("title", "content", null),
+                    Arguments.of("", "content", "category"), // 빈 문자열일때
+                    Arguments.of("title", "", "category"),
+                    Arguments.of("title", "content", "")
+//                        Arguments.of("100", "content", ""), // 문자열 max 길이보다 길때 100
+//                        Arguments.of("title", "content", "") // 4000
+            );
         }
     }
 }

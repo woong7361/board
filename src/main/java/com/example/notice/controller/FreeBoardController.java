@@ -13,10 +13,13 @@ import com.example.notice.service.FreeBoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+
+import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
 
 /**
  * 자유 게시판 컨트롤러
@@ -46,11 +49,12 @@ public class FreeBoardController {
         Long freeBoardId = freeBoardService.createFreeBoard(freeBoard);
 
         return ResponseEntity
-                .ok(Map.of(ResponseConstant.FREE_BOARD_ID_PARAM, freeBoardId));
+                .ok(Map.of(FREE_BOARD_ID_PARAM, freeBoardId));
     }
 
     /**
      * 자유게시판 게시글 조회
+     *
      * @param freeBoardId 게시글 식별자
      * @return 게시글 내용
      */
@@ -66,8 +70,9 @@ public class FreeBoardController {
 
     /**
      * 자유게시판 게시글 리스트 조회/검색
+     *
      * @param freeBoardSearchParam 게시글 검색 파라미터
-     * @param pageRequest 페이지네이션 요청 파라미터
+     * @param pageRequest          페이지네이션 요청 파라미터
      * @return 게시글 페이지
      */
     @GetMapping("/api/boards/free")
@@ -84,6 +89,7 @@ public class FreeBoardController {
 
     /**
      * 자유게시판 게시글 삭제
+     *
      * @return 200 ok
      */
     @DeleteMapping("/api/boards/free/{freeBoardId}")
@@ -91,9 +97,32 @@ public class FreeBoardController {
             @PathVariable(name = "freeBoardId") Long freeBoardId,
             @AuthenticationPrincipal Principal<Member> principal) {
         Member member = principal.getAuthentication();
+        freeBoardService.checkFreeBoardAuthorization(freeBoardId, member.getMemberId());
 
-        freeBoardService.deleteFreeBoard(freeBoardId, member);
+        freeBoardService.deleteFreeBoard(freeBoardId);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 자유게시판 게시글 수정
+     * @param freeBoard 게시글 수정 인자
+     * @param freeBoardId 게시글 식별자
+     * @param principal 인증된 사용자 정보
+     * @return 200 ok
+     */
+    @PutMapping("/api/boards/free/{freeBoardId}")
+    public ResponseEntity<Object> updateBoard(
+            @Valid @RequestBody FreeBoard freeBoard,
+            @PathVariable(name = "freeBoardId") Long freeBoardId,
+            @AuthenticationPrincipal Principal<Member> principal) {
+        Member member = principal.getAuthentication();
+        freeBoardService.checkFreeBoardAuthorization(freeBoardId, member.getMemberId());
+
+        // TODO 구조를 어떻게 해야할지 - setter? - 새로이 build?
+        freeBoardService.updateFreeBoard(freeBoard, freeBoardId);
+
+        return ResponseEntity
+                .ok(Map.of(FREE_BOARD_ID_PARAM, freeBoardId));
     }
 
     private static void checkSearchRange(FreeBoardSearchParam freeBoardSearchParam) {

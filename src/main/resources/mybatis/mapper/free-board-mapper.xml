@@ -112,4 +112,17 @@
     </select>
 
 
+    <update id="update">
+        UPDATE free_board
+        SET
+            category_id = (SELECT category.category_id
+                           FROM category
+                           WHERE category.value = #{freeBoard.category}),
+            title = #{freeBoard.title},
+            content = #{freeBoard.content},
+            modified_at = NOW()
+        WHERE free_board_id = #{freeBoardId}
+    </update>
+
+
 </mapper>

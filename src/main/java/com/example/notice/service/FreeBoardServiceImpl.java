@@ -2,7 +2,6 @@ package com.example.notice.service;
 
 import com.example.notice.dto.FreeBoardSearchParam;
 import com.example.notice.entity.FreeBoard;
-import com.example.notice.entity.Member;
 import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.BoardNotExistException;
 import com.example.notice.page.PageRequest;
@@ -54,10 +53,7 @@ public class FreeBoardServiceImpl implements FreeBoardService{
      */
     @Transactional
     @Override
-    public void deleteFreeBoard(Long freeBoardId, Member member) {
-        freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, member.getMemberId())
-                .orElseThrow(() -> new AuthorizationException("삭제할 권한이 없습니다."));
-
+    public void deleteFreeBoard(Long freeBoardId) {
         if (freeBoardRepository.hasCommentByBoardId(freeBoardId)) {
             freeBoardRepository.deleteContentAndMemberByBoardId(freeBoardId);
         } else {
@@ -66,4 +62,19 @@ public class FreeBoardServiceImpl implements FreeBoardService{
 
     }
 
+    @Transactional
+    @Override
+    public void updateFreeBoard(FreeBoard freeBoard, Long freeBoardId) {
+        freeBoardRepository.update(freeBoard, freeBoardId);
+    }
+
+    @Override
+    public void checkFreeBoardAuthorization(Long freeBoardId, Long memberId) {
+        freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId)
+                .orElseThrow(() -> new AuthorizationException("삭제할 권한이 없습니다."));
+    }
+
 }
+
+
+

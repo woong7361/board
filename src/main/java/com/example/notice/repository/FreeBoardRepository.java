@@ -73,4 +73,12 @@ public interface FreeBoardRepository {
      * @return 게시글
      */
     Optional<FreeBoard> findBoardByIdAndMemberId(@Param("freeBoardId") Long freeBoardId, @Param("memberId") Long memberId);
+
+    /**
+     * 게시글을 수정한다.
+     *
+     * @param freeBoard   게시글 수정 인자
+     * @param freeBoardId 게시글 식별자
+     */
+    void update(@Param("freeBoard") FreeBoard freeBoard, @Param("freeBoardId") Long freeBoardId);
 }

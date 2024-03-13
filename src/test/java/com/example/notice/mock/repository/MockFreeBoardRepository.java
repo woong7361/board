@@ -3,10 +3,8 @@ package com.example.notice.mock.repository;
 import com.example.notice.dto.FreeBoardSearchParam;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
-import com.example.notice.entity.MemberRole;
 import com.example.notice.page.PageRequest;
 import com.example.notice.repository.FreeBoardRepository;
-import com.example.notice.repository.MemberRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,6 +37,8 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
 
     @Override
     public Optional<FreeBoard> findBoardById(Long freeBoardId) {
+        List<FreeBoard> repository1 = repository;
+        System.out.println("repository1 = " + repository1);
         return repository.stream()
                 .filter((fd) -> fd.getFreeBoardId().equals(freeBoardId))
                 .findFirst();
@@ -141,6 +141,28 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
         return repository.stream()
                 .filter((fd) -> fd.getFreeBoardId().equals(freeBoardId) && fd.getMemberId().equals(memberId))
                 .findFirst();
+    }
+
+    @Override
+    public void update(FreeBoard freeBoard, Long freeBoardId) {
+        findBoardById(freeBoard.getFreeBoardId())
+                .ifPresent((fd) -> {
+                    deleteByBoardId(fd.getFreeBoardId());
+                    FreeBoard updateBoard = FreeBoard.builder()
+                            .freeBoardId(fd.getFreeBoardId())
+                            .member(Member.builder()
+                                    .memberId(fd.getMemberId())
+                                    .name(fd.getMemberName())
+                                    .build())
+                            .createdAt(fd.getCreatedAt())
+                            .modifiedAt(LocalDateTime.now())
+                            .title(freeBoard.getTitle())
+                            .content(freeBoard.getContent())
+                            .category(freeBoard.getCategory())
+                            .views(fd.getViews())
+                            .build();
+                    save(updateBoard);
+                });
     }
 
 }
