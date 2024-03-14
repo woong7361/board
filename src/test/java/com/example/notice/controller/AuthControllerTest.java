@@ -25,8 +25,8 @@ import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
 
 @WebMvcTest(AuthController.class)
 class AuthControllerTest {
-    public static final String LOGIN_URI = "/api/auth/login";
-    public static final String ADMIN_LOGIN_URI = "/admin/auth/login";
+    public static final String LOGIN_URI = "/auth/member/login";
+    public static final String ADMIN_LOGIN_URI = "/auth/admin/login";
 
     @Autowired
     private MockMvc mockMvc;
@@ -131,7 +131,8 @@ class AuthControllerTest {
                                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isOk());
 
-            Assertions.assertThat(mockHttpSession.getAttribute(ADMIN_SESSION_KEY)).isEqualTo(memberId);
+            Assertions.assertThat(mockHttpSession.getAttribute(ADMIN_SESSION_KEY))
+                    .usingRecursiveComparison().isEqualTo(member);
         }
 
     }

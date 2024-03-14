@@ -48,6 +48,4 @@ public class FreeBoard {
     public String getMemberName() {
         return this.member != null ? this.member.getName() : null;
     }
-
-
 }

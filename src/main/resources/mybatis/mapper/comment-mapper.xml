@@ -14,7 +14,8 @@
     <select id="getCommentsByFreeBoardId" resultType="com.example.notice.entity.Comment">
         SELECT
             c.*,
-            m.name AS 'member.name'
+            m.name AS 'member.name',
+            m.member_id AS 'member.memberId'
         FROM
             comment c
             LEFT JOIN member m on c.member_id = m.member_id

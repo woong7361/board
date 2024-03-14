@@ -32,7 +32,7 @@ public class AuthController {
      * @param member 회원 정보
      * @return 인증된 jwt token
      */
-    @PostMapping("/api/auth/login")
+    @PostMapping("/auth/member/login")
     public ResponseEntity<Map<String, String>> userLogin(
             @Validated(MemberLoginValidationGroup.class) @RequestBody Member member) {
         String token = authService.userAuthentication(member);
@@ -49,13 +49,13 @@ public class AuthController {
      * @param member 로그인 요청 정보
      * @return 200 ok
      */
-    @PostMapping("/admin/auth/login")
+    @PostMapping("/auth/admin/login")
     public ResponseEntity<Object> adminLogin(
             @Validated(MemberLoginValidationGroup.class) @RequestBody Member member,
             HttpSession httpSession) {
         Member adminMember = authService.adminAuthentication(member);
 
-        httpSession.setAttribute(ADMIN_SESSION_KEY, adminMember.getMemberId());
+        httpSession.setAttribute(ADMIN_SESSION_KEY, adminMember);
 
         return ResponseEntity.ok().build();
     }
