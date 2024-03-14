@@ -35,10 +35,6 @@ class JwtTokenAuthFilterTest {
             ServletResponse response = Mockito.mock(MockHttpServletResponse.class);
             FilterChain filterChain = Mockito.mock(FilterChain.class);
 
-//            HashMap<String, String> headers = new HashMap<>();
-//            headers.put(AUTHORIZATION, "Bearer jwtToken");
-//            Mockito.when(request.getHeader(AUTHORIZATION)).thenReturn(headers.get(AUTHORIZATION));
-
             //when
             //then
             filter.doFilter(request, response, filterChain);
