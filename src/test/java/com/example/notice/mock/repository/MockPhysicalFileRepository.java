@@ -2,14 +2,12 @@ package com.example.notice.mock.repository;
 
 import com.example.notice.exception.FileSaveCheckedException;
 import com.example.notice.files.PhysicalFileRepository;
-import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.mock.service.MockConfigurationService;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
-import static com.example.notice.mock.database.MemoryDataBase.physicalFileRepository;
+import static com.example.notice.mock.database.MemoryDataBase.PHYSICAL_FILE_STORAGE;
 
 public class MockPhysicalFileRepository implements PhysicalFileRepository {
 
@@ -32,14 +30,14 @@ public class MockPhysicalFileRepository implements PhysicalFileRepository {
         }
 
         String savedFilePath = configurationService.getFilePath() + "/" + originalFileName;
-        physicalFileRepository.add(savedFilePath);
+        PHYSICAL_FILE_STORAGE.add(savedFilePath);
 
         return savedFilePath;
     }
 
     @Override
     public void delete(String fullPath) {
-        physicalFileRepository.remove(fullPath);
+        PHYSICAL_FILE_STORAGE.remove(fullPath);
     }
 
     @Override
@@ -48,7 +46,7 @@ public class MockPhysicalFileRepository implements PhysicalFileRepository {
     }
 
     public void clearRepository() {
-        physicalFileRepository = new ArrayList<>();
+        PHYSICAL_FILE_STORAGE = new ArrayList<>();
 //        physicalFileRepository = new ArrayList<>();
     }
 }

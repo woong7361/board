@@ -3,7 +3,6 @@ package com.example.notice.mock.repository;
 import com.example.notice.dto.FreeBoardSearchParam;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
-import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.page.PageRequest;
 import com.example.notice.repository.FreeBoardRepository;
 
@@ -12,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.notice.mock.database.MemoryDataBase.freeBoardRepository;
+import static com.example.notice.mock.database.MemoryDataBase.FREE_BOARD_STORAGE;
 
 public class MockFreeBoardRepository implements FreeBoardRepository {
 
@@ -30,21 +29,21 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
 
     @Override
     public void save(FreeBoard freeBoard) {
-        freeBoardRepository.add(freeBoard);
+        FREE_BOARD_STORAGE.add(freeBoard);
     }
 
     @Override
     public Optional<FreeBoard> findBoardById(Long freeBoardId) {
-        List<FreeBoard> repository1 = freeBoardRepository;
+        List<FreeBoard> repository1 = FREE_BOARD_STORAGE;
         System.out.println("repository1 = " + repository1);
-        return freeBoardRepository.stream()
+        return FREE_BOARD_STORAGE.stream()
                 .filter((fd) -> fd.getFreeBoardId().equals(freeBoardId))
                 .findFirst();
     }
 
     @Override
     public List<FreeBoard> findBoardsBySearchParam(FreeBoardSearchParam freeBoardSearchParam, PageRequest pageRequest) {
-        return freeBoardRepository.stream()
+        return FREE_BOARD_STORAGE.stream()
                 .filter((fd) -> {
                     boolean result = true;
                     if (freeBoardSearchParam.getCategory() != null) {
@@ -66,7 +65,7 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
 
     @Override
     public Integer getTotalCountBySearchParam(FreeBoardSearchParam freeBoardSearchParam) {
-        return (int) freeBoardRepository.stream()
+        return (int) FREE_BOARD_STORAGE.stream()
                 .filter((fd) -> {
                     boolean result = true;
                     if (freeBoardSearchParam.getCategory() != null) {
@@ -90,7 +89,7 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
     public void increaseViewsByBoardId(Long freeBoardId) {
         findBoardById(freeBoardId)
                 .ifPresent((fd) -> {
-                    freeBoardRepository.remove(fd);
+                    FREE_BOARD_STORAGE.remove(fd);
                     FreeBoard increaseBoard = FreeBoard.builder()
                             .member(Member.builder().memberId(fd.getMemberId()).name(fd.getMemberName()).build())
                             .createdAt(fd.getCreatedAt())
@@ -102,7 +101,7 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
                             .freeBoardId(fd.getFreeBoardId())
                             .build();
 
-                    freeBoardRepository.add(increaseBoard);
+                    FREE_BOARD_STORAGE.add(increaseBoard);
                 });
     }
 
@@ -130,13 +129,13 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
 
     @Override
     public void deleteByBoardId(Long freeBoardId) {
-        freeBoardRepository
+        FREE_BOARD_STORAGE
                 .removeIf((fd) -> fd.getFreeBoardId().equals(freeBoardId));
     }
 
     @Override
     public Optional<FreeBoard> findBoardByIdAndMemberId(Long freeBoardId, Long memberId) {
-        return freeBoardRepository.stream()
+        return FREE_BOARD_STORAGE.stream()
                 .filter((fd) -> fd.getFreeBoardId().equals(freeBoardId) && fd.getMemberId().equals(memberId))
                 .findFirst();
     }

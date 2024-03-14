@@ -1,16 +1,13 @@
 package com.example.notice.mock.repository;
 
 import com.example.notice.entity.AttachmentFile;
-import com.example.notice.entity.FreeBoard;
-import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.repository.AttachmentFileRepository;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-import static com.example.notice.mock.database.MemoryDataBase.attachmentFileRepository;
-import static com.example.notice.mock.database.MemoryDataBase.freeBoardRepository;
+import static com.example.notice.mock.database.MemoryDataBase.ATTACHMENT_FILE_STORAGE;
+import static com.example.notice.mock.database.MemoryDataBase.FREE_BOARD_STORAGE;
 
 public class MockAttachmentFileRepository implements AttachmentFileRepository {
 
@@ -23,19 +20,19 @@ public class MockAttachmentFileRepository implements AttachmentFileRepository {
                 .freeBoardId(boardId)
                 .build();
 
-        attachmentFileRepository.add(addFile);
+        ATTACHMENT_FILE_STORAGE.add(addFile);
     }
 
     @Override
     public Optional<AttachmentFile> findByFileId(Long fileId) {
-        return attachmentFileRepository.stream()
+        return ATTACHMENT_FILE_STORAGE.stream()
                 .filter((af) -> af.getFileId().equals(fileId))
                 .findFirst();
     }
 
     @Override
     public void deleteByFileId(Long fileId) {
-        attachmentFileRepository
+        ATTACHMENT_FILE_STORAGE
                 .removeIf((af) -> af.getFileId().equals(fileId));
     }
 
@@ -43,9 +40,9 @@ public class MockAttachmentFileRepository implements AttachmentFileRepository {
     //  임시로 MemoryDataBase 를 따로 구현하여 구현함
     @Override
     public Optional<AttachmentFile> findByFileIdAndMemberId(Long fileId, Long memberId) {
-        return attachmentFileRepository.stream()
+        return ATTACHMENT_FILE_STORAGE.stream()
                 .filter((af) -> af.getFileId().equals(fileId))
-                .filter((af) -> freeBoardRepository.stream()
+                .filter((af) -> FREE_BOARD_STORAGE.stream()
                             .filter((fb) -> af.getFreeBoardId().equals(fb.getFreeBoardId()))
                             .anyMatch((fb) -> fb.getMemberId().equals(memberId)))
                 .findFirst();
@@ -61,6 +58,6 @@ public class MockAttachmentFileRepository implements AttachmentFileRepository {
     }
 
     public void clearRepository() {
-        attachmentFileRepository = new ArrayList<>();
+        ATTACHMENT_FILE_STORAGE = new ArrayList<>();
     }
 }

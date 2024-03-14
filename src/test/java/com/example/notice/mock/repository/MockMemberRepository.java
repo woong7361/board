@@ -6,7 +6,7 @@ import com.example.notice.repository.MemberRepository;
 
 import java.util.Optional;
 
-import static com.example.notice.mock.database.MemoryDataBase.memberRepository;
+import static com.example.notice.mock.database.MemoryDataBase.MEMBER_STORAGE;
 
 public class MockMemberRepository implements MemberRepository {
 
@@ -33,7 +33,7 @@ public class MockMemberRepository implements MemberRepository {
      */
     @Override
     public void save(Member member) {
-        memberRepository.add(member);
+        MEMBER_STORAGE.add(member);
     }
 
     /**
@@ -41,7 +41,7 @@ public class MockMemberRepository implements MemberRepository {
      */
     @Override
     public boolean isDuplicateMemberName(String memberName) {
-        return memberRepository.stream()
+        return MEMBER_STORAGE.stream()
                 .anyMatch((member) -> member.getName().equals(memberName));
     }
 
@@ -50,7 +50,7 @@ public class MockMemberRepository implements MemberRepository {
      */
     @Override
     public Optional<Member> findMemberByLoginIdAndPassword(Member member) {
-        return memberRepository.stream()
+        return MEMBER_STORAGE.stream()
                 .filter((savedMember) -> {
                     return savedMember.getLoginId().equals(member.getLoginId()) &&
                             savedMember.getPassword().equals(member.getPassword()) &&
@@ -61,7 +61,7 @@ public class MockMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findAdminMemberByLoginIdAndPassword(Member member) {
-        return memberRepository.stream()
+        return MEMBER_STORAGE.stream()
                 .filter((savedMember) -> {
                     return savedMember.getLoginId().equals(member.getLoginId()) &&
                             savedMember.getPassword().equals(member.getPassword()) &&

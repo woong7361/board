@@ -80,8 +80,8 @@ class FileServiceTest {
             fileService.save(files, 1L);
 
             //then
-            Assertions.assertThat(MemoryDataBase.attachmentFileRepository.size()).isEqualTo(1);
-            Assertions.assertThat(MemoryDataBase.physicalFileRepository.size()).isEqualTo(1);
+            Assertions.assertThat(MemoryDataBase.ATTACHMENT_FILE_STORAGE.size()).isEqualTo(1);
+            Assertions.assertThat(MemoryDataBase.PHYSICAL_FILE_STORAGE.size()).isEqualTo(1);
         }
 
         @DisplayName("I/O 작업에 문제가 생겨 일부 파일 저장에 실패했을때")
@@ -104,8 +104,8 @@ class FileServiceTest {
             fileService.save(files, 1L);
 
             //then
-            Assertions.assertThat(MemoryDataBase.attachmentFileRepository.size()).isEqualTo(1);
-            Assertions.assertThat(MemoryDataBase.physicalFileRepository.size()).isEqualTo(1);
+            Assertions.assertThat(MemoryDataBase.ATTACHMENT_FILE_STORAGE.size()).isEqualTo(1);
+            Assertions.assertThat(MemoryDataBase.PHYSICAL_FILE_STORAGE.size()).isEqualTo(1);
         }
     }
 
@@ -117,7 +117,7 @@ class FileServiceTest {
         @DisplayName("정상 처리")
         @Test
         public void success() throws Exception {
-            for (String s : MemoryDataBase.physicalFileRepository) {
+            for (String s : MemoryDataBase.PHYSICAL_FILE_STORAGE) {
                 System.out.println("s = " + s);
             }
 
@@ -134,15 +134,15 @@ class FileServiceTest {
             ids.addId(fileId);
 
             //when
-            MemoryDataBase.attachmentFileRepository
+            MemoryDataBase.ATTACHMENT_FILE_STORAGE
                     .add(attachmentFile);
             physicalFileRepository.save(null, fileName);
 
             fileService.delete(ids);
 
             //then
-            Assertions.assertThat(MemoryDataBase.attachmentFileRepository.size()).isEqualTo(0);
-            Assertions.assertThat(MemoryDataBase.physicalFileRepository.size()).isEqualTo(0);
+            Assertions.assertThat(MemoryDataBase.ATTACHMENT_FILE_STORAGE.size()).isEqualTo(0);
+            Assertions.assertThat(MemoryDataBase.PHYSICAL_FILE_STORAGE.size()).isEqualTo(0);
         }
     }
 
@@ -163,7 +163,7 @@ class FileServiceTest {
             ids.addId(fileId);
 
             //when
-            MemoryDataBase.attachmentFileRepository
+            MemoryDataBase.ATTACHMENT_FILE_STORAGE
                     .add(attachmentFile);
 
             //then
@@ -184,7 +184,7 @@ class FileServiceTest {
             ids.addId(fileId);
 
             //when
-            MemoryDataBase.attachmentFileRepository
+            MemoryDataBase.ATTACHMENT_FILE_STORAGE
                     .add(attachmentFile);
 
             //then

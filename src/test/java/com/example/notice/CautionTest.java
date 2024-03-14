@@ -1,6 +1,5 @@
 package com.example.notice;
 
-import com.example.notice.entity.AttachmentFile;
 import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.mock.repository.MockAttachmentFileRepository;
 import com.example.notice.mock.repository.MockPhysicalFileRepository;
@@ -48,7 +47,7 @@ public class CautionTest {
         physicalFileRepository.clearRepository();
 
 //        physicalFileRepository.clearRepository();
-        for (String s : MemoryDataBase.physicalFileRepository) {
+        for (String s : MemoryDataBase.PHYSICAL_FILE_STORAGE) {
             System.out.println("s = " + s);
         }
 
