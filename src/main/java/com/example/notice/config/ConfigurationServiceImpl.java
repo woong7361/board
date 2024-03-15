@@ -23,6 +23,10 @@ public class ConfigurationServiceImpl implements ConfigurationService{
     @Value("${setting.allow-extension}")
     private String allowExtension;
 
+    @Value("${setting.notice-board.max-fixed-size}")
+    private Integer maxNoticeFixedCount;
+
+
     @Override
     public List<String> getAllowExtension() {
         String[] extensions = allowExtension.split(",");
@@ -31,5 +35,10 @@ public class ConfigurationServiceImpl implements ConfigurationService{
                 .collect(Collectors.toList());
 
 
+    }
+
+    @Override
+    public Integer getMaxNoticeFixedCount() {
+        return maxNoticeFixedCount;
     }
 }

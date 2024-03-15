@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.notice.repository.NoticeBoardRepository">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="noticeBoard.noticeBoardId">
+        INSERT INTO notice_board
+            (member_id, category_id,
+             title, content, is_fixed,
+             views, created_at, modified_at)
+        VALUES (#{memberId}, (SELECT category_id
+                              FROM category
+                              WHERE category.value = #{noticeBoard.category}),
+                #{noticeBoard.title}, #{noticeBoard.content}, #{noticeBoard.isFixed},
+                0, NOW(), null)
+    </insert>
+
+    <select id="findFixedNoticeBoardWithoutContentByLimit" resultType="com.example.notice.entity.NoticeBoard">
+        SELECT notice_board_id,
+               m.member_id AS 'member.memberId', m.name AS 'member.name' ,
+               c.value AS category,
+               title, views, is_fixed,
+               created_at, modified_at
+        FROM notice_board nb
+            LEFT JOIN member m on m.member_id = nb.member_id
+            LEFT JOIN category c on c.category_id = nb.category_id
+        WHERE nb.is_fixed = true
+        ORDER BY nb.created_at DESC
+        LIMIT #{limit}
+    </select>
+
+
+</mapper>

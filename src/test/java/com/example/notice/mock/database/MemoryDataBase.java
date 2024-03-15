@@ -1,9 +1,6 @@
 package com.example.notice.mock.database;
 
-import com.example.notice.entity.AttachmentFile;
-import com.example.notice.entity.Comment;
-import com.example.notice.entity.FreeBoard;
-import com.example.notice.entity.Member;
+import com.example.notice.entity.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +11,7 @@ import static com.example.notice.mock.repository.MockMemberRepository.SAVED_MEMB
 
 public class MemoryDataBase {
     public static List<FreeBoard> FREE_BOARD_STORAGE = new ArrayList<>();
+    public static List<NoticeBoard> NOTICE_BOARD_STORAGE = new ArrayList<>();
     public static List<AttachmentFile> ATTACHMENT_FILE_STORAGE = new ArrayList<>();
     public static List<Member> MEMBER_STORAGE = new ArrayList<>();
     public static List<Comment> COMMENT_STORAGE = new ArrayList<>();
@@ -27,5 +25,9 @@ public class MemoryDataBase {
 
     public static void clearCommentRepository() {
         COMMENT_STORAGE = new ArrayList<>();
+    }
+
+    public static void clearNoticeBoardRepository(){
+        NOTICE_BOARD_STORAGE = new ArrayList<>();
     }
 }

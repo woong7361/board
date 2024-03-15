@@ -9,4 +9,6 @@ public class ResponseConstant {
 
     public static final String COMMENTS_PARAM = "comments";
 
+    public static final String NOTICE_BOARD_ID_PARAM = "noticeBoardId";
+    public static final String BOARDS_PARAM = "boards";
 }

@@ -10,6 +10,7 @@
     <mappers>
         <mapper resource="mybatis/mapper/member-mapper.xml"/>
         <mapper resource="mybatis/mapper/free-board-mapper.xml"/>
+        <mapper resource="mybatis/mapper/notice-board-mapper.xml"/>
         <mapper resource="mybatis/mapper/file-mapper.xml"/>
         <mapper resource="mybatis/mapper/comment-mapper.xml"/>
 <!--        <mapper resource="mybatis/mapper/fileMapper.xml"/>-->

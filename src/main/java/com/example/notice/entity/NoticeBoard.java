@@ -2,6 +2,7 @@ package com.example.notice.entity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -29,13 +30,16 @@ public class NoticeBoard {
     @Size(min = 1, max = 4000)
     @NotEmpty
     private String content;
-    private Long views;
 
+    @NotNull
+    private Boolean isFixed;
+
+    private Long views;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     @Builder
-    public NoticeBoard(Long noticeBoardId, Long memberId, String category, String title, String content, Long views, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    private NoticeBoard(Long noticeBoardId, Long memberId, String category, String title, String content, Boolean isFixed, Long views, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         if (memberId != null) {
             this.member = Member.builder()
                     .memberId(memberId)
@@ -45,6 +49,7 @@ public class NoticeBoard {
         this.category = category;
         this.title = title;
         this.content = content;
+        this.isFixed = isFixed;
         this.views = views;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;

@@ -33,4 +33,9 @@ public class MockConfigurationService implements ConfigurationService {
         return ALLOW_EXTENSIONS;
     }
 
+    @Override
+    public Integer getMaxNoticeFixedCount() {
+        return 5;
+    }
+
 }

@@ -18,6 +18,7 @@ public class AdminSessionInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         HttpSession session = request.getSession(false);
+
         if (session == null) {
             throw new AuthenticationException("세션이 없습니다.");
         }
