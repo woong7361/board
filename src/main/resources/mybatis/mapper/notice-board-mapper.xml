@@ -110,4 +110,9 @@
         WHERE nb.notice_board_id = #{noticeBoardId}
     </select>
 
+    <delete id="deleteById">
+        DELETE FROM notice_board
+        WHERE notice_board_id = #{noticeBoardId}
+    </delete>
+
 </mapper>

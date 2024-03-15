@@ -57,4 +57,10 @@ public interface NoticeBoardRepository {
      * @return 공지 게시글
      */
     Optional<NoticeBoard> findById(@Param("noticeBoardId") Long noticeBoardId);
+
+    /**
+     * 게시글 식별자를 통해 게시글 삭제
+     * @param noticeBoardId 공지 게시글 식별자
+     */
+    void deleteById(@Param("noticeBoardId") Long noticeBoardId);
 }

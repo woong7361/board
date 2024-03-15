@@ -55,4 +55,10 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
                 .orElseThrow(() -> new EntityNotExistException("해당하는 게시글이 존재하지 않는다."));
 
     }
+
+    @Override
+    @Transactional
+    public void deleteNoticeBoardById(Long noticeBoardId) {
+        noticeBoardRepository.deleteById(noticeBoardId);
+    }
 }

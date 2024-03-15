@@ -1,6 +1,7 @@
 package com.example.notice.controller;
 
 import com.example.notice.constant.ResponseConstant;
+import com.example.notice.constant.SessionConstant;
 import com.example.notice.dto.NoticeBoardSearchParam;
 import com.example.notice.entity.Member;
 import com.example.notice.entity.NoticeBoard;
@@ -273,7 +274,7 @@ class NoticeBoardControllerTest {
     }
 
     @Nested
-    @DisplayName("게시글 아이디로 공지 게시글 조회")
+    @DisplayName("게시글 아이디로 공지 게시글 조회 컨트롤러 테스트")
     public class GetNoticeBoard {
         private static final String GET_NOTICE_BOARD_URI = "/api/boards/notice/%s";
 
@@ -311,6 +312,39 @@ class NoticeBoardControllerTest {
                     .andExpect(MockMvcResultMatchers
                             .jsonPath("$.memberName").value(noticeBoard.getMemberName()))
                     .andExpect(MockMvcResultMatchers.status().isOk());
+        }
+    }
+
+    @Nested
+    @DisplayName("게시글 아이디로 공지 게시글 삭제 컨트롤러 테스트")
+    public class DeleteNoticeBoardById {
+        private static final String DELETE_NOTICE_BOARD_URI = "/admin/boards/notice/%s";
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            Long noticeBoardId = 153L;
+            Long memberId = 15153L;
+            //when
+
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_NOTICE_BOARD_URI.formatted(noticeBoardId))
+                            .sessionAttr(ADMIN_SESSION_KEY, Member.builder()
+                                    .memberId(memberId)
+                                    .build()))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+        }
+
+        @DisplayName("관리자 로그인이 되어있지 않을때")
+        @Test
+        public void notAuthenticated() throws Exception{
+            //given
+            Long noticeBoardId = 153L;
+            //when
+
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_NOTICE_BOARD_URI.formatted(noticeBoardId)))
+                    .andExpect(MockMvcResultMatchers.status().isUnauthorized());
         }
     }
 }

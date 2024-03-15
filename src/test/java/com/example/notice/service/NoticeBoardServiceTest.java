@@ -170,4 +170,20 @@ class NoticeBoardServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("게시글 식별자를 통해 게시글 삭제 테스트")
+    public class DeleteNoticeBoardById {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            noticeBoardRepository.save(NO_FK_NOTICE_BOARD, null);
+            //when
+            noticeBoardService.deleteNoticeBoardById(NO_FK_NOTICE_BOARD.getNoticeBoardId());
+            //then
+            Assertions.assertThat(noticeBoardRepository.findById(NO_FK_NOTICE_BOARD.getNoticeBoardId()).isEmpty())
+                    .isEqualTo(true);
+        }
+    }
+
 }

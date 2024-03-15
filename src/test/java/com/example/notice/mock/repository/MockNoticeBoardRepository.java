@@ -107,6 +107,12 @@ public class MockNoticeBoardRepository implements NoticeBoardRepository {
                 .findFirst();
     }
 
+    @Override
+    public void deleteById(Long noticeBoardId) {
+        NOTICE_BOARD_STORAGE
+                .removeIf(noticeBoard -> noticeBoard.getNoticeBoardId().equals(noticeBoardId));
+    }
+
     public static NoticeBoard.NoticeBoardBuilder noticeBoardBuilderMapper(NoticeBoard noticeBoard) {
         return NoticeBoard.builder()
                 .noticeBoardId(noticeBoard.getNoticeBoardId())

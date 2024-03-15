@@ -38,6 +38,11 @@ public class SpringControllerAdvice {
                 );
     }
 
+    /**
+     * 컨트롤러의 필수 파라미터가 결여되어있을때 발생하는 exception endpoint (ex. pathVariable)
+     * @param exception 컨트롤러 필수 파라미터 결여 exception
+     * @return 400 bad request
+     */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> methodArgumentNotValid(MissingServletRequestParameterException exception) {
         log.debug("field error - name: {}, type: {}, message: {}",

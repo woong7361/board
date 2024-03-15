@@ -79,6 +79,7 @@ public class NoticeBoardController {
 
     /**
      * 게시글 식별자를 통해 공지글을 가져온다.
+     *
      * @param noticeBoardId 공지 게시글 식별자
      * @return 공지 게시글
      */
@@ -93,7 +94,18 @@ public class NoticeBoardController {
 
     // 공지글 수정
 
-    // 공지글 삭제
+    /**
+     * 게시글 식별자를 통해 게시글 삭제
+     * @param noticeBoardId 공지 게시글 식별자
+     */
+    @DeleteMapping("/admin/boards/notice/{noticeBoardId}")
+    public ResponseEntity<Object> deleteNoticeBoard(
+            @PathVariable Long noticeBoardId
+    ) {
+        noticeBoardService.deleteNoticeBoardById(noticeBoardId);
+
+        return ResponseEntity.ok().build();
+    }
 
     // TODO 원래 생각은 관리자 api, 사용자 api 따로 만들라고 했는데 그게 맞겠죠? 전에 말했던 것처럼
     //문의 게시판 생성 - 사용자만

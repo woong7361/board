@@ -42,4 +42,10 @@ public interface NoticeBoardService {
      * @return 공지 게시글
      */
     NoticeBoard getNoticeBoardById(Long noticeBoardId);
+
+    /**
+     * 게시글 식별자를 통해 게시글 삭제
+     * @param noticeBoardId 공지 게시글 식별자
+     */
+    void deleteNoticeBoardById(Long noticeBoardId);
 }
