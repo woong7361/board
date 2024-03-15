@@ -48,4 +48,11 @@ public interface NoticeBoardService {
      * @param noticeBoardId 공지 게시글 식별자
      */
     void deleteNoticeBoardById(Long noticeBoardId);
+
+    /**
+     * 게시글 식별자를 통해 게시글 수정
+     * @param noticeBoardId 공지 게시글 식별자
+     * @param noticeBoard 공지 게시글 수정 요청 파라미터
+     */
+    void updateNoticeBoardById(Long noticeBoardId, NoticeBoard noticeBoard);
 }

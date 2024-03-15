@@ -51,6 +51,8 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
 
     @Override
     public NoticeBoard getNoticeBoardById(Long noticeBoardId) {
+        noticeBoardRepository.increaseViewsById(noticeBoardId);
+
         return noticeBoardRepository.findById(noticeBoardId)
                 .orElseThrow(() -> new EntityNotExistException("해당하는 게시글이 존재하지 않는다."));
 
@@ -60,5 +62,11 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
     @Transactional
     public void deleteNoticeBoardById(Long noticeBoardId) {
         noticeBoardRepository.deleteById(noticeBoardId);
+    }
+
+    @Override
+    @Transactional
+    public void updateNoticeBoardById(Long noticeBoardId, NoticeBoard noticeBoard) {
+        noticeBoardRepository.updateBoardById(noticeBoardId, noticeBoard);
     }
 }

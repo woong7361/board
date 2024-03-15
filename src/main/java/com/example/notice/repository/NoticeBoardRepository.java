@@ -63,4 +63,18 @@ public interface NoticeBoardRepository {
      * @param noticeBoardId 공지 게시글 식별자
      */
     void deleteById(@Param("noticeBoardId") Long noticeBoardId);
+
+    /**
+     * 게시글 식별자를 통해 게시글 수정
+     *
+     * @param noticeBoardId 공지 게시글 식별자
+     * @param noticeBoard 공지 게시글 수정 요청 파라미터
+     */
+    void updateBoardById(@Param("noticeBoardId") Long noticeBoardId, @Param("noticeBoard") NoticeBoard noticeBoard);
+
+    /**
+     * 공지 게시글 조회수 추가
+     * @param noticeBoardId 공지 게시글 식별자
+     */
+    void increaseViewsById(@Param("noticeBoardId") Long noticeBoardId);
 }

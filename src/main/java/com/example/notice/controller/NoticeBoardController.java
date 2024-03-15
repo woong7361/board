@@ -92,8 +92,21 @@ public class NoticeBoardController {
         return ResponseEntity.ok(noticeBoard);
     }
 
-    // 공지글 수정
+    /**
+     * 게시글 식별자를 통해 게시글 수정
+     * @param noticeBoardId 공지 게시글 식별자
+     * @param noticeBoard 공지 게시글 수정 요청 파라미터
+     * @return 200 ok
+     */
+    @PutMapping("/admin/boards/notice/{noticeBoardId}")
+    public ResponseEntity<Object> updateNoticeBoard(
+            @PathVariable Long noticeBoardId,
+            @RequestBody NoticeBoard noticeBoard
+    ) {
+        noticeBoardService.updateNoticeBoardById(noticeBoardId, noticeBoard);
 
+        return ResponseEntity.ok().build();
+    }
     /**
      * 게시글 식별자를 통해 게시글 삭제
      * @param noticeBoardId 공지 게시글 식별자

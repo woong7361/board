@@ -115,4 +115,22 @@
         WHERE notice_board_id = #{noticeBoardId}
     </delete>
 
+    <update id="updateBoardById">
+        UPDATE notice_board
+        SET title       = #{noticeBoard.title},
+            content     = #{noticeBoard.content},
+            is_fixed    = #{noticeBoard.isFixed},
+            modified_at = NOW(),
+            category_id = (SELECT ct.category_id
+                           FROM category ct
+                           WHERE ct.value = #{noticeBoard.category})
+
+        WHERE notice_board_id = #{noticeBoardId};
+    </update>
+
+    <update id="increaseViewsById">
+        UPDATE notice_board
+        SET views = views + 1
+        WHERE notice_board_id = #{noticeBoardId}
+    </update>
 </mapper>
