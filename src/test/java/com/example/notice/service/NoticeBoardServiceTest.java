@@ -2,6 +2,7 @@ package com.example.notice.service;
 
 import com.example.notice.dto.NoticeBoardSearchParam;
 import com.example.notice.entity.NoticeBoard;
+import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.mock.repository.MockNoticeBoardRepository;
 import com.example.notice.mock.service.MockConfigurationService;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.example.notice.mock.repository.MockNoticeBoardRepository.NO_FK_NOTICE_BOARD;
 
 
 class NoticeBoardServiceTest {
@@ -38,7 +41,7 @@ class NoticeBoardServiceTest {
             //given
             Long memberId = 5L;
             //when
-            noticeBoardService.createNoticeBoard(MockNoticeBoardRepository.NO_FK_NOTICE_BOARD, memberId);
+            noticeBoardService.createNoticeBoard(NO_FK_NOTICE_BOARD, memberId);
             //then
             Assertions.assertThat(MemoryDataBase.NOTICE_BOARD_STORAGE.size()).isEqualTo(1);
             Assertions.assertThat(MemoryDataBase.NOTICE_BOARD_STORAGE.get(0).getMemberId()).isEqualTo(memberId);
@@ -99,6 +102,8 @@ class NoticeBoardServiceTest {
         }
     }
 
+
+    //TODO 이자식도 내가 만든 repo를 test 해야하는 그런 느낌 -> 테스트를 하기 위해 repo를 만들고 그 repo를 또 test하고 또 거시기...
     @Nested
     @DisplayName("상단 고정 공지를 제외한 공지 검색 테스트")
     public class GetNoneFixedNoticeBoards {
@@ -133,6 +138,35 @@ class NoticeBoardServiceTest {
             //then
             Assertions.assertThat(noneFixedNoticeBoards.getContentSize())
                     .isEqualTo(fixedSize + unFixedSize - configurationService.getMaxFixedNoticeCount());
+        }
+    }
+
+    @Nested
+    @DisplayName("게시글 식별자를 통해 공지 게시글 조회 테스트")
+    public class GetNoticeBoardTest {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+
+            //when
+            noticeBoardRepository.save(NO_FK_NOTICE_BOARD, null);
+            NoticeBoard findBoard = noticeBoardService.getNoticeBoardById(NO_FK_NOTICE_BOARD.getNoticeBoardId());
+            //then
+
+            Assertions.assertThat(findBoard)
+                    .usingRecursiveComparison()
+                    .isEqualTo(NO_FK_NOTICE_BOARD);
+        }
+
+        @DisplayName("식별자에 해당하는 게시글이 없을때")
+        @Test
+        public void notExistBoard() throws Exception{
+            //given
+            //when
+            //then
+            Assertions.assertThatThrownBy(() -> noticeBoardService.getNoticeBoardById(NO_FK_NOTICE_BOARD.getNoticeBoardId()))
+                    .isInstanceOf(EntityNotExistException.class);
         }
     }
 

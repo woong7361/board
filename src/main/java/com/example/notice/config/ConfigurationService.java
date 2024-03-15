@@ -30,4 +30,10 @@ public interface ConfigurationService {
      * @return 상단 고정된 최대 공지 수
      */
     Integer getMaxFixedNoticeCount();
+
+    /**
+     * 허용된 검색 기간을 가져온다.
+     * @return 최대 검색 기간
+     */
+    Long getSearchMaxYearRange();
 }

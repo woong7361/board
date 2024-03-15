@@ -33,6 +33,8 @@ setting:
 #  page-size: 3
   file-path: /home/woong/workspace/project/notice/file
   allow-extension: "jpg, gif, png, zip"
+  max-search-range-year: 1
+
 
   notice-board:
     max-fixed-size: 5

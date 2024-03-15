@@ -26,6 +26,11 @@ public class ConfigurationServiceImpl implements ConfigurationService{
     @Value("${setting.notice-board.max-fixed-size}")
     private Integer maxNoticeFixedCount;
 
+    @Value("${setting.max-search-range-year}")
+    private Long maxSearchYearRange;
+
+
+
 
     @Override
     public List<String> getAllowExtension() {
@@ -40,5 +45,9 @@ public class ConfigurationServiceImpl implements ConfigurationService{
     @Override
     public Integer getMaxFixedNoticeCount() {
         return maxNoticeFixedCount;
+    }
+
+    public Long getSearchMaxYearRange() {
+        return maxSearchYearRange;
     }
 }

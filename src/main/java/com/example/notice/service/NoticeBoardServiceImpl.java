@@ -3,6 +3,7 @@ package com.example.notice.service;
 import com.example.notice.config.ConfigurationService;
 import com.example.notice.dto.NoticeBoardSearchParam;
 import com.example.notice.entity.NoticeBoard;
+import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
 import com.example.notice.repository.NoticeBoardRepository;
@@ -46,5 +47,12 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
                 pageRequest,
                 configurationService.getMaxFixedNoticeCount());
         return new PageResponse<>(noneFixedNoticeBoards, pageRequest, totalCount);
+    }
+
+    @Override
+    public NoticeBoard getNoticeBoardById(Long noticeBoardId) {
+        return noticeBoardRepository.findById(noticeBoardId)
+                .orElseThrow(() -> new EntityNotExistException("해당하는 게시글이 존재하지 않는다."));
+
     }
 }

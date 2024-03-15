@@ -35,4 +35,11 @@ public interface NoticeBoardService {
      * @return 고정 공지글이 아닌 공지글들
      */
     PageResponse<NoticeBoard> getNoneFixedNoticeBoards(NoticeBoardSearchParam noticeBoardSearchParam, PageRequest pageRequest);
+
+    /**
+     * 게시글 식별자를 통해 공지글을 가져온다.
+     * @param noticeBoardId 공지 게시글 식별자
+     * @return 공지 게시글
+     */
+    NoticeBoard getNoticeBoardById(Long noticeBoardId);
 }

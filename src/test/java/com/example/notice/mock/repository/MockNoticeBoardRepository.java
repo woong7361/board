@@ -7,6 +7,7 @@ import com.example.notice.repository.NoticeBoardRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.notice.mock.database.MemoryDataBase.NOTICE_BOARD_STORAGE;
@@ -97,6 +98,13 @@ public class MockNoticeBoardRepository implements NoticeBoardRepository {
                     return result;
                 })
                 .count();
+    }
+
+    @Override
+    public Optional<NoticeBoard> findById(Long noticeBoardId) {
+        return NOTICE_BOARD_STORAGE.stream()
+                .filter(noticeBoard -> noticeBoard.getNoticeBoardId().equals(noticeBoardId))
+                .findFirst();
     }
 
     public static NoticeBoard.NoticeBoardBuilder noticeBoardBuilderMapper(NoticeBoard noticeBoard) {

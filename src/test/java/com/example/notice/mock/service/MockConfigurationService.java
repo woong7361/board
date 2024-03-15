@@ -38,4 +38,9 @@ public class MockConfigurationService implements ConfigurationService {
         return 5;
     }
 
+    @Override
+    public Long getSearchMaxYearRange() {
+        return 1L;
+    }
+
 }

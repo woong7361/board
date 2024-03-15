@@ -99,4 +99,15 @@
         <include refid="noticeBoardSearchCondition"/>
     </select>
 
+    <select id="findById" resultType="com.example.notice.entity.NoticeBoard">
+        SELECT
+            nb.*,
+            c.value AS category,
+            m.member_id AS 'member.memberId', m.name AS 'member.name'
+        FROM notice_board nb
+             LEFT JOIN member m on m.member_id = nb.member_id
+             LEFT JOIN category c on c.category_id = nb.category_id
+        WHERE nb.notice_board_id = #{noticeBoardId}
+    </select>
+
 </mapper>

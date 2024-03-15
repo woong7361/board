@@ -271,4 +271,46 @@ class NoticeBoardControllerTest {
                     Arguments.of("dsaf;", "fdsa;;,./.,/"));
         }
     }
+
+    @Nested
+    @DisplayName("게시글 아이디로 공지 게시글 조회")
+    public class GetNoticeBoard {
+        private static final String GET_NOTICE_BOARD_URI = "/api/boards/notice/%s";
+
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            Long noticeBoardId = 13L;
+            NoticeBoard noticeBoard = NoticeBoard.builder()
+                    .noticeBoardId(noticeBoardId)
+                    .category("category")
+                    .title("title")
+                    .content("content")
+                    .createdAt(LocalDateTime.now())
+                    .isFixed(false)
+                    .memberId(1563L)
+                    .build();
+            //when
+            Mockito.when(noticeBoardService.getNoticeBoardById(noticeBoardId))
+                    .thenReturn(noticeBoard);
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.get(GET_NOTICE_BOARD_URI.formatted(noticeBoardId)))
+                    .andExpect(MockMvcResultMatchers
+                            .jsonPath("$.noticeBoardId").value(noticeBoard.getNoticeBoardId()))
+                    .andExpect(MockMvcResultMatchers
+                            .jsonPath("$.category").value(noticeBoard.getCategory()))
+                    .andExpect(MockMvcResultMatchers
+                            .jsonPath("$.title").value(noticeBoard.getTitle()))
+                    .andExpect(MockMvcResultMatchers
+                            .jsonPath("$.createdAt").value(noticeBoard.getCreatedAt().toString()))
+                    .andExpect(MockMvcResultMatchers
+                            .jsonPath("$.isFixed").value(noticeBoard.getIsFixed()))
+                    .andExpect(MockMvcResultMatchers
+                            .jsonPath("$.memberId").value(noticeBoard.getMemberId()))
+                    .andExpect(MockMvcResultMatchers
+                            .jsonPath("$.memberName").value(noticeBoard.getMemberName()))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+        }
+    }
 }

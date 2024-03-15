@@ -71,16 +71,25 @@ public class NoticeBoardController {
             @ModelAttribute NoticeBoardSearchParam noticeBoardSearchParam,
             @Valid @ModelAttribute PageRequest pageRequest) {
 
-//         TODO 최대 날짜 기간 체크 - 모듈로 뺴야 할듯
-
-
         PageResponse<NoticeBoard> noneFixedNoticeBoards =
                 noticeBoardService.getNoneFixedNoticeBoards(noticeBoardSearchParam, pageRequest);
         return ResponseEntity
                 .ok(noneFixedNoticeBoards);
     }
 
-    // 공지글 상세 보기
+    /**
+     * 게시글 식별자를 통해 공지글을 가져온다.
+     * @param noticeBoardId 공지 게시글 식별자
+     * @return 공지 게시글
+     */
+    @GetMapping("/api/boards/notice/{noticeBoardId}")
+    public ResponseEntity<NoticeBoard> getNoticeBoard(
+            @PathVariable Long noticeBoardId
+    ) {
+        NoticeBoard noticeBoard = noticeBoardService.getNoticeBoardById(noticeBoardId);
+
+        return ResponseEntity.ok(noticeBoard);
+    }
 
     // 공지글 수정
 

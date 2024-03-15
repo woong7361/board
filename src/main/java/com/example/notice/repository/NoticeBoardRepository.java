@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 알림 게시판 repository
@@ -50,4 +51,10 @@ public interface NoticeBoardRepository {
             @Param("search") NoticeBoardSearchParam noticeBoardSearchParam,
             @Param("fixedNoticeLimit") Integer maxFixedNoticeCount);
 
+    /**
+     * 게시글 식별자를 통해 공지 게시글을 가져온다.
+     * @param noticeBoardId 공지 게시글 식별자
+     * @return 공지 게시글
+     */
+    Optional<NoticeBoard> findById(@Param("noticeBoardId") Long noticeBoardId);
 }
