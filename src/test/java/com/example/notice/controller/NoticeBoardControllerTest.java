@@ -347,4 +347,89 @@ class NoticeBoardControllerTest {
                     .andExpect(MockMvcResultMatchers.status().isUnauthorized());
         }
     }
+
+    @Nested
+    @DisplayName("게시글 아이디로 공지 게시글 수정 컨트롤러 테스트")
+    public class UpdateNoticeBoardTest {
+
+        private static final String NOTICE_BOARD_UPDATE_URI = "/admin/boards/notice/%s";
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            long noticeBoardId = 1535L;
+            NoticeBoard noticeBoard = NoticeBoard.builder()
+                    .category("category1213")
+                    .title("title34322")
+                    .content("content15341")
+                    .isFixed(true)
+                    .build();
+
+            Member member = Member.builder()
+                    .memberId(1534L)
+                    .build();
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.put(NOTICE_BOARD_UPDATE_URI.formatted(noticeBoardId))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(noticeBoard))
+                            .sessionAttr(ADMIN_SESSION_KEY, member))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+        }
+
+        @DisplayName("관리자 로그인이 안되어있을때")
+        @Test
+        public void noAuthentication() throws Exception{
+            //given
+            long noticeBoardId = 1535L;
+            NoticeBoard noticeBoard = NoticeBoard.builder()
+                    .build();
+
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.put(NOTICE_BOARD_UPDATE_URI.formatted(noticeBoardId))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(noticeBoard)))
+                    .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+        }
+
+        @DisplayName("요청 인자 테스트")
+        @ParameterizedTest
+        @MethodSource("invalidInputs")
+        public void test(String category, String title, String content, Boolean isFixed) throws Exception{
+            //given
+            int noticeBoardId = 1531;
+            NoticeBoard board = NoticeBoard.builder()
+                    .category(category)
+                    .title(title)
+                    .content(content)
+                    .isFixed(isFixed)
+                    .build();
+
+            Member member = Member.builder()
+                    .memberId(1534L)
+                    .build();
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.put(NOTICE_BOARD_UPDATE_URI.formatted(noticeBoardId))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(board))
+                            .sessionAttr(ADMIN_SESSION_KEY, member))
+
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(result -> assertThat(result.getResolvedException())
+                            .isInstanceOf(MethodArgumentNotValidException.class));
+        }
+
+        public static Stream<Arguments> invalidInputs() {
+            return Stream.of(
+                    Arguments.of(null, "title", "content", "true"), // null일떄
+                    Arguments.of("category", null, "content", "true"),
+                    Arguments.of("category", "title", null, "true"),
+                    Arguments.of("category", "title", "", null),
+                    Arguments.of(" ", "title", "content", false), //빈칸 일때
+                    Arguments.of("category", " ", "conetent", false),
+                    Arguments.of("category", "title", "", false));
+        }
+    }
 }

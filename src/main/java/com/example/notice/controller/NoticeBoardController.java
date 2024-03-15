@@ -101,7 +101,7 @@ public class NoticeBoardController {
     @PutMapping("/admin/boards/notice/{noticeBoardId}")
     public ResponseEntity<Object> updateNoticeBoard(
             @PathVariable Long noticeBoardId,
-            @RequestBody NoticeBoard noticeBoard
+            @Valid @RequestBody NoticeBoard noticeBoard
     ) {
         noticeBoardService.updateNoticeBoardById(noticeBoardId, noticeBoard);
 

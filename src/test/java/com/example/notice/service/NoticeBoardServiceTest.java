@@ -154,9 +154,7 @@ class NoticeBoardServiceTest {
             NoticeBoard findBoard = noticeBoardService.getNoticeBoardById(NO_FK_NOTICE_BOARD.getNoticeBoardId());
             //then
 
-            Assertions.assertThat(findBoard)
-                    .usingRecursiveComparison()
-                    .isEqualTo(NO_FK_NOTICE_BOARD);
+            Assertions.assertThat(findBoard.getViews()).isEqualTo(NO_FK_NOTICE_BOARD.getViews() + 1);
         }
 
         @DisplayName("식별자에 해당하는 게시글이 없을때")

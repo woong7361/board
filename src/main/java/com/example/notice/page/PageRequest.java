@@ -19,7 +19,7 @@ public class PageRequest {
     @Pattern(regexp = "[a-zA-z]")
     private String orderColumn;
 
-    @Pattern(regexp = "[a-zA-z]")
+    @Pattern(regexp = "[a-zA-z_]")
     private String orderType;
 
     public Integer getOffset() {
