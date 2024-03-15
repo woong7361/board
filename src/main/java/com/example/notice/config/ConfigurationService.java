@@ -29,5 +29,5 @@ public interface ConfigurationService {
      * 상단 최대 공지 수를 반환한다.
      * @return 상단 고정된 최대 공지 수
      */
-    Integer getMaxNoticeFixedCount();
+    Integer getMaxFixedNoticeCount();
 }

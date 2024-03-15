@@ -2,6 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.notice.repository.NoticeBoardRepository">
 
+    <sql id="noticeBoardSearchCondition">
+        WHERE nb.notice_board_id NOT IN (SELECT temp_table.notice_board_id
+                                        FROM (SELECT sub_nb.notice_board_id
+                                                FROM notice_board as sub_nb
+                                                WHERE sub_nb.is_fixed = true
+                                                ORDER BY sub_nb.created_at DESC
+                                                LIMIT #{fixedNoticeLimit}) as temp_table)
+        <if test="#{search.getStartDate != null and #{search.getEndDate} != null }">
+            AND
+            ((nb.created_at BETWEEN #{search.startDate} AND #{search.endDate})
+            OR
+            (nb.modified_at BETWEEN #{search.startDate} AND #{search.endDate}))
+        </if>
+        <if test="search.category != null and search.category != 'ALL'">
+            AND #{search.category} = c.value
+        </if>
+        <if test="search.keyWord != null and search.keyWord != ''">
+            AND
+            (nb.title LIKE CONCAT('%', #{search.keyWord}, '%')
+            OR
+            nb.content LIKE CONCAT('%', #{search.keyWord}, '%')
+            OR
+            m.`name` LIKE CONCAT('%', #{search.keyWord}, '%'))
+        </if>
+    </sql>
+
     <insert id="save" useGeneratedKeys="true" keyProperty="noticeBoard.noticeBoardId">
         INSERT INTO notice_board
             (member_id, category_id,
@@ -11,22 +37,52 @@
                               FROM category
                               WHERE category.value = #{noticeBoard.category}),
                 #{noticeBoard.title}, #{noticeBoard.content}, #{noticeBoard.isFixed},
-                0, NOW(), null)
+                0, NOW(), null);
+
     </insert>
 
-    <select id="findFixedNoticeBoardWithoutContentByLimit" resultType="com.example.notice.entity.NoticeBoard">
+    <select id="findFixedNoticeBoardByLimit" resultType="com.example.notice.entity.NoticeBoard">
         SELECT notice_board_id,
-               m.member_id AS 'member.memberId', m.name AS 'member.name' ,
-               c.value AS category,
-               title, views, is_fixed,
-               created_at, modified_at
+               m.member_id AS 'member.memberId',
+               m.name      AS 'member.name',
+               c.value     AS category,
+               title,
+               views,
+               is_fixed,
+               created_at,
+               modified_at
         FROM notice_board nb
-            LEFT JOIN member m on m.member_id = nb.member_id
-            LEFT JOIN category c on c.category_id = nb.category_id
+                 LEFT JOIN member m on m.member_id = nb.member_id
+                 LEFT JOIN category c on c.category_id = nb.category_id
         WHERE nb.is_fixed = true
         ORDER BY nb.created_at DESC
-        LIMIT #{limit}
+        LIMIT #{fixedNoticeLimit};
+
     </select>
 
+    <select id="findNoneFixedNoticeBoardBySearchParam" resultType="com.example.notice.entity.NoticeBoard">
+        SELECT *
+        FROM notice_board nb
+                 LEFT JOIN member m on m.member_id = nb.member_id
+                 LEFT JOIN category c on c.category_id = nb.category_id
+        <include refid="noticeBoardSearchCondition"/>
+        <choose>
+            <when test="page.orderColumn != null and page.orderType != null">
+                ORDER BY nb.${page.orderColumn} ${page.orderType}
+            </when>
+            <otherwise>
+                ORDER BY nb.created_at DESC
+            </otherwise>
+        </choose>
+        LIMIT #{page.offset}, #{page.size}
+    </select>
+
+    <select id="findNoneFixedNoticeBoardCountBySearchParam" resultType="int">
+        SELECT COUNT(*)
+        FROM notice_board nb
+                LEFT JOIN member m on m.member_id = nb.member_id
+                LEFT JOIN category c on c.category_id = nb.category_id
+        <include refid="noticeBoardSearchCondition"/>
+    </select>
 
 </mapper>

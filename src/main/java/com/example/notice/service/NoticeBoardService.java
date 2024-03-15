@@ -1,7 +1,9 @@
 package com.example.notice.service;
 
-import com.example.notice.entity.Member;
+import com.example.notice.dto.NoticeBoardSearchParam;
 import com.example.notice.entity.NoticeBoard;
+import com.example.notice.page.PageRequest;
+import com.example.notice.page.PageResponse;
 
 import java.util.List;
 
@@ -25,4 +27,12 @@ public interface NoticeBoardService {
      */
     List<NoticeBoard> getFixedNoticeBoardWithoutContent();
 
+    /**
+     * 고정 공지글이 아닌 공지글들을 반환
+     *
+     * @param noticeBoardSearchParam 공지글 검색 파라미터
+     * @param pageRequest            페이지 요청 파라미터
+     * @return 고정 공지글이 아닌 공지글들
+     */
+    PageResponse<NoticeBoard> getNoneFixedNoticeBoards(NoticeBoardSearchParam noticeBoardSearchParam, PageRequest pageRequest);
 }

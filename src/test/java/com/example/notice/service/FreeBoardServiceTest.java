@@ -89,7 +89,7 @@ class FreeBoardServiceTest {
             //then
             PageResponse<FreeBoard> result = freeBoardService.getBoardsBySearchParams(freeBoardSearchParam, pageRequest);
 
-            Assertions.assertThat(result.getContent().size()).isEqualTo(result.getTotalCount());
+            Assertions.assertThat(result.getContents().size()).isEqualTo(result.getTotalCount());
             Assertions.assertThat(result.getPageSize()).isEqualTo(pageRequest.getSize());
             Assertions.assertThat(result.getCurrentPage()).isEqualTo(pageRequest.getCurrentPage());
         }

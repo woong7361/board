@@ -1,7 +1,10 @@
 package com.example.notice.service;
 
 import com.example.notice.config.ConfigurationService;
+import com.example.notice.dto.NoticeBoardSearchParam;
 import com.example.notice.entity.NoticeBoard;
+import com.example.notice.page.PageRequest;
+import com.example.notice.page.PageResponse;
 import com.example.notice.repository.NoticeBoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,18 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
 
     @Override
     public List<NoticeBoard> getFixedNoticeBoardWithoutContent() {
-        return noticeBoardRepository.findFixedNoticeBoardWithoutContentByLimit(configurationService.getMaxNoticeFixedCount());
+        return noticeBoardRepository.findFixedNoticeBoardByLimit(configurationService.getMaxFixedNoticeCount());
+    }
+
+    @Override
+    public PageResponse<NoticeBoard> getNoneFixedNoticeBoards(NoticeBoardSearchParam noticeBoardSearchParam, PageRequest pageRequest) {
+        Integer totalCount = noticeBoardRepository.findNoneFixedNoticeBoardCountBySearchParam(
+                noticeBoardSearchParam,
+                configurationService.getMaxFixedNoticeCount());
+        List<NoticeBoard> noneFixedNoticeBoards = noticeBoardRepository.findNoneFixedNoticeBoardBySearchParam(
+                noticeBoardSearchParam,
+                pageRequest,
+                configurationService.getMaxFixedNoticeCount());
+        return new PageResponse<>(noneFixedNoticeBoards, pageRequest, totalCount);
     }
 }

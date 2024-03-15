@@ -2,9 +2,11 @@ package com.example.notice.controller;
 
 import com.example.notice.auth.AdminAuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
-import com.example.notice.constant.ResponseConstant;
+import com.example.notice.dto.NoticeBoardSearchParam;
 import com.example.notice.entity.Member;
 import com.example.notice.entity.NoticeBoard;
+import com.example.notice.page.PageRequest;
+import com.example.notice.page.PageResponse;
 import com.example.notice.service.NoticeBoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.example.notice.constant.ResponseConstant.*;
 
 /**
  * 공지 게시판 컨트롤러
@@ -38,7 +42,7 @@ public class NoticeBoardController {
         Long noticeBoardId = noticeBoardService.createNoticeBoard(noticeBoard, member.getMemberId());
 
         return ResponseEntity
-                .ok(Map.of(ResponseConstant.NOTICE_BOARD_ID_PARAM, noticeBoardId));
+                .ok(Map.of(NOTICE_BOARD_ID_PARAM, noticeBoardId));
     }
 
     /**
@@ -47,15 +51,31 @@ public class NoticeBoardController {
      * @return 상단 고정된 공지 게시글들
      */
     @GetMapping("/api/boards/notice/fixed")
-    public ResponseEntity<Map<String, List<NoticeBoard>>> getNoticeBoard(
+    public ResponseEntity<Map<String, List<NoticeBoard>>> getFixedNoticeBoard(
     ) {
         List<NoticeBoard> noticeBoards = noticeBoardService.getFixedNoticeBoardWithoutContent();
 
         return ResponseEntity
-                .ok(Map.of(ResponseConstant.BOARDS_PARAM, noticeBoards));
+                .ok(Map.of(FIXED_NOTICE_BOARDS_PARAM, noticeBoards));
     }
 
-    // 고정 공지글 뺀 나머지 공지 검색
+    /**
+     * 고정으로 반환된 공지글 말고 남은 공지글을 반환
+     *
+     * @param noticeBoardSearchParam 공지글 검색 파라미터
+     * @param pageRequest            페이지 요청 파라미터
+     * @return 고정 공지글이 아닌 공지글들 반환
+     */
+    @GetMapping("/api/boards/notice")
+    public ResponseEntity<Map<String, PageResponse<NoticeBoard>>> getNoticeBoardsWithoutFixed(
+            @ModelAttribute NoticeBoardSearchParam noticeBoardSearchParam,
+            @ModelAttribute PageRequest pageRequest) {
+
+        PageResponse<NoticeBoard> noneFixedNoticeBoards =
+                noticeBoardService.getNoneFixedNoticeBoards(noticeBoardSearchParam, pageRequest);
+        return ResponseEntity
+                .ok(Map.of(NONE_FIXED_NOTICE_BOARDS_PARAM, noneFixedNoticeBoards));
+    }
 
     // 공지글 상세 보기
 

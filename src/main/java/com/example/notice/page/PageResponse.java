@@ -1,13 +1,12 @@
 package com.example.notice.page;
 
-import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
 
 @Getter
 public class PageResponse<T> {
-    private List<T> content;
+    private List<T> contents;
 
     private Integer pageOffset;
     private Integer currentPage;
@@ -15,13 +14,13 @@ public class PageResponse<T> {
     private Integer contentSize;
     private Integer pageSize;
 
-    public PageResponse(List<T> content, PageRequest pageRequest, Integer totalCount) {
-        this.content = content;
+    public PageResponse(List<T> contents, PageRequest pageRequest, Integer totalCount) {
+        this.contents = contents;
         this.pageOffset = pageRequest.getOffset();
         this.currentPage = pageRequest.getCurrentPage();
         this.pageSize = pageRequest.getSize();
         this.totalCount = totalCount;
-        this.contentSize = content == null ? 0 : content.size();
+        this.contentSize = contents == null ? 0 : contents.size();
     }
 
 

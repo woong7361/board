@@ -10,11 +10,11 @@
                 AND
                     #{search.category} = ct.value
             </if>
-            <if test="search.keyword != null and search.keyword != ''">
+            <if test="search.keyWord != null and search.keyWord != ''">
                 AND (
-                    fd.title LIKE CONCAT('%', #{search.keyword}, '%')
-                    OR fd.content LIKE CONCAT('%', #{search.keyword}, '%')
-                    OR m.`name` LIKE CONCAT('%', #{search.keyword}, '%'))
+                    fd.title LIKE CONCAT('%', #{search.keyWord}, '%')
+                    OR fd.content LIKE CONCAT('%', #{search.keyWord}, '%')
+                    OR m.`name` LIKE CONCAT('%', #{search.keyWord}, '%'))
             </if>
     </sql>
 

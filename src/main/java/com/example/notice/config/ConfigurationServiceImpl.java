@@ -38,7 +38,7 @@ public class ConfigurationServiceImpl implements ConfigurationService{
     }
 
     @Override
-    public Integer getMaxNoticeFixedCount() {
+    public Integer getMaxFixedNoticeCount() {
         return maxNoticeFixedCount;
     }
 }

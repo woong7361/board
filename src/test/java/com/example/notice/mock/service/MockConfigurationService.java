@@ -34,7 +34,7 @@ public class MockConfigurationService implements ConfigurationService {
     }
 
     @Override
-    public Integer getMaxNoticeFixedCount() {
+    public Integer getMaxFixedNoticeCount() {
         return 5;
     }
 

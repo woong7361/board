@@ -91,7 +91,7 @@ class NoticeBoardServiceTest {
             }
             List<NoticeBoard> findNoticeBoard = noticeBoardService.getFixedNoticeBoardWithoutContent();
             //then
-            Assertions.assertThat(findNoticeBoard.size()).isEqualTo(configurationService.getMaxNoticeFixedCount());
+            Assertions.assertThat(findNoticeBoard.size()).isEqualTo(configurationService.getMaxFixedNoticeCount());
         }
     }
 

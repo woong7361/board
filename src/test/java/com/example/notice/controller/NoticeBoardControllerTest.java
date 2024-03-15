@@ -1,6 +1,5 @@
 package com.example.notice.controller;
 
-import com.example.notice.constant.ResponseConstant;
 import com.example.notice.entity.Member;
 import com.example.notice.entity.NoticeBoard;
 import com.example.notice.service.NoticeBoardService;
@@ -25,7 +24,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.example.notice.constant.ResponseConstant.BOARDS_PARAM;
+import static com.example.notice.constant.ResponseConstant.FIXED_NOTICE_BOARDS_PARAM;
 import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -128,19 +127,19 @@ class NoticeBoardControllerTest {
             mockMvc.perform(MockMvcRequestBuilders.get(GET_FIXED_NOTICE_BOARD_URI))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers
-                            .jsonPath("$.%s[0].noticeBoardId".formatted(BOARDS_PARAM)).value(board.getNoticeBoardId()))
+                            .jsonPath("$.%s[0].noticeBoardId".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getNoticeBoardId()))
                     .andExpect(MockMvcResultMatchers
-                            .jsonPath("$.%s[0].category".formatted(BOARDS_PARAM)).value(board.getCategory()))
+                            .jsonPath("$.%s[0].category".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getCategory()))
                     .andExpect(MockMvcResultMatchers
-                            .jsonPath("$.%s[0].title".formatted(BOARDS_PARAM)).value(board.getTitle()))
+                            .jsonPath("$.%s[0].title".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getTitle()))
                     .andExpect(MockMvcResultMatchers
-                            .jsonPath("$.%s[0].createdAt".formatted(BOARDS_PARAM)).value(board.getCreatedAt()))
+                            .jsonPath("$.%s[0].createdAt".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getCreatedAt()))
                     .andExpect(MockMvcResultMatchers
-                            .jsonPath("$.%s[0].isFixed".formatted(BOARDS_PARAM)).value(board.getIsFixed()))
+                            .jsonPath("$.%s[0].isFixed".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getIsFixed()))
                     .andExpect(MockMvcResultMatchers
-                            .jsonPath("$.%s[0].memberId".formatted(BOARDS_PARAM)).value(board.getMemberId()))
+                            .jsonPath("$.%s[0].memberId".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getMemberId()))
                     .andExpect(MockMvcResultMatchers
-                            .jsonPath("$.%s[0].memberName".formatted(BOARDS_PARAM)).value(board.getMemberName()));
+                            .jsonPath("$.%s[0].memberName".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getMemberName()));
         }
 
         @DisplayName("여러개 있을때")
@@ -164,11 +163,11 @@ class NoticeBoardControllerTest {
             mockMvc.perform(MockMvcRequestBuilders.get(GET_FIXED_NOTICE_BOARD_URI))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers
-                            .jsonPath("$.%s[0].noticeBoardId".formatted(BOARDS_PARAM)).value(board1.getNoticeBoardId()))
+                            .jsonPath("$.%s[0].noticeBoardId".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board1.getNoticeBoardId()))
                     .andExpect(MockMvcResultMatchers
-                            .jsonPath("$.%s[1].noticeBoardId".formatted(BOARDS_PARAM)).value(board2.getNoticeBoardId()))
+                            .jsonPath("$.%s[1].noticeBoardId".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board2.getNoticeBoardId()))
                     .andExpect(MockMvcResultMatchers
-                            .jsonPath("$.%s[2].noticeBoardId".formatted(BOARDS_PARAM)).value(board3.getNoticeBoardId()));
+                            .jsonPath("$.%s[2].noticeBoardId".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board3.getNoticeBoardId()));
 
         }
     }

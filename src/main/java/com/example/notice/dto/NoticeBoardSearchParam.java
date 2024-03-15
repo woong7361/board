@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @AllArgsConstructor
-public class FreeBoardSearchParam {
+public class NoticeBoardSearchParam {
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
