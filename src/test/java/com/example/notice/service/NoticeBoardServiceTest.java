@@ -1,15 +1,19 @@
 package com.example.notice.service;
 
+import com.example.notice.dto.NoticeBoardSearchParam;
 import com.example.notice.entity.NoticeBoard;
 import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.mock.repository.MockNoticeBoardRepository;
 import com.example.notice.mock.service.MockConfigurationService;
+import com.example.notice.page.PageRequest;
+import com.example.notice.page.PageResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -73,7 +77,6 @@ class NoticeBoardServiceTest {
         @Test
         public void limit() throws Exception{
             //given
-            //given
             int fixedSize = 56;
             for (int i = 0; i < fixedSize; i++) {
                 NoticeBoard fixedBoard = NoticeBoard.builder()
@@ -90,8 +93,46 @@ class NoticeBoardServiceTest {
                 noticeBoardRepository.save(notFixedBoard, null);
             }
             List<NoticeBoard> findNoticeBoard = noticeBoardService.getFixedNoticeBoardWithoutContent();
+
             //then
             Assertions.assertThat(findNoticeBoard.size()).isEqualTo(configurationService.getMaxFixedNoticeCount());
+        }
+    }
+
+    @Nested
+    @DisplayName("상단 고정 공지를 제외한 공지 검색 테스트")
+    public class GetNoneFixedNoticeBoards {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            int fixedSize = 7;
+            for (int i = 0; i < fixedSize; i++) {
+                NoticeBoard fixedBoard = NoticeBoard.builder()
+                        .noticeBoardId(Long.parseLong(String.valueOf(i)))
+                        .isFixed(true)
+                        .build();
+                noticeBoardRepository.save(fixedBoard, null);
+            }
+            int unFixedSize = 3;
+            for (int i = 1000; i < 1000 + unFixedSize; i++) {
+                NoticeBoard notFixedBoard = NoticeBoard.builder()
+                        .noticeBoardId(Long.parseLong(String.valueOf(i)))
+                        .isFixed(false)
+                        .build();
+                noticeBoardRepository.save(notFixedBoard, null);
+            }
+
+            NoticeBoardSearchParam param =
+                    new NoticeBoardSearchParam(null, null, null, null);
+            PageRequest pageRequest = new PageRequest(5, 0, null, null);
+
+            //when
+            PageResponse<NoticeBoard> noneFixedNoticeBoards = noticeBoardService.getNoneFixedNoticeBoards(param, pageRequest);
+
+            //then
+            Assertions.assertThat(noneFixedNoticeBoards.getContentSize())
+                    .isEqualTo(fixedSize + unFixedSize - configurationService.getMaxFixedNoticeCount());
         }
     }
 

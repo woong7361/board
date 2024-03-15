@@ -1,5 +1,6 @@
 package com.example.notice.page;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,16 +11,19 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class PageRequest {
+    @NotNull
     private Integer size;
+    @NotNull
     private Integer currentPage;
 
     @Pattern(regexp = "[a-zA-z]")
     private String orderColumn;
+
     @Pattern(regexp = "[a-zA-z]")
     private String orderType;
 
-    public int getOffset() {
-        return size * currentPage;
+    public Integer getOffset() {
+        return size != null && currentPage != null ? size * currentPage : null;
     }
 }
 

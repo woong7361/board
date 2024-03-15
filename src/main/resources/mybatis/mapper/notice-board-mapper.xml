@@ -9,15 +9,26 @@
                                                 WHERE sub_nb.is_fixed = true
                                                 ORDER BY sub_nb.created_at DESC
                                                 LIMIT #{fixedNoticeLimit}) as temp_table)
-        <if test="#{search.getStartDate != null and #{search.getEndDate} != null }">
-            AND
-            ((nb.created_at BETWEEN #{search.startDate} AND #{search.endDate})
-            OR
-            (nb.modified_at BETWEEN #{search.startDate} AND #{search.endDate}))
-        </if>
+
+        <choose>
+            <when test="search.startDate != null and search.endDate != null ">
+                AND
+                ((nb.created_at BETWEEN #{search.startDate} AND #{search.endDate})
+                OR
+                (nb.modified_at BETWEEN #{search.startDate} AND #{search.endDate}))
+            </when>
+            <otherwise>
+                AND
+                ((nb.created_at BETWEEN SUBDATE(NOW(), INTERVAL 1 YEAR) AND NOW())
+                OR
+                (nb.modified_at BETWEEN SUBDATE(NOW(), INTERVAL 1 YEAR) AND NOW()))
+            </otherwise>
+        </choose>
+
         <if test="search.category != null and search.category != 'ALL'">
             AND #{search.category} = c.value
         </if>
+
         <if test="search.keyWord != null and search.keyWord != ''">
             AND
             (nb.title LIKE CONCAT('%', #{search.keyWord}, '%')
@@ -61,7 +72,10 @@
     </select>
 
     <select id="findNoneFixedNoticeBoardBySearchParam" resultType="com.example.notice.entity.NoticeBoard">
-        SELECT *
+        SELECT
+            nb.*,
+            c.value AS category,
+            m.member_id AS 'member.memberId', m.name AS 'member.name'
         FROM notice_board nb
                  LEFT JOIN member m on m.member_id = nb.member_id
                  LEFT JOIN category c on c.category_id = nb.category_id

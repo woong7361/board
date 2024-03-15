@@ -18,12 +18,4 @@ public class FreeBoardSearchParam {
 
     private String category;
     private String keyWord;
-
-    public LocalDateTime getStartDate() {
-        return startDate == null ? LocalDateTime.now().minusMonths(1L) : startDate;
-    }
-
-    public LocalDateTime getEndDate() {
-        return endDate == null ? LocalDateTime.now() : endDate;
-    }
 }

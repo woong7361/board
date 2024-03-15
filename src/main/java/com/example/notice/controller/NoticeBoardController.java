@@ -67,14 +67,17 @@ public class NoticeBoardController {
      * @return 고정 공지글이 아닌 공지글들 반환
      */
     @GetMapping("/api/boards/notice")
-    public ResponseEntity<Map<String, PageResponse<NoticeBoard>>> getNoticeBoardsWithoutFixed(
+    public ResponseEntity<PageResponse<NoticeBoard>> getNoticeBoardsWithoutFixed(
             @ModelAttribute NoticeBoardSearchParam noticeBoardSearchParam,
-            @ModelAttribute PageRequest pageRequest) {
+            @Valid @ModelAttribute PageRequest pageRequest) {
+
+//         TODO 최대 날짜 기간 체크 - 모듈로 뺴야 할듯
+
 
         PageResponse<NoticeBoard> noneFixedNoticeBoards =
                 noticeBoardService.getNoneFixedNoticeBoards(noticeBoardSearchParam, pageRequest);
         return ResponseEntity
-                .ok(Map.of(NONE_FIXED_NOTICE_BOARDS_PARAM, noneFixedNoticeBoards));
+                .ok(noneFixedNoticeBoards);
     }
 
     // 공지글 상세 보기
@@ -83,12 +86,18 @@ public class NoticeBoardController {
 
     // 공지글 삭제
 
-    //문의 게시판 생성
+    // TODO 원래 생각은 관리자 api, 사용자 api 따로 만들라고 했는데 그게 맞겠죠? 전에 말했던 것처럼
+    //문의 게시판 생성 - 사용자만
     // 검색
     // 조회
     // 수정
     // 삭제
-    // 답변
+    // 답변   - 관리자만
     // 답변 삭제
+
+    //자유게시판 - 관리자용
+    // 생성
+    // 수정
+    // 삭제
 
 }

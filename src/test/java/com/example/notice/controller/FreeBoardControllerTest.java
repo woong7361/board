@@ -177,7 +177,6 @@ class FreeBoardControllerTest {
             mockMvc.perform(MockMvcRequestBuilders.get(GET_BOARDS_URI)
                             .params(params))
                     .andExpect(MockMvcResultMatchers.status().isOk());
-
         }
 
         @DisplayName("설정한 최대 기간(1year)을 넘어갈때")
@@ -187,6 +186,8 @@ class FreeBoardControllerTest {
             LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("startDate", LocalDateTime.now().minusYears(2L).minusDays(1L).toString());
             params.add("endDate", LocalDateTime.now().toString());
+            params.add("size", "5");
+            params.add("currentPage", "0");
 
             //when
             //then

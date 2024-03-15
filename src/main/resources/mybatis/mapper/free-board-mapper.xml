@@ -2,20 +2,34 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.notice.repository.FreeBoardRepository">
     <sql id="searchCondition">
-        WHERE
-            ((fd.created_at BETWEEN #{search.startDate} AND #{search.endDate})
-                OR
-            (fd.modified_at BETWEEN #{search.startDate} AND #{search.endDate}))
+        <where>
+            <choose>
+                <when test="search.startDate != null and search.endDate != null ">
+                    AND
+                    ((fb.created_at BETWEEN #{search.startDate} AND #{search.endDate})
+                    OR
+                    (fb.modified_at BETWEEN #{search.startDate} AND #{search.endDate}))
+                </when>
+                <otherwise>
+                    AND
+                    ((fb.created_at BETWEEN SUBDATE(NOW(), INTERVAL 1 YEAR) AND NOW())
+                    OR
+                    (fb.modified_at BETWEEN SUBDATE(NOW(), INTERVAL 1 YEAR) AND NOW()))
+                </otherwise>
+            </choose>
+
             <if test="search.category != null and search.category != 'ALL'">
                 AND
                     #{search.category} = ct.value
             </if>
+
             <if test="search.keyWord != null and search.keyWord != ''">
                 AND (
-                    fd.title LIKE CONCAT('%', #{search.keyWord}, '%')
-                    OR fd.content LIKE CONCAT('%', #{search.keyWord}, '%')
+                    fb.title LIKE CONCAT('%', #{search.keyWord}, '%')
+                    OR fb.content LIKE CONCAT('%', #{search.keyWord}, '%')
                     OR m.`name` LIKE CONCAT('%', #{search.keyWord}, '%'))
             </if>
+        </where>
     </sql>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="freeBoardId">
@@ -42,9 +56,9 @@
             free_board_id, title, content, views, created_at, modified_at,
             ct.value as 'category',
             m.name as 'member.name', m.member_id as 'member.memberId'
-        FROM free_board fd
-            LEFT JOIN category ct on fd.category_id = ct.category_id
-            LEFT JOIN member m on m.member_id = fd.member_id
+        FROM free_board fb
+            LEFT JOIN category ct on fb.category_id = ct.category_id
+            LEFT JOIN member m on m.member_id = fb.member_id
         WHERE free_board_id = #{freeBoardId}
     </select>
 
@@ -61,16 +75,16 @@
             ct.value as 'category',
             m.name as 'member.name', m.member_id as 'member.memberId',
             (SELECT count(*) > 0 from file) as have_file
-        FROM free_board fd
-            LEFT JOIN category ct on fd.category_id = ct.category_id
-            LEFT JOIN member m on m.member_id = fd.member_id
+        FROM free_board fb
+            LEFT JOIN category ct on fb.category_id = ct.category_id
+            LEFT JOIN member m on m.member_id = fb.member_id
         <include refid="searchCondition"/>
         <choose>
             <when test="page.orderColumn != null and page.orderType != null">
                 ORDER BY ${page.orderColumn} ${page.orderType}
             </when>
             <otherwise>
-                ORDER BY fd.created_at DESC
+                ORDER BY fb.created_at DESC
             </otherwise>
         </choose>
         LIMIT #{page.offset}, #{page.size}
@@ -78,9 +92,9 @@
 
     <select id="getTotalCountBySearchParam" resultType="int">
         SELECT count(*)
-        FROM free_board fd
-            LEFT JOIN category ct on fd.category_id = ct.category_id
-            LEFT JOIN member m on m.member_id = fd.member_id
+        FROM free_board fb
+            LEFT JOIN category ct on fb.category_id = ct.category_id
+            LEFT JOIN member m on m.member_id = fb.member_id
         <include refid="searchCondition"/>
     </select>
 
@@ -90,10 +104,10 @@
 
     <update id="deleteContentAndMemberByBoardId">
         UPDATE
-            free_board fd
+            free_board fb
         SET
-            fd.content = NULL,
-            fd.member_id = NULL
+            fb.content = NULL,
+            fb.member_id = NULL
         WHERE
             free_board_id = #{freeBoardId}
     </update>

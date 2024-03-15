@@ -126,6 +126,9 @@ public class FreeBoardController {
     }
 
     private static void checkSearchRange(FreeBoardSearchParam freeBoardSearchParam) {
+        if (freeBoardSearchParam.getEndDate() == null || freeBoardSearchParam.getStartDate() == null) {
+            return;
+        }
 
         if (isSearchRangeMoreThan1Year(freeBoardSearchParam)) {
             throw new BadRequestParamException("최대 날짜 범위는 1년 이하 입니다.");
