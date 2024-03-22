@@ -4,6 +4,7 @@ package com.example.notice.service;
 import com.example.notice.dto.IdList;
 import com.example.notice.entity.AttachmentFile;
 import com.example.notice.exception.AuthorizationException;
+import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.mock.repository.MockAttachmentFileRepository;
 import com.example.notice.mock.repository.MockPhysicalFileRepository;
@@ -190,6 +191,46 @@ class FileServiceTest {
             //then
             Assertions.assertThatThrownBy(() -> fileService.checkFilesAuthorization(ids, 1L))
                     .isInstanceOf(AuthorizationException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("물리적 파일 가져오기 테스트")
+    public class GetPhysicalFile {
+        @Disabled
+        @DisplayName("정상처리")
+        @Test
+        public void success() throws Exception {
+            //given
+
+            //when
+
+            //then
+        }
+
+        @DisplayName("파일이 DB에 존재하지 않음")
+        @Test
+        public void fileNotExist() throws Exception{
+            //given
+            long notExistFileId = 1531352L;
+
+            //when
+            Assertions.assertThatThrownBy(() -> fileService.getPhysicalFile(notExistFileId))
+                    .isInstanceOf(EntityNotExistException.class);
+            //then
+        }
+
+        //TODO 파일을 다루는 부분에서 실제 파일을 다루는 부분을 직접적으로 쓴다?
+        // 이상하다. 얘도 mocking? 하기에도 좀 애매하다.
+        @Disabled
+        @DisplayName("파일의 경로에 물리적 파일이 존재하지 않음")
+        @Test
+        public void physicalFileNotExist() throws Exception{
+            //given
+
+            //when
+
+            //then
         }
     }
 }

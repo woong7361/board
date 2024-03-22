@@ -8,10 +8,8 @@ import com.example.notice.entity.Member;
 import com.example.notice.service.FileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+
+import java.io.File;
 
 import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
 
@@ -88,6 +88,28 @@ class FileControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(mapper.writeValueAsString(ids)))
                     .andExpect(MockMvcResultMatchers.status().isOk());
+        }
+    }
+
+    //TODO 파일 다운로드 테스트에서 더미파일 사용?
+    @Disabled
+    @Nested
+    @DisplayName("파일 다운로드 컨트롤러 테스트")
+    public class FileDownloadTest {
+
+        private static String FILE_DOWNLOAD_URI = "/api/boards/files/%s/download";
+
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            long fileId = 13L;
+            //when
+//            Mockito.when(fileService.getPhysicalFile(fileId))
+//                    .thenReturn(new File());
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.post(FILE_DOWNLOAD_URI.formatted(fileId)));
+
         }
     }
 

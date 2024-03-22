@@ -6,6 +6,7 @@ import com.example.notice.dto.IdList;
 import com.example.notice.dto.SuccessesAndFails;
 import com.example.notice.entity.AttachmentFile;
 import com.example.notice.entity.Member;
+import com.example.notice.exception.PhysicalFileNotFoundException;
 import com.example.notice.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -72,7 +73,7 @@ public class FileController {
 
     @PostMapping("/api/boards/files/{fileId}/download")
     public ResponseEntity<InputStreamResource> downloadFile(
-            @PathVariable Long fileId) throws FileNotFoundException {
+            @PathVariable Long fileId) {
         File file = fileService.getPhysicalFile(fileId);
 
         return ResponseEntity
@@ -92,8 +93,12 @@ public class FileController {
                 .toString();
     }
 
-    private InputStreamResource getInputStreamResource(File file) throws FileNotFoundException {
+    private InputStreamResource getInputStreamResource(File file) {
+        try {
             return new InputStreamResource(new FileInputStream(file));
+        } catch (FileNotFoundException e) {
+            throw new PhysicalFileNotFoundException(e.getMessage());
+        }
     }
 
 }
