@@ -29,11 +29,11 @@ public interface ConfigurationService {
      * 상단 최대 공지 수를 반환한다.
      * @return 상단 고정된 최대 공지 수
      */
-    Integer getMaxFixedNoticeCount();
+    Integer getMaxNoticeFixedCount();
 
     /**
      * 허용된 검색 기간을 가져온다.
      * @return 최대 검색 기간
      */
-    Long getSearchMaxYearRange();
+    Long getMaxSearchYearRange();
 }

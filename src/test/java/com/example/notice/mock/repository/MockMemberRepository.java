@@ -40,9 +40,9 @@ public class MockMemberRepository implements MemberRepository {
      * @implSpec SAVED MEMBER와 이름이 같다면 참, 다르다면 거짓 반환
      */
     @Override
-    public boolean isDuplicateMemberName(String memberName) {
+    public boolean isDuplicateMemberLoginId(String loginId) {
         return MEMBER_STORAGE.stream()
-                .anyMatch((member) -> member.getName().equals(memberName));
+                .anyMatch((member) -> member.getLoginId().equals(loginId));
     }
 
     /**

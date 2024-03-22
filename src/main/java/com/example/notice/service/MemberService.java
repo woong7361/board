@@ -16,5 +16,5 @@ public interface MemberService {
      * 회원 이름 중복 검사
      * @param memberName 검사할 회원 이름
      */
-    public void isDuplicateMemberName(String memberName);
+    public void isDuplicateMemberLoginId(String memberName);
 }

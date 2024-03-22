@@ -25,7 +25,7 @@ public class FilterConfig {
         FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
         filterFilterRegistrationBean.setFilter(new JwtTokenAuthFilter(authProvider));
         filterFilterRegistrationBean.setOrder(1);
-        filterFilterRegistrationBean.addUrlPatterns("/api/*");
+        filterFilterRegistrationBean.addUrlPatterns("/api/sss/*");
 
         return filterFilterRegistrationBean;
     }

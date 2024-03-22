@@ -22,7 +22,7 @@ class AuthProviderTest {
         public void success() throws Exception {
             //given
             Member member = Member.builder()
-                    .memberId(1)
+                    .memberId(1L)
                     .name("name")
                     .build();
             //when
@@ -35,10 +35,10 @@ class AuthProviderTest {
 
         @DisplayName("오염된 인증 객체")
         @Test
-        public void test() throws Exception{
+        public void corruptedAuthenticationObject() throws Exception{
             //given
             Member member = Member.builder()
-                    .memberId(1)
+                    .memberId(1L)
                     .name("name")
                     .build();
             //when
@@ -46,7 +46,8 @@ class AuthProviderTest {
             String corruptedAuthentication = authentication + "123";
 
             //then
-            assertThatThrownBy(() -> authProvider.verify(corruptedAuthentication)).isInstanceOf(SignatureException.class);
+            assertThatThrownBy(() -> authProvider.verify(corruptedAuthentication))
+                    .isInstanceOf(SignatureException.class);
         }
 
     }

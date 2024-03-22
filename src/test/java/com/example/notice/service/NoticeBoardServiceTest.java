@@ -14,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.example.notice.mock.repository.MockNoticeBoardRepository.NO_FK_NOTICE_BOARD;
@@ -98,12 +97,10 @@ class NoticeBoardServiceTest {
             List<NoticeBoard> findNoticeBoard = noticeBoardService.getFixedNoticeBoardWithoutContent();
 
             //then
-            Assertions.assertThat(findNoticeBoard.size()).isEqualTo(configurationService.getMaxFixedNoticeCount());
+            Assertions.assertThat(findNoticeBoard.size()).isEqualTo(configurationService.getMaxNoticeFixedCount());
         }
     }
 
-
-    //TODO 이자식도 내가 만든 repo를 test 해야하는 그런 느낌 -> 테스트를 하기 위해 repo를 만들고 그 repo를 또 test하고 또 거시기...
     @Nested
     @DisplayName("상단 고정 공지를 제외한 공지 검색 테스트")
     public class GetNoneFixedNoticeBoards {
@@ -137,7 +134,7 @@ class NoticeBoardServiceTest {
 
             //then
             Assertions.assertThat(noneFixedNoticeBoards.getContentSize())
-                    .isEqualTo(fixedSize + unFixedSize - configurationService.getMaxFixedNoticeCount());
+                    .isEqualTo(fixedSize + unFixedSize - configurationService.getMaxNoticeFixedCount());
         }
     }
 

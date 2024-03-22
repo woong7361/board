@@ -20,6 +20,10 @@ public class SuccessesAndFails<T> {
         this.fails = fails;
     }
 
+    /**
+     * 빈 생성 로직
+     * @return 빈 인스턴스 반환
+     */
     public static <T> SuccessesAndFails<T> emptyList() {
         return new SuccessesAndFails<T>(new ArrayList<>(), new ArrayList<>());
     }
@@ -38,10 +42,5 @@ public class SuccessesAndFails<T> {
      */
     public void addFail(T element) {
         this.fails.add(element);
-    }
-
-    public void addALl(SuccessesAndFails<T> successesAndFails) {
-        this.successes.addAll(successesAndFails.getSuccesses());
-        this.fails.addAll(successesAndFails.getFails());
     }
 }

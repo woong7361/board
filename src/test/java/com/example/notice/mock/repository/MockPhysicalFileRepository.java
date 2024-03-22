@@ -2,10 +2,12 @@ package com.example.notice.mock.repository;
 
 import com.example.notice.exception.FileSaveCheckedException;
 import com.example.notice.files.PhysicalFileRepository;
+import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.mock.service.MockConfigurationService;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.notice.mock.database.MemoryDataBase.PHYSICAL_FILE_STORAGE;
 
@@ -16,7 +18,7 @@ public class MockPhysicalFileRepository implements PhysicalFileRepository {
     //TODO static과 local의 저장공간의 차이성?
     // 둘다 저장을 하면 같이 저장되지만
     // 삭제를 하면 하나만 삭제되어 문제가 일어난다.
-//    public List<String> physicalFileRepository = MemoryDataBase.physicalFileRepository;
+//    public List<String> PHYSICAL_FILE_STORAGE = MemoryDataBase.PHYSICAL_FILE_STORAGE;
 
     MockConfigurationService configurationService = new MockConfigurationService();
 

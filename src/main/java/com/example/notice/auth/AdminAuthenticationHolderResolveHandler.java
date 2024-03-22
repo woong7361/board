@@ -20,17 +20,27 @@ import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
  */
 @Component
 public class AdminAuthenticationHolderResolveHandler implements HandlerMethodArgumentResolver {
+
+    /**
+     * parameter가 Principal.class인지 AND @Annotation이 AdminAuthenticationPrincipal.classd인지
+     * @param parameter method Argument parameter
+     * @return 파라미터를 지원하는지
+     */
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return isSupportAnnotationClass(parameter) & isSupportParameterType(parameter);
     }
 
+    /**
+     * session에서 관리자 인증 객체를 꺼내준다.
+     * @return 관리자 인증 객체
+     */
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         HttpSession session = request.getSession(false);
         if (session == null){
-            throw new AuthenticationException("관리자 로그인 실패");
+            throw new AuthenticationException("관리자 인증 과정이 처리되지 않았습니다.");
         }
         Member adminMember = (Member) session.getAttribute(ADMIN_SESSION_KEY);
         return new MemberPrincipal(adminMember);

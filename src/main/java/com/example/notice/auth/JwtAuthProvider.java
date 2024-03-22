@@ -17,16 +17,19 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtAuthProvider implements AuthProvider {
 
+    public static final String MEMBER_ID = "memberId";
+    public static final String MEMBER_NAME = "name";
+    private static final String SUBJECT = "board";
+    public static final String BEARER = "Bearer";
+
     private final ConfigurationService configurationService;
 
-    public static final String BEARER = "Bearer";
 
     private final Long SECOND = 1000L;
     private final Long MINUTE = 60 * SECOND;
     private final Long HOUR = 60 * MINUTE;
     private final Long AUTH_DURATION = 255 * HOUR;
 
-    private final String SUBJECT = "board";
 
 
     @Override
@@ -36,8 +39,8 @@ public class JwtAuthProvider implements AuthProvider {
 
         return Jwts.builder()
                 .setSubject(SUBJECT)
-                .claim("memberId", member.getMemberId())
-                .claim("name", member.getName())
+                .claim(MEMBER_ID, member.getMemberId())
+                .claim(MEMBER_NAME, member.getName())
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(date)
                 .compact();
@@ -53,8 +56,8 @@ public class JwtAuthProvider implements AuthProvider {
                 .parseClaimsJws(jwtToken)
                 .getBody();
 
-        long memberId = (int) claims.get("memberId");
-        String name = (String) claims.get("name");
+        long memberId = (int) claims.get(MEMBER_ID);
+        String name = (String) claims.get(MEMBER_NAME);
         return Member.builder()
                 .memberId(memberId)
                 .name(name)

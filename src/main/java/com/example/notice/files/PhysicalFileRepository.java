@@ -23,5 +23,10 @@ public interface PhysicalFileRepository {
      */
     public void delete(String fullPath);
 
+    /**
+     * 물리적 파일을 반환한다.
+     * @param path 파일의 이름을 포함한 경로
+     * @return 물리적 파일 반환
+     */
     File getFile(String path);
 }

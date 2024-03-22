@@ -41,4 +41,6 @@ public class MemberController {
             throw new BadRequestParamException("login Id should not be same as password");
         }
     }
+
+    // 관리자 로그아웃 구현 해야함
 }

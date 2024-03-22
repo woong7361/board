@@ -51,7 +51,7 @@ class FreeBoardControllerTest {
     @BeforeEach
     public void createMember() {
         Member member = Member.builder()
-                .memberId(1)
+                .memberId(1L)
                 .build();
         Principal<Member> principal = new MemberPrincipal(member);
 
@@ -91,6 +91,7 @@ class FreeBoardControllerTest {
         @DisplayName("게시글 인자 검증 테스트")
         public class NestedClass {
 
+            //
             @DisplayName("제목이 null 일때 실패")
             @ParameterizedTest
             @MethodSource("invalidFreeBoardParam")

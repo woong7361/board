@@ -35,7 +35,7 @@ class DateValidationTest {
         @Test
         public void beyondMaxRange() throws Exception{
             //given
-            LocalDateTime startDate = LocalDateTime.now().minusYears(configurationService.getSearchMaxYearRange()+1);
+            LocalDateTime startDate = LocalDateTime.now().minusYears(configurationService.getMaxSearchYearRange()+1);
             LocalDateTime endDate = LocalDateTime.now();
 
             //when

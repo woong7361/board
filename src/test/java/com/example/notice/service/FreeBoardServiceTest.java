@@ -109,7 +109,7 @@ class FreeBoardServiceTest {
 
 
             //when
-            freeBoardService.deleteFreeBoard(board.getFreeBoardId());
+            freeBoardService.deleteFreeBoardById(board.getFreeBoardId());
 
             //then
             Assertions.assertThat(freeBoardRepository.findBoardById(board.getFreeBoardId()))

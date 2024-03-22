@@ -5,6 +5,7 @@ import com.example.notice.dto.SuccessesAndFails;
 import com.example.notice.entity.AttachmentFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -33,4 +34,11 @@ public interface FileService {
      * @param memberId 삭제를 요청하는 사용자
      */
     void checkFilesAuthorization(IdList fileIds, Long memberId);
+
+    /**
+     * 물리적 파일을 반환하는 서비스
+     * @param fileId 파일 식별자
+     * @return 물리적 파일
+     */
+    File getPhysicalFile(Long fileId);
 }

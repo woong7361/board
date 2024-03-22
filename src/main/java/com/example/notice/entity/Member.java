@@ -43,7 +43,7 @@ public class Member {
     private MemberRole role;
 
     @Builder
-    protected Member(long memberId, String loginId, String password, String name, MemberRole role) {
+    protected Member(Long memberId, String loginId, String password, String name, MemberRole role) {
         this.memberId = memberId;
         this.loginId = loginId;
         this.password = password;

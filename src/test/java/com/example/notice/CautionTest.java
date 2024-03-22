@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //TODO 테스트 확인
@@ -43,15 +44,14 @@ public class CautionTest {
         //then
         fileService.save(files, 1L);
 
-        fileRepository.clearRepository();
         physicalFileRepository.clearRepository();
+//        MemoryDataBase.PHYSICAL_FILE_STORAGE = new ArrayList<>();
 
-//        physicalFileRepository.clearRepository();
         for (String s : MemoryDataBase.PHYSICAL_FILE_STORAGE) {
             System.out.println("s = " + s);
         }
 
-//        for (String s : physicalFileRepository.physicalFileRepository) {
+//        for (String s : physicalFileRepository.PHYSICAL_FILE_STORAGE) {
 //            System.out.println("sss = " + s);
 //        }
 

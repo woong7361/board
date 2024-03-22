@@ -27,7 +27,7 @@ class AuthenticationHolderTest {
         public void saveAndGet() throws Exception {
             //given
             Member member = Member.builder()
-                    .memberId(1)
+                    .memberId(1L)
                     .build();
             Principal<Member> principal = new MemberPrincipal(member);
 
@@ -45,7 +45,7 @@ class AuthenticationHolderTest {
         public void clearTest() throws Exception{
             //given
             Member member = Member.builder()
-                    .memberId(1)
+                    .memberId(1L)
                     .build();
             Principal<Member> principal = new MemberPrincipal(member);
 
@@ -57,7 +57,6 @@ class AuthenticationHolderTest {
             assertThat(AuthenticationHolder.getPrincipal()).isEqualTo(null);
         }
 
-        //TODO 테스트 실패 - why?
         @DisplayName("로컬 스레드마다 다른 값 확인")
         @Test
         public void multiThread() throws Exception{
@@ -68,15 +67,11 @@ class AuthenticationHolderTest {
             CountDownLatch latch = new CountDownLatch(threadCount);
 
             List<Long> memberIds = new ArrayList<>();
-
-            // add 작업만 하는데 데이터가 누락될 이유?
-            // add 작업이 atomic 하지 않아 발생한 문제? -> add도 atomic 해야 하는가? -> 그렇다고 볼 수 있다.
-//            List<Long> results = new ArrayList<>();
             List<Long> results = new CopyOnWriteArrayList<>();
 
             //when
-            for (int i = 0; i < threadCount; i++) {
-                memberIds.add((long) i);
+            for (long i = 0; i < threadCount; i++) {
+                memberIds.add(i);
 
                 Member member = Member.builder()
                         .memberId(i)
@@ -90,7 +85,6 @@ class AuthenticationHolderTest {
                         long savedMemberId = savedPrincipal.getAuthentication().getMemberId();
 
                         results.add(savedMemberId);
-//                        System.out.println(member.getMemberId() + "    " + AuthenticationHolder.getMemberId() + "  " + (member.getMemberId() == AuthenticationHolder.getMemberId()));
                     } finally {
                         latch.countDown();
                     }

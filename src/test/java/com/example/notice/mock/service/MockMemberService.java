@@ -20,6 +20,6 @@ public class MockMemberService implements MemberService {
      * @implSpec 아무런 행동을 하지 않음
      */
     @Override
-    public void isDuplicateMemberName(String memberName) {
+    public void isDuplicateMemberLoginId(String memberName) {
     }
 }

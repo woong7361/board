@@ -23,7 +23,7 @@ public interface MemberRepository {
      * @param memberName 검증할 회원 이름
      * @return 참/거짓
      */
-    boolean isDuplicateMemberName(@Param("name") String memberName);
+    boolean isDuplicateMemberLoginId(@Param("loginId") String memberName);
 
     /**
      * 회원 아이디와 비밀번호를 통해 회원 검색

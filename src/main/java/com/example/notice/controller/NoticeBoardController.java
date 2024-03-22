@@ -120,7 +120,8 @@ public class NoticeBoardController {
         return ResponseEntity.ok().build();
     }
 
-    // TODO 원래 생각은 관리자 api, 사용자 api 따로 만들라고 했는데 그게 맞겠죠? 전에 말했던 것처럼
+    //파일 다운로드
+
     //문의 게시판 생성 - 사용자만
     // 검색
     // 조회

@@ -4,7 +4,7 @@ import com.example.notice.entity.Member;
 import lombok.Getter;
 
 /**
- * Member not exist exception
+ * 회원이 존재하지 않는다는 에러 클래스
  */
 @Getter
 public class MemberNotExistException extends EntityNotExistException{

@@ -16,6 +16,7 @@ public class PageRequest {
     @NotNull
     private Integer currentPage;
 
+    //TODO 노출 최소화
     @Pattern(regexp = "[a-zA-z]")
     private String orderColumn;
 

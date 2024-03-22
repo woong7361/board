@@ -2,6 +2,7 @@ package com.example.notice.files;
 
 import com.example.notice.config.ConfigurationService;
 import com.example.notice.exception.FileSaveCheckedException;
+import com.example.notice.exception.PhysicalFileNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,11 +22,8 @@ public class LocalServerFileRepository implements PhysicalFileRepository{
 
     @Override
     public String save(byte[] bytes, String originalFileName) throws FileSaveCheckedException {
-        String filePath = configurationService.getFilePath();
-        String extension = getExtension(originalFileName);
-        String newFilename = getNewFilename(extension);
+        String fullPath = configurationService.getFilePath() + "/" + getNewFilename(getExtension(originalFileName));
 
-        String fullPath = filePath + "/" + newFilename;
         try (OutputStream outputStream = new FileOutputStream(fullPath))
         {
             outputStream.write(bytes);
@@ -45,11 +43,19 @@ public class LocalServerFileRepository implements PhysicalFileRepository{
 
     @Override
     public File getFile(String path) {
-        return new File(path);
+        File file = new File(path);
+        if (isFileNotExist(file)) {
+            throw new PhysicalFileNotFoundException(path);
+        }
+
+        return file;
+    }
+
+    private static boolean isFileNotExist(File file) {
+        return !file.exists();
     }
 
 
-    //    ==================================================================================================================
     private static String getExtension(String originalFilename) {
         return originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
     }

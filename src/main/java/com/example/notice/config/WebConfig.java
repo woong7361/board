@@ -26,6 +26,8 @@ public class WebConfig implements WebMvcConfigurer {
     private final AuthenticationHolderResolveHandler authenticationHolderResolveHandler;
     private final AdminAuthenticationHolderResolveHandler adminAuthenticationHolderResolveHandler;
     private final AdminSessionInterceptor adminSessionInterceptor;
+
+
     /**
      * argumentResolvers에 authenticationHolderResolveHandler 추가
      * argumentResolvers에 adminAuthenticationHolderResolveHandler 추가
@@ -36,6 +38,9 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.add(adminAuthenticationHolderResolveHandler);
     }
 
+    /**
+     *  admin authentication filter 추가
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminSessionInterceptor)

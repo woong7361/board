@@ -37,7 +37,7 @@ public interface FreeBoardService {
      *
      * @param freeBoardId 게시글 식별자
      */
-    void deleteFreeBoard(Long freeBoardId);
+    void deleteFreeBoardById(Long freeBoardId);
 
     /**
      * 자유게시판 게시글 수정
@@ -45,7 +45,7 @@ public interface FreeBoardService {
      * @param freeBoard   게시글 수정 인자
      * @param freeBoardId 게시글 식별자
      */
-    void updateFreeBoard(FreeBoard freeBoard, Long freeBoardId);
+    void updateFreeBoardById(FreeBoard freeBoard, Long freeBoardId);
 
     /**
      * 자유게시판 게시글의 권한 인증

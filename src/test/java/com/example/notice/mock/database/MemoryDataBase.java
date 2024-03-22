@@ -30,4 +30,10 @@ public class MemoryDataBase {
     public static void clearNoticeBoardRepository(){
         NOTICE_BOARD_STORAGE = new ArrayList<>();
     }
+
+    public static void clearMemberRepositoryAndInitMockData() {
+        MEMBER_STORAGE = new ArrayList<>();
+        MEMBER_STORAGE.add(SAVED_MEMBER);
+        MEMBER_STORAGE.add(SAVED_ADMIN_MEMBER);
+    }
 }

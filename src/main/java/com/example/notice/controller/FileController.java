@@ -8,10 +8,19 @@ import com.example.notice.entity.AttachmentFile;
 import com.example.notice.entity.Member;
 import com.example.notice.service.FileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +53,8 @@ public class FileController {
 
     /**
      * 파일 삭제
-     * @param fileIds 파일 식별자
+     *
+     * @param fileIds   파일 식별자
      * @param principal 인증된 사용자 정보
      * @return 200 ok
      */
@@ -52,12 +62,39 @@ public class FileController {
     public ResponseEntity<Object> deleteFiles(
             @RequestBody IdList fileIds,
             @AuthenticationPrincipal Principal<Member> principal
-            ) {
+    ) {
         Member member = principal.getAuthentication();
         fileService.checkFilesAuthorization(fileIds, member.getMemberId());
 
         fileService.delete(fileIds);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/api/boards/files/{fileId}/download")
+    public ResponseEntity<InputStreamResource> downloadFile(
+            @PathVariable Long fileId) throws FileNotFoundException {
+        File file = fileService.getPhysicalFile(fileId);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .contentLength(file.length())
+                .header(HttpHeaders.CONTENT_DISPOSITION, getContentDispositionValue(file))
+                .body(getInputStreamResource(file));
+    }
+
+
+    private String getContentDispositionValue(File file) {
+        return ContentDisposition
+                .attachment()
+                .filename(file.getName(), StandardCharsets.UTF_8)
+                .build()
+                .toString();
+    }
+
+    private InputStreamResource getInputStreamResource(File file) throws FileNotFoundException {
+            return new InputStreamResource(new FileInputStream(file));
+    }
+
 }
 

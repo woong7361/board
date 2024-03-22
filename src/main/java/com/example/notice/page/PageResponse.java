@@ -4,6 +4,10 @@ import lombok.Getter;
 
 import java.util.List;
 
+/**
+ * 페이징을 하고 난 후 응답할 wrapper 객체
+ * @param <T> 응답할 contents Type
+ */
 @Getter
 public class PageResponse<T> {
     private List<T> contents;
@@ -14,6 +18,7 @@ public class PageResponse<T> {
     private Integer contentSize;
     private Integer pageSize;
 
+    // 방어코드
     public PageResponse(List<T> contents, PageRequest pageRequest, Integer totalCount) {
         this.contents = contents;
         this.pageOffset = pageRequest.getOffset();

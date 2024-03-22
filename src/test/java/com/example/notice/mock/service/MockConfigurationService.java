@@ -34,12 +34,12 @@ public class MockConfigurationService implements ConfigurationService {
     }
 
     @Override
-    public Integer getMaxFixedNoticeCount() {
+    public Integer getMaxNoticeFixedCount() {
         return 5;
     }
 
     @Override
-    public Long getSearchMaxYearRange() {
+    public Long getMaxSearchYearRange() {
         return 1L;
     }
 

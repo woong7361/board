@@ -40,11 +40,10 @@ public class NoticeBoard {
 
     @Builder
     private NoticeBoard(Long noticeBoardId, Long memberId, String category, String title, String content, Boolean isFixed, Long views, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        if (memberId != null) {
-            this.member = Member.builder()
-                    .memberId(memberId)
-                    .build();
-        }
+        this.member = Member.builder()
+                .memberId(memberId)
+                .build();
+
         this.noticeBoardId = noticeBoardId;
         this.category = category;
         this.title = title;
@@ -56,10 +55,10 @@ public class NoticeBoard {
     }
 
     public Long getMemberId() {
-        return this.member != null ? this.member.getMemberId() : null;
+        return member.getMemberId();
     }
 
     public String getMemberName() {
-        return this.member != null ? this.member.getName() : null;
+        return member.getName();
     }
 }

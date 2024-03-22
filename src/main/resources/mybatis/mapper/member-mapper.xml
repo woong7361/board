@@ -16,10 +16,10 @@
             (#{member.loginId}, SHA2(#{member.password}, 256), #{member.name}, 'ADMIN')
     </insert>
 
-    <select id="isDuplicateMemberName" resultType="boolean">
+    <select id="isDuplicateMemberLoginId" resultType="boolean">
         SELECT (count(*) >= 1) AS duplicate_name_count
         FROM member
-        WHERE member.name = #{name}
+        WHERE member.name = #{loginId}
     </select>
 
     <select id="findMemberByLoginIdAndPassword" resultType="com.example.notice.entity.Member" >

@@ -29,25 +29,11 @@ public class ConfigurationServiceImpl implements ConfigurationService{
     @Value("${setting.max-search-range-year}")
     private Long maxSearchYearRange;
 
-
-
-
     @Override
     public List<String> getAllowExtension() {
         String[] extensions = allowExtension.split(",");
         return Arrays.stream(extensions)
                 .map((extension) -> extension.strip())
                 .collect(Collectors.toList());
-
-
-    }
-
-    @Override
-    public Integer getMaxFixedNoticeCount() {
-        return maxNoticeFixedCount;
-    }
-
-    public Long getSearchMaxYearRange() {
-        return maxSearchYearRange;
     }
 }

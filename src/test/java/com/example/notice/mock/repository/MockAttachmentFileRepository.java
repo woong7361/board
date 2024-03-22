@@ -1,9 +1,12 @@
 package com.example.notice.mock.repository;
 
 import com.example.notice.entity.AttachmentFile;
+import com.example.notice.entity.FreeBoard;
+import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.repository.AttachmentFileRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.notice.mock.database.MemoryDataBase.ATTACHMENT_FILE_STORAGE;
@@ -11,8 +14,8 @@ import static com.example.notice.mock.database.MemoryDataBase.FREE_BOARD_STORAGE
 
 public class MockAttachmentFileRepository implements AttachmentFileRepository {
 
-//    private List<AttachmentFile> attachmentFileRepository = MemoryDataBase.attachmentFileRepository;
-//    private List<FreeBoard> freeBoardRepository = MemoryDataBase.freeBoardRepository;
+//    private List<AttachmentFile> ATTACHMENT_FILE_STORAGE = MemoryDataBase.ATTACHMENT_FILE_STORAGE;
+//    private List<FreeBoard> FREE_BOARD_STORAGE = MemoryDataBase.FREE_BOARD_STORAGE;
 
     @Override
     public void saveWithFreeBoardId(AttachmentFile file, Long boardId) {
@@ -36,8 +39,6 @@ public class MockAttachmentFileRepository implements AttachmentFileRepository {
                 .removeIf((af) -> af.getFileId().equals(fileId));
     }
 
-    //TODO 구현상의 어려움 -> 불가능은 아니지만 테스트를 위한 비용이 너무 커진다는 단점
-    //  임시로 MemoryDataBase 를 따로 구현하여 구현함
     @Override
     public Optional<AttachmentFile> findByFileIdAndMemberId(Long fileId, Long memberId) {
         return ATTACHMENT_FILE_STORAGE.stream()

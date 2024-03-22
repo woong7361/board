@@ -53,7 +53,7 @@ public class FreeBoardServiceImpl implements FreeBoardService{
      */
     @Transactional
     @Override
-    public void deleteFreeBoard(Long freeBoardId) {
+    public void deleteFreeBoardById(Long freeBoardId) {
         if (freeBoardRepository.hasCommentByBoardId(freeBoardId)) {
             freeBoardRepository.deleteContentAndMemberByBoardId(freeBoardId);
         } else {
@@ -64,7 +64,7 @@ public class FreeBoardServiceImpl implements FreeBoardService{
 
     @Transactional
     @Override
-    public void updateFreeBoard(FreeBoard freeBoard, Long freeBoardId) {
+    public void updateFreeBoardById(FreeBoard freeBoard, Long freeBoardId) {
         freeBoardRepository.update(freeBoard, freeBoardId);
     }
 

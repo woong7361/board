@@ -2,7 +2,6 @@ package com.example.notice.controller;
 
 import com.example.notice.auth.AuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
-import com.example.notice.constant.ResponseConstant;
 import com.example.notice.dto.FreeBoardSearchParam;
 import com.example.notice.exception.BadRequestParamException;
 import com.example.notice.page.PageRequest;
@@ -13,7 +12,6 @@ import com.example.notice.service.FreeBoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.temporal.ChronoUnit;
@@ -97,9 +95,10 @@ public class FreeBoardController {
             @PathVariable(name = "freeBoardId") Long freeBoardId,
             @AuthenticationPrincipal Principal<Member> principal) {
         Member member = principal.getAuthentication();
+        //
         freeBoardService.checkFreeBoardAuthorization(freeBoardId, member.getMemberId());
 
-        freeBoardService.deleteFreeBoard(freeBoardId);
+        freeBoardService.deleteFreeBoardById(freeBoardId);
         return ResponseEntity.ok().build();
     }
 
@@ -118,8 +117,8 @@ public class FreeBoardController {
         Member member = principal.getAuthentication();
         freeBoardService.checkFreeBoardAuthorization(freeBoardId, member.getMemberId());
 
-        // TODO 구조를 어떻게 해야할지 - setter? - 새로이 build?
-        freeBoardService.updateFreeBoard(freeBoard, freeBoardId);
+        // TODO 구조를 어떻게 해야할지 - setter? - 새로이 build? - 그대로?
+        freeBoardService.updateFreeBoardById(freeBoard, freeBoardId);
 
         return ResponseEntity
                 .ok(Map.of(FREE_BOARD_ID_PARAM, freeBoardId));

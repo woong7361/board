@@ -5,6 +5,7 @@ import com.example.notice.dto.IdList;
 import com.example.notice.dto.SuccessesAndFails;
 import com.example.notice.entity.AttachmentFile;
 import com.example.notice.exception.AuthorizationException;
+import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.exception.FileSaveCheckedException;
 import com.example.notice.exception.FileSaveException;
 import com.example.notice.files.PhysicalFileRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -50,6 +52,18 @@ public class FileServiceImpl implements FileService{
         }
     }
 
+    @Override
+    public File getPhysicalFile(Long fileId) {
+        AttachmentFile attachmentFile = fileRepository.findByFileId(fileId)
+                .orElseThrow(() -> new EntityNotExistException("해당하는 파일 존재하지 않음"));
+
+        return physicalFileRepository.getFile(getFileFullPath(attachmentFile));
+    }
+
+    private static String getFileFullPath(AttachmentFile attachmentFile) {
+        return attachmentFile.getPath() + "/" + attachmentFile.getPhysicalName();
+    }
+
     private void deleteFiles(IdList fileIds) {
         for (Long fileId : fileIds.getIds()) {
             deleteFile(fileId);
@@ -60,7 +74,7 @@ public class FileServiceImpl implements FileService{
         fileRepository.findByFileId(fileId)
                 .ifPresent((file) -> {
                     fileRepository.deleteByFileId(fileId);
-                    physicalFileRepository.delete(file.getPath() + "/" + file.getPhysicalName());
+                    physicalFileRepository.delete(getFileFullPath(file));
                 });
     }
 
