@@ -75,4 +75,15 @@
         </choose>
         LIMIT #{page.offset}, #{page.size}
     </select>
+
+    <select id="findById" resultType="com.example.notice.entity.InquireBoard">
+        SELECT
+            ib.*,
+            m.member_id AS 'member.memberId', m.name AS 'member.name'
+        FROM inquire_board ib
+             LEFT JOIN member m on m.member_id = ib.member_id
+        WHERE ib.inquire_board_id = #{inquireBoardId}
+    </select>
+
+
 </mapper>

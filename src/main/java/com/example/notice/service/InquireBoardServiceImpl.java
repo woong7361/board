@@ -3,6 +3,7 @@ package com.example.notice.service;
 import com.example.notice.dto.InquireBoardSearchParam;
 import com.example.notice.dto.InquireBoardSearchResponseDTO;
 import com.example.notice.entity.InquireBoard;
+import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
 import com.example.notice.repository.InquireBoardRepository;
@@ -33,6 +34,12 @@ public class InquireBoardServiceImpl implements InquireBoardService {
                 inquireBoardRepository.search(inquireBoardSearchParam, pageRequest, memberId);
 
         return new PageResponse<>(inquireBoards, pageRequest, searchTotalCount);
+    }
+
+    @Override
+    public InquireBoard getBoardById(Long inquireBoardId) {
+        return inquireBoardRepository.findById(inquireBoardId)
+                .orElseThrow(() -> new EntityNotExistException("해당하는 문의 게시판이 존재하지 않습니다."));
     }
 
 }

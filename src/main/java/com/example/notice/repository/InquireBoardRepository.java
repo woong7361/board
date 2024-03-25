@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 문의 게시판 repository
@@ -45,6 +46,14 @@ public interface InquireBoardRepository {
     Integer getSearchTotalCount(
             @Param("search") InquireBoardSearchParam inquireBoardSearchParam,
             @Param("memberId") Long memberId);
+
+    /**
+     * 게시글 식별자에 해당하는 문의 게시판 게시글 가져오기
+     * @param inquireBoardId 게시글 식별자
+     * @return 게시글
+     */
+    Optional<InquireBoard> findById(@Param("inquireBoardId") Long inquireBoardId);
+
 }
 
 

@@ -31,8 +31,9 @@ public class InquireBoardController {
 
     /**
      * 문의 게시판 게시글 생성
+     *
      * @param inquireBoard 문의 게시판 게시글 파라미터
-     * @param principal 게시글 생성자 인증 객체
+     * @param principal    게시글 생성자 인증 객체
      * @return 문의 게시판 게시글 식별자
      */
     @PostMapping("/api/boards/inquire")
@@ -49,9 +50,10 @@ public class InquireBoardController {
 
     /**
      * 문의 게시판 검색
+     *
      * @param inquireBoardSearchParam 문의 게시판 검색 파라미터
-     * @param pageRequest 페이지 요청 파라미터
-     * @param principal 회원 인증 객체
+     * @param pageRequest             페이지 요청 파라미터
+     * @param principal               회원 인증 객체
      * @return 검색 결과
      */
     @GetMapping("/api/boards/inquire")
@@ -68,5 +70,18 @@ public class InquireBoardController {
                 .ok(inquireBoards);
     }
 
+    /**
+     * 문의 게시판 게시글 상세보기
+     * @param inquireBoardId 문의 게시판 게시글 식별자
+     * @return 해당하는 게시글의 내용
+     */
+    @GetMapping("/api/boards/inquire/{inquireBoardId}")
+    public ResponseEntity<InquireBoard> getInquireBoard(
+            @PathVariable Long inquireBoardId) {
 
+        InquireBoard inquireBoard = inquireBoardService.getBoardById(inquireBoardId);
+
+        return ResponseEntity
+                .ok(inquireBoard);
+    }
 }

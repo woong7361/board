@@ -28,4 +28,12 @@ public interface InquireBoardService {
      * @return 검색 결과
      */
     PageResponse<InquireBoardSearchResponseDTO> searchInquireBoard(InquireBoardSearchParam inquireBoardSearchParam, PageRequest pageRequest, Long memberId);
+
+    /**
+     * 문의 게시판 게시글 상세보기
+     * @param inquireBoardId 문의 게시판 게시글 식별자
+     * @return 해당하는 게시글의 내용
+     */
+    InquireBoard getBoardById(Long inquireBoardId);
+
 }
