@@ -12,5 +12,5 @@ public class ResponseConstant {
     public static final String NOTICE_BOARD_ID_PARAM = "noticeBoardId";
     public static final String FIXED_NOTICE_BOARDS_PARAM = "fixedNoticeBoards";
     public static final String NONE_FIXED_NOTICE_BOARDS_PARAM = "noneFixedNoticeBoards";
-
+    public static final String INQUIRE_BOARD_ID_PARAM = "inquireBoardId";
 }

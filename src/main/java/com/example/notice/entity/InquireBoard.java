@@ -3,10 +3,7 @@ package com.example.notice.entity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class InquireBoard {
     private Long inquireBoardId;
+
+    @Getter(AccessLevel.PRIVATE)
     private Member member;
 
     private LocalDateTime createdAt;
@@ -42,5 +41,13 @@ public class InquireBoard {
         this.content = content;
         this.views = views;
         this.isSecret = isSecret;
+    }
+
+    public Long getMemberId() {
+        return member.getMemberId();
+    }
+
+    public String getMemberName() {
+        return member.getName();
     }
 }

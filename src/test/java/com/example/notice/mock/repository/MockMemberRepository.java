@@ -10,8 +10,6 @@ import static com.example.notice.mock.database.MemoryDataBase.MEMBER_STORAGE;
 
 public class MockMemberRepository implements MemberRepository {
 
-//    private final List<Member> memberRepository = MemoryDataBase.memberRepository;
-
     public static Member SAVED_MEMBER = Member.builder()
             .memberId(30L)
             .loginId("qwer21")

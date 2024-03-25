@@ -15,8 +15,6 @@ import static com.example.notice.mock.database.MemoryDataBase.FREE_BOARD_STORAGE
 
 public class MockFreeBoardRepository implements FreeBoardRepository {
 
-//    private final List<FreeBoard> freeBoardRepository = MemoryDataBase.freeBoardRepository;
-
     public static FreeBoard SAVED_FREE_BOARD = FreeBoard.builder()
             .freeBoardId(1L)
             .title("title")

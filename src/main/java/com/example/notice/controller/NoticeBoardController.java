@@ -121,6 +121,7 @@ public class NoticeBoardController {
     }
 
     //문의 게시판 생성 - 사용자만
+
     // 검색
     // 조회
     // 수정

@@ -14,9 +14,6 @@ import static com.example.notice.mock.database.MemoryDataBase.FREE_BOARD_STORAGE
 
 public class MockAttachmentFileRepository implements AttachmentFileRepository {
 
-//    private List<AttachmentFile> ATTACHMENT_FILE_STORAGE = MemoryDataBase.ATTACHMENT_FILE_STORAGE;
-//    private List<FreeBoard> FREE_BOARD_STORAGE = MemoryDataBase.FREE_BOARD_STORAGE;
-
     @Override
     public void saveWithFreeBoardId(AttachmentFile file, Long boardId) {
         AttachmentFile addFile = attachmentFileBuilderMapper(file)
@@ -56,9 +53,5 @@ public class MockAttachmentFileRepository implements AttachmentFileRepository {
                 .originalName(file.getOriginalName())
                 .extension(file.getExtension())
                 .path(file.getPath());
-    }
-
-    public void clearRepository() {
-        ATTACHMENT_FILE_STORAGE = new ArrayList<>();
     }
 }

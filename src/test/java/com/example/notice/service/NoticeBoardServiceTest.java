@@ -27,7 +27,7 @@ class NoticeBoardServiceTest {
 
     @BeforeEach
     public void clearRepository() {
-        MemoryDataBase.clearNoticeBoardRepository();
+        MemoryDataBase.initRepository();
     }
 
     @Nested

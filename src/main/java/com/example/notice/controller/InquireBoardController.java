@@ -1,18 +1,23 @@
 package com.example.notice.controller;
 
+import com.example.notice.auth.AdminAuthenticationPrincipal;
 import com.example.notice.auth.AuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
+import com.example.notice.dto.InquireBoardSearchParam;
+import com.example.notice.dto.InquireBoardSearchResponseDTO;
 import com.example.notice.entity.InquireBoard;
 import com.example.notice.entity.Member;
+import com.example.notice.page.PageRequest;
+import com.example.notice.page.PageResponse;
 import com.example.notice.service.InquireBoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+
+import static com.example.notice.constant.ResponseConstant.INQUIRE_BOARD_ID_PARAM;
 
 /**
  * 문의 게시판 컨트롤러
@@ -21,7 +26,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InquireBoardController {
 
-    public static final String INQUIRE_BOARD_ID_PARAM = "inquireBoardId";
 
     private final InquireBoardService inquireBoardService;
 
@@ -43,4 +47,24 @@ public class InquireBoardController {
     }
 
 
+    /**
+     * 문의 게시판 검색
+     * @param inquireBoardSearchParam 문의 게시판 검색 파라미터
+     * @param pageRequest 페이지 요청 파라미터
+     * @param principal 회원 인증 객체
+     * @return 검색 결과
+     */
+    @GetMapping("/api/boards/inquire")
+    public ResponseEntity<PageResponse<InquireBoardSearchResponseDTO>> searchInquireBoard(
+            @ModelAttribute InquireBoardSearchParam inquireBoardSearchParam,
+            @ModelAttribute PageRequest pageRequest,
+            @AuthenticationPrincipal Principal<Member> principal) {
+        Member member = principal.getAuthentication();
+
+        PageResponse<InquireBoardSearchResponseDTO> inquireBoards =
+                inquireBoardService.searchInquireBoard(inquireBoardSearchParam, pageRequest, member.getMemberId());
+
+        return ResponseEntity
+                .ok(inquireBoards);
+    }
 }

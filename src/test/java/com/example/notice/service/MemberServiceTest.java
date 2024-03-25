@@ -19,7 +19,7 @@ class MemberServiceTest {
 
     @BeforeEach
     public void clearRepository() {
-        MemoryDataBase.clearMemberRepositoryAndInitMockData();
+        MemoryDataBase.initRepository();
     }
     @Nested
     @DisplayName("일반(USER) 회원 생성 서비스 테스트")

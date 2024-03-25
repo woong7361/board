@@ -24,7 +24,7 @@ class CommentServiceTest {
 
     @BeforeEach
     public void clearRepository() {
-        MemoryDataBase.clearCommentRepository();
+        MemoryDataBase.initRepository();
     }
 
     @Nested

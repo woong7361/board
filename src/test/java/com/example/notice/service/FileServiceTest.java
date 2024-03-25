@@ -33,8 +33,7 @@ class FileServiceTest {
 
     @BeforeEach
     public void resetRepository123() {
-        physicalFileRepository.clearRepository();
-        fileRepository.clearRepository();
+        MemoryDataBase.initRepository();
     }
 
     @Nested
