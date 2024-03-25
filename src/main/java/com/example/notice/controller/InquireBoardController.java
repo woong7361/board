@@ -67,4 +67,6 @@ public class InquireBoardController {
         return ResponseEntity
                 .ok(inquireBoards);
     }
+
+
 }

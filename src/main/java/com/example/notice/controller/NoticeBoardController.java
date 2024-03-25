@@ -136,4 +136,10 @@ public class NoticeBoardController {
 
     //자유 게시판 수정 & 생성 컨트롤러 단일화
 
+    //에러 메시지 프로퍼티화
+    //filter interceptor로 변환
+    //인증과 인가 절차 따로?
+    //spring rest docs 도입
+    //패턴을 쓴다면 게시글 삭제시 파일 queue에 담아놓아 백업 구현?
+
 }

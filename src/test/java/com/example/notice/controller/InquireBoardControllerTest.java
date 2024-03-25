@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.stream.Stream;
 
@@ -35,7 +36,7 @@ class InquireBoardControllerTest {
 
 
     @Nested
-    @DisplayName("문의 게시판 게시글 생성")
+    @DisplayName("문의 게시판 게시글 생성 컨트롤러 테스트")
     public class InquireBoardCreateControllerTest {
         private static final String INQUIRE_BOARD_CREATE_URI = "/api/boards/inquire";
 
@@ -93,6 +94,35 @@ class InquireBoardControllerTest {
             );
         }
 
+    }
+
+    @Nested
+    @DisplayName("문의 게시판 게시글 검색 컨트롤러 테스트")
+    public class InquireBoardSearchControllerTest {
+
+        private static final String INQUIRE_BOARD_SEARCH_URI = "/api/boards/inquire";
+        @BeforeEach
+        public void memberLogin() {
+            Long memberId = 654153L;
+            MockMemberLogin.memberLogin(memberId);
+        }
+
+
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("size", "5");
+            params.add("currentPage", "0");
+            params.add("keyWord", "4153");
+            params.add("onlyMine", "false");
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.get(INQUIRE_BOARD_SEARCH_URI)
+                            .params(params))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+        }
     }
 
 
