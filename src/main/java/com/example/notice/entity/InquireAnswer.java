@@ -1,0 +1,29 @@
+package com.example.notice.entity;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class InquireAnswer {
+
+    private Long inquireAnswerId;
+    private Long inquireBoardId;
+    private Member member;
+
+    private String answer;
+
+    @Builder
+    public InquireAnswer(Long inquireAnswerId, Long inquireBoardId, Long memberId, String answer) {
+        this.inquireAnswerId = inquireAnswerId;
+        this.inquireBoardId = inquireBoardId;
+        this.member = Member.builder()
+                .memberId(memberId)
+                .build();
+        this.answer = answer;
+    }
+}

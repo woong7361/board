@@ -120,8 +120,6 @@ public class NoticeBoardController {
         return ResponseEntity.ok().build();
     }
 
-    //파일 다운로드
-
     //문의 게시판 생성 - 사용자만
     // 검색
     // 조회
@@ -134,5 +132,7 @@ public class NoticeBoardController {
     // 생성
     // 수정
     // 삭제
+
+    //자유 게시판 수정 & 생성 컨트롤러 단일화
 
 }

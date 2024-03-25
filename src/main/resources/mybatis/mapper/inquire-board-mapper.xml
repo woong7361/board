@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.notice.repository.InquireBoardRepository">
+
+<insert id="save" useGeneratedKeys="true">
+    INSERT INTO inquire_board
+        (member_id, title, content,
+         views, is_secret,
+         created_at, modified_at)
+    VALUES
+        (#{memberId}, #{inquireBoard.title}, #{inquireBoard.content},
+         0, #{inquireBoard.isSecret},
+         NOW(), NOW())
+
+</insert>
+
+</mapper>
