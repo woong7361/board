@@ -70,6 +70,12 @@ public interface InquireBoardRepository {
      * @param inquireBoardId 해당하는 게시글 식별자
      */
     void updateById(@Param("inquireBoard") InquireBoard inquireBoard, @Param("inquireBoardId") Long inquireBoardId);
+
+    /**
+     * 게시글 식별자로 게시글을 삭제한다.
+     * @param inquireBoardId 삭제하려는 게시글 식별자
+     */
+    void deleteById(@Param("inquireBoardId") Long inquireBoardId);
 }
 
 

@@ -51,6 +51,14 @@ public class InquireBoardServiceImpl implements InquireBoardService {
         inquireBoardRepository.updateById(inquireBoard, inquireBoardId);
     }
 
+    @Override
+    @Transactional
+    public void deleteById(Long inquireBoardId, Long memberId) {
+        checkInquireBoardAuthorization(inquireBoardId, memberId);
+
+        inquireBoardRepository.deleteById(inquireBoardId);
+    }
+
     private void checkInquireBoardAuthorization(Long inquireBoardId, Long memberId) {
         inquireBoardRepository.findByInquireBoardIdAndMemberId(inquireBoardId, memberId)
                 .orElseThrow(() -> new AuthorizationException("게시글에 대한 접근 권한이 없습니다."));

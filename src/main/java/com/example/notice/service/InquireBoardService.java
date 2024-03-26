@@ -43,4 +43,11 @@ public interface InquireBoardService {
      * @param memberId 게시글 수정 요청자의 식별자
      */
     void updateById(InquireBoard inquireBoard, Long inquireBoardId, Long memberId);
+
+    /**
+     * 문의 게시판 게시글 삭제
+     * @param inquireBoardId 삭제할 문의 게시글 식별자
+     * @param memberId 삭제 요청하는 회원 식별자
+     */
+    void deleteById(Long inquireBoardId, Long memberId);
 }

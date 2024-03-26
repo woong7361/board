@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.example.notice.mock.database.MemoryDataBase.initRepository;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 class InquireBoardServiceTest {
@@ -151,7 +152,7 @@ class InquireBoardServiceTest {
     }
 
     @Nested
-    @DisplayName("알림 게시판 수정 테스트")
+    @DisplayName("알림 게시판 게시글 수정 테스트")
     public class InquireBoardUpdateTest {
         @DisplayName("정상 처리")
         @Test
@@ -177,7 +178,7 @@ class InquireBoardServiceTest {
 
         @DisplayName("게시글의 주인이 아닌 다른 회원이 접근할때")
         @Test
-        public void test() throws Exception{
+        public void notOwner() throws Exception{
             //given
             Long notOwnerMemberId = 153435L;
             Long ownerMemberId = 452463541L;
@@ -197,6 +198,49 @@ class InquireBoardServiceTest {
             //when
             //then
             Assertions.assertThatThrownBy(() -> mockitoInquireBoardService.updateById(inquireBoard, inquireBoardId, notOwnerMemberId))
+                    .isInstanceOf(AuthorizationException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("알림 게시판 게시글 삭제 테스트")
+    public class InquireBoardDeleteTest {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            long memberId = 3453413L;
+            long inquireBoardId = 453154L;
+
+            InquireBoard inquireBoard = InquireBoard.builder()
+                    .inquireBoardId(inquireBoardId)
+                    .memberId(memberId)
+                    .title("new Title")
+                    .content("new content")
+                    .isSecret(false)
+                    .build();
+
+            Mockito.when(mockitoInquireBoardRepository.findByInquireBoardIdAndMemberId(inquireBoardId, memberId))
+                    .thenReturn(Optional.of(inquireBoard));
+
+            //when
+            mockitoInquireBoardService.deleteById(inquireBoardId, memberId);
+            //then
+        }
+
+        @DisplayName("게시글의 주인이 아닌 다른 회원이 접근할때")
+        @Test
+        public void notOwner() throws Exception{
+            //given
+            long memberId = 3453413L;
+            long inquireBoardId = 453154L;
+
+            Mockito.when(mockitoInquireBoardRepository.findByInquireBoardIdAndMemberId(anyLong(), anyLong()))
+                    .thenReturn(Optional.empty());
+
+            //when
+            //then
+            Assertions.assertThatThrownBy(() -> mockitoInquireBoardService.deleteById(inquireBoardId, memberId))
                     .isInstanceOf(AuthorizationException.class);
         }
     }

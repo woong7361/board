@@ -91,6 +91,12 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
     public void updateById(InquireBoard inquireBoard, Long inquireBoardId) {
     }
 
+    @Override
+    public void deleteById(Long inquireBoardId) {
+        INQUIRE_BOARD_STORAGE
+                .removeIf(inquireBoard -> inquireBoard.getInquireBoardId().equals(inquireBoardId));
+    }
+
     public static InquireBoard.InquireBoardBuilder InquireBoardBuilderMapper(InquireBoard inquireBoard) {
         return InquireBoard.builder()
                 .title(inquireBoard.getTitle())

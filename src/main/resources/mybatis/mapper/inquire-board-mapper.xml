@@ -101,4 +101,10 @@
             modified_at = NOW()
         WHERE inquire_board_id = #{inquireBoardId}
     </update>
+
+    <delete id="deleteById">
+        DELETE FROM inquire_board
+        WHERE inquire_board_id = #{inquireBoardId};
+
+    </delete>
 </mapper>

@@ -103,4 +103,22 @@ public class InquireBoardController {
                 .ok()
                 .build();
     }
+
+    /**
+     * 문의 게시판 게시글 삭제
+     * @param inquireBoardId 삭제할 문의 게시판 게시글 식별자
+     * @param principal 요청하는 회원 인증 객체
+     * @return 200 ok
+     */
+    @DeleteMapping("/api/boards/inquire/{inquireBoardId}")
+    public ResponseEntity<Object> deleteInquireBoard(
+            @PathVariable Long inquireBoardId,
+            @AuthenticationPrincipal Principal<Member> principal) {
+        Member member = principal.getAuthentication();
+        inquireBoardService.deleteById(inquireBoardId, member.getMemberId());
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
 }

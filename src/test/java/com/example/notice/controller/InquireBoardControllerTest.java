@@ -226,4 +226,21 @@ class InquireBoardControllerTest {
 
     }
 
+    @Nested
+    @DisplayName("문의 게시판 게시글 삭제 컨트롤러 테스트")
+    public class InquireBoardDeleteControllerTest {
+
+        private static final String INQUIRE_BOARD_DELETE_URI = "/api/boards/inquire/%s";
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            Long boardId = 41564L;
+
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.delete(INQUIRE_BOARD_DELETE_URI.formatted(boardId)))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+        }
+    }
 }

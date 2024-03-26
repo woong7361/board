@@ -1,6 +1,7 @@
 package com.example.notice.entity;
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class InquireAnswer {
     private Long inquireBoardId;
     private Member member;
 
+    @NotBlank
     private String answer;
 
     @Builder
