@@ -163,4 +163,67 @@ class InquireBoardControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("문의 게시판 게시글 수정 컨트롤러 테스트")
+    public class InquireBoardUpdateControllerTest {
+
+        private static final String UPDATE_INQUIRE_BOARD_URI = "/api/boards/inquire/%s";
+
+        @BeforeEach
+        public void memberLogin() {
+            Long memberId = 654153L;
+            MockMemberLogin.memberLogin(memberId);
+        }
+
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            long boardId = 1546743L;
+            InquireBoard inputBoard = InquireBoard.builder()
+                    .title("tiutle")
+                    .content("consgsda")
+                    .isSecret(false)
+                    .build();
+
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.put(UPDATE_INQUIRE_BOARD_URI.formatted(boardId))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(inputBoard)))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+        }
+
+        @DisplayName("유효하지 않은 입력값이 들어올때")
+        @ParameterizedTest
+        @MethodSource("invalidInquireBoardParam")
+        public void invalidParam(String title, String content, Boolean isSecret) throws Exception{
+            //given
+            long boardId = 1546743L;
+            InquireBoard inquireBoard = InquireBoard.builder()
+                    .title(title)
+                    .content(content)
+                    .isSecret(isSecret)
+                    .build();
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.put(UPDATE_INQUIRE_BOARD_URI.formatted(boardId))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(inquireBoard)))
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        }
+
+        private static Stream<Arguments> invalidInquireBoardParam() {
+            return Stream.of(
+                    Arguments.of(null, "content", "true"), // null일때
+                    Arguments.of("title", null, "false"),
+                    Arguments.of("title", "content", null),
+                    Arguments.of("", "content", "true"), // 빈 문자열일때
+                    Arguments.of("title", "", "false")
+            );
+        }
+
+
+    }
+
 }

@@ -84,9 +84,16 @@ public class InquireBoardController {
                 .ok(inquireBoard);
     }
 
+    /**
+     * 문의 게시판 게시글 수정
+     * @param inquireBoard 문의 게시판 게시글 수정 요청 파라미터
+     * @param inquireBoardId 문의 게시판 게시글 식별자
+     * @param principal 요청하는 회원 인증 객체
+     * @return 200 ok
+     */
     @PutMapping("/api/boards/inquire/{inquireBoardId}")
     public ResponseEntity<Object> updateInquireBoard(
-            @RequestBody InquireBoard inquireBoard,
+            @Valid @RequestBody InquireBoard inquireBoard,
             @PathVariable Long inquireBoardId,
             @AuthenticationPrincipal Principal<Member> principal) {
         Member member = principal.getAuthentication();

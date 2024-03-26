@@ -3,6 +3,7 @@ package com.example.notice.service;
 import com.example.notice.dto.InquireBoardSearchParam;
 import com.example.notice.dto.InquireBoardSearchResponseDTO;
 import com.example.notice.entity.InquireBoard;
+import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.mock.repository.MockInquireBoardRepository;
@@ -17,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.example.notice.mock.database.MemoryDataBase.initRepository;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 class InquireBoardServiceTest {
@@ -147,6 +147,57 @@ class InquireBoardServiceTest {
             //then
             Assertions.assertThatThrownBy(() -> mockitoInquireBoardService.getBoardById(anyLong()))
                     .isInstanceOf(EntityNotExistException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("알림 게시판 수정 테스트")
+    public class InquireBoardUpdateTest {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            Long memberId = 153435L;
+            Long inquireBoardId = 4165431352L;
+            InquireBoard inquireBoard = InquireBoard.builder()
+                    .inquireBoardId(inquireBoardId)
+                    .memberId(memberId)
+                    .title("new Title")
+                    .content("new content")
+                    .isSecret(false)
+                    .build();
+
+            Mockito.when(mockitoInquireBoardRepository.findByInquireBoardIdAndMemberId(inquireBoardId, memberId))
+                    .thenReturn(Optional.of(inquireBoard));
+
+            //when
+            mockitoInquireBoardService.updateById(inquireBoard, inquireBoardId, memberId);
+            //then
+        }
+
+        @DisplayName("게시글의 주인이 아닌 다른 회원이 접근할때")
+        @Test
+        public void test() throws Exception{
+            //given
+            Long notOwnerMemberId = 153435L;
+            Long ownerMemberId = 452463541L;
+            Long inquireBoardId = 4165431352L;
+
+            InquireBoard inquireBoard = InquireBoard.builder()
+                    .inquireBoardId(inquireBoardId)
+                    .memberId(ownerMemberId)
+                    .title("new Title")
+                    .content("new content")
+                    .isSecret(false)
+                    .build();
+
+            Mockito.when(mockitoInquireBoardRepository.findByInquireBoardIdAndMemberId(anyLong(), anyLong()))
+                    .thenReturn(Optional.empty());
+
+            //when
+            //then
+            Assertions.assertThatThrownBy(() -> mockitoInquireBoardService.updateById(inquireBoard, inquireBoardId, notOwnerMemberId))
+                    .isInstanceOf(AuthorizationException.class);
         }
     }
 }

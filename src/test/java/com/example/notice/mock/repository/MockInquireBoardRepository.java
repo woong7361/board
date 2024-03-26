@@ -79,6 +79,18 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
                 .findFirst();
     }
 
+    @Override
+    public Optional<InquireBoard> findByInquireBoardIdAndMemberId(Long inquireBoardId, Long memberId) {
+        return INQUIRE_BOARD_STORAGE.stream()
+                .filter(inquireBoard -> inquireBoard.getInquireBoardId().equals(inquireBoardId))
+                .filter(inquireBoard -> inquireBoard.getMemberId().equals(memberId))
+                .findFirst();
+    }
+
+    @Override
+    public void updateById(InquireBoard inquireBoard, Long inquireBoardId) {
+    }
+
     public static InquireBoard.InquireBoardBuilder InquireBoardBuilderMapper(InquireBoard inquireBoard) {
         return InquireBoard.builder()
                 .title(inquireBoard.getTitle())
