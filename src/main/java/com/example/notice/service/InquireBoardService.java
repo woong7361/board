@@ -36,4 +36,11 @@ public interface InquireBoardService {
      */
     InquireBoard getBoardById(Long inquireBoardId);
 
+    /**
+     * 문의 게시판 게시글 수정
+     * @param inquireBoard 문의 게시판 게시글 수정 파라미터
+     * @param inquireBoardId 문의 게시판 게시글 식별자
+     * @param memberId 게시글 수정 요청자의 식별자
+     */
+    void updateById(InquireBoard inquireBoard, Long inquireBoardId, Long memberId);
 }

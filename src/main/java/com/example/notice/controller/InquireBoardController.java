@@ -72,16 +72,28 @@ public class InquireBoardController {
 
     /**
      * 문의 게시판 게시글 상세보기
+     *
      * @param inquireBoardId 문의 게시판 게시글 식별자
      * @return 해당하는 게시글의 내용
      */
     @GetMapping("/api/boards/inquire/{inquireBoardId}")
-    public ResponseEntity<InquireBoard> getInquireBoard(
-            @PathVariable Long inquireBoardId) {
-
+    public ResponseEntity<InquireBoard> getInquireBoard(@PathVariable Long inquireBoardId) {
         InquireBoard inquireBoard = inquireBoardService.getBoardById(inquireBoardId);
 
         return ResponseEntity
                 .ok(inquireBoard);
+    }
+
+    @PutMapping("/api/boards/inquire/{inquireBoardId}")
+    public ResponseEntity<Object> updateInquireBoard(
+            @RequestBody InquireBoard inquireBoard,
+            @PathVariable Long inquireBoardId,
+            @AuthenticationPrincipal Principal<Member> principal) {
+        Member member = principal.getAuthentication();
+        inquireBoardService.updateById(inquireBoard, inquireBoardId, member.getMemberId());
+
+        return ResponseEntity
+                .ok()
+                .build();
     }
 }

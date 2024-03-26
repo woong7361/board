@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.LinkedMultiValueMap;
 
+import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 @WebMvcTest(InquireBoardController.class)
@@ -125,5 +127,40 @@ class InquireBoardControllerTest {
         }
     }
 
+
+    @Nested
+    @DisplayName("문의 게시판 게시글 조회 컨트롤러 테스트")
+    public class InquireBoardGetControllerTest {
+        private static final String GET_BOARD_CONTROLLER_URI = "/api/boards/inquire/%s";
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            Long boardId = 1532423L;
+            InquireBoard findBoard = InquireBoard.builder()
+                    .inquireBoardId(boardId)
+                    .title("title")
+                    .content("content")
+                    .isSecret(false)
+                    .createdAt(LocalDateTime.now())
+                    .modifiedAt(LocalDateTime.now())
+                    .views(153452L)
+                    .memberId(485641534L)
+                    .build();
+
+            //when
+            Mockito.when(inquireBoardService.getBoardById(boardId))
+                    .thenReturn(findBoard);
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.get(GET_BOARD_CONTROLLER_URI.formatted(boardId)))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoardId").value(boardId))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.content").value(findBoard.getContent()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(findBoard.getTitle()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.views").value(findBoard.getViews()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.memberId").value(findBoard.getMemberId()));
+
+        }
+    }
 
 }

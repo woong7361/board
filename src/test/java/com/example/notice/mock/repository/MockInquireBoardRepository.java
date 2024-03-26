@@ -7,6 +7,7 @@ import com.example.notice.page.PageRequest;
 import com.example.notice.repository.InquireBoardRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.notice.mock.database.MemoryDataBase.INQUIRE_BOARD_STORAGE;
@@ -69,6 +70,13 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
                     return result;
                 })
                 .count();
+    }
+
+    @Override
+    public Optional<InquireBoard> findById(Long inquireBoardId) {
+        return INQUIRE_BOARD_STORAGE.stream()
+                .filter(inquireBoard -> inquireBoard.getInquireBoardId().equals(inquireBoardId))
+                .findFirst();
     }
 
     public static InquireBoard.InquireBoardBuilder InquireBoardBuilderMapper(InquireBoard inquireBoard) {

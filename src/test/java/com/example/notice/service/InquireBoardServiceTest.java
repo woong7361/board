@@ -3,6 +3,7 @@ package com.example.notice.service;
 import com.example.notice.dto.InquireBoardSearchParam;
 import com.example.notice.dto.InquireBoardSearchResponseDTO;
 import com.example.notice.entity.InquireBoard;
+import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.mock.repository.MockInquireBoardRepository;
 import com.example.notice.page.PageRequest;
@@ -10,16 +11,22 @@ import com.example.notice.page.PageResponse;
 import com.example.notice.repository.InquireBoardRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.example.notice.mock.database.MemoryDataBase.initRepository;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 
 class InquireBoardServiceTest {
 
     private InquireBoardRepository inquireBoardRepository = new MockInquireBoardRepository();
     private InquireBoardService inquireBoardService = new InquireBoardServiceImpl(inquireBoardRepository);
+
+    private InquireBoardRepository mockitoInquireBoardRepository = Mockito.mock(InquireBoardRepository.class);
+    private InquireBoardService mockitoInquireBoardService = new InquireBoardServiceImpl(mockitoInquireBoardRepository);
 
     @AfterEach
     public void clearRepository() {
@@ -100,6 +107,46 @@ class InquireBoardServiceTest {
             //then
             Assertions.assertThat(result.getTotalCount()).isEqualTo(0);
             Assertions.assertThat(result.getContents().size()).isEqualTo(0);
+        }
+    }
+
+    @Nested
+    @DisplayName("문의 게시판 게시글 조회 테스트")
+    public class InquireBoardGetTest {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            Long inquireBoardId = 4534184L;
+
+            InquireBoard inquireBoard = InquireBoard.builder()
+                    .inquireBoardId(inquireBoardId)
+                    .title("title")
+                    .content("contest")
+                    .isSecret(false)
+                    .build();
+
+            Mockito.when(mockitoInquireBoardRepository.findById(inquireBoardId))
+                    .thenReturn(Optional.of(inquireBoard));
+            //when
+            InquireBoard findBoard = mockitoInquireBoardService.getBoardById(inquireBoardId);
+
+            //then
+            Assertions.assertThat(findBoard).usingRecursiveComparison()
+                    .isEqualTo(inquireBoard);
+        }
+
+        @DisplayName("식별자에 해당하는 게시글이 존재하지 않을때")
+        @Test
+        public void notExistBoard() throws Exception{
+            //given
+            Mockito.when(mockitoInquireBoardRepository.findById(anyLong()))
+                    .thenReturn(Optional.empty());
+
+            //when
+            //then
+            Assertions.assertThatThrownBy(() -> mockitoInquireBoardService.getBoardById(anyLong()))
+                    .isInstanceOf(EntityNotExistException.class);
         }
     }
 }

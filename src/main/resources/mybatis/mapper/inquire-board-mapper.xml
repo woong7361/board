@@ -85,5 +85,20 @@
         WHERE ib.inquire_board_id = #{inquireBoardId}
     </select>
 
+    <select id="findByInquireBoardIdAndMemberId" resultType="com.example.notice.entity.InquireBoard">
+        SELECT *
+        FROM inquire_board ib
+        WHERE ib.inquire_board_id = #{inquireBoardId}
+          AND ib.member_id = #{memberId};
+    </select>
 
+    <update id="updateById">
+        UPDATE inquire_board
+        SET
+            title = #{inquireBoard.title},
+            content = #{inquireBoard.content},
+            is_secret = #{inquireBoard.isSecret},
+            modified_at = NOW()
+        WHERE inquire_board_id = #{inquireBoardId}
+    </update>
 </mapper>

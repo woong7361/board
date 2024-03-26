@@ -54,6 +54,22 @@ public interface InquireBoardRepository {
      */
     Optional<InquireBoard> findById(@Param("inquireBoardId") Long inquireBoardId);
 
+    /**
+     * 회원 식별자와 게시글 식별자를 통해 게시글을 검색한다.
+     * @param inquireBoardId 게시글 식별자
+     * @param memberId 회원 식별자
+     * @return 검색된 게시글
+     */
+    Optional<InquireBoard> findByInquireBoardIdAndMemberId(
+            @Param("inquireBoardId") Long inquireBoardId,
+            @Param("memberId") Long memberId);
+
+    /**
+     * 게시글을 업데이트 한다.
+     * @param inquireBoard 게시글 업데이트 요청 파라미터
+     * @param inquireBoardId 해당하는 게시글 식별자
+     */
+    void updateById(@Param("inquireBoard") InquireBoard inquireBoard, @Param("inquireBoardId") Long inquireBoardId);
 }
 
 

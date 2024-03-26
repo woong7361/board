@@ -3,6 +3,7 @@ package com.example.notice.service;
 import com.example.notice.dto.InquireBoardSearchParam;
 import com.example.notice.dto.InquireBoardSearchResponseDTO;
 import com.example.notice.entity.InquireBoard;
+import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
@@ -40,6 +41,19 @@ public class InquireBoardServiceImpl implements InquireBoardService {
     public InquireBoard getBoardById(Long inquireBoardId) {
         return inquireBoardRepository.findById(inquireBoardId)
                 .orElseThrow(() -> new EntityNotExistException("해당하는 문의 게시판이 존재하지 않습니다."));
+    }
+
+    @Override
+    @Transactional
+    public void updateById(InquireBoard inquireBoard, Long inquireBoardId, Long memberId) {
+        checkInquireBoardAuthorization(inquireBoardId, memberId);
+
+        inquireBoardRepository.updateById(inquireBoard, inquireBoardId);
+    }
+
+    private void checkInquireBoardAuthorization(Long inquireBoardId, Long memberId) {
+        inquireBoardRepository.findByInquireBoardIdAndMemberId(inquireBoardId, memberId)
+                .orElseThrow(() -> new AuthorizationException("게시글에 대한 접근 권한이 없습니다."));
     }
 
 }
