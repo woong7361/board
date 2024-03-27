@@ -1,7 +1,8 @@
 package com.example.notice.mock.repository;
 
-import com.example.notice.dto.InquireBoardSearchParam;
-import com.example.notice.dto.InquireBoardSearchResponseDTO;
+import com.example.notice.dto.request.InquireBoardSearchDTO;
+import com.example.notice.dto.response.InquireBoardResponseDTO;
+import com.example.notice.dto.response.InquireBoardSearchResponseDTO;
 import com.example.notice.entity.InquireBoard;
 import com.example.notice.page.PageRequest;
 import com.example.notice.repository.InquireBoardRepository;
@@ -27,20 +28,20 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
     }
 
     @Override
-    public List<InquireBoardSearchResponseDTO> search(InquireBoardSearchParam inquireBoardSearchParam, PageRequest pageRequest, Long memberId) {
+    public List<InquireBoardSearchResponseDTO> search(InquireBoardSearchDTO inquireBoardSearchDTO, PageRequest pageRequest, Long memberId) {
 
         return INQUIRE_BOARD_STORAGE.stream()
                 .filter((ib) -> {
                     boolean result = true;
-                    if (inquireBoardSearchParam.getKeyWord() != null) {
-                        result = result && ib.getContent().contains(inquireBoardSearchParam.getKeyWord());
-                        result = result && ib.getTitle().contains(inquireBoardSearchParam.getKeyWord());
+                    if (inquireBoardSearchDTO.getKeyWord() != null) {
+                        result = result && ib.getContent().contains(inquireBoardSearchDTO.getKeyWord());
+                        result = result && ib.getTitle().contains(inquireBoardSearchDTO.getKeyWord());
                     }
-                    if (inquireBoardSearchParam.getStartDate() != null && inquireBoardSearchParam.getEndDate() != null) {
-                        result = result && ib.getCreatedAt().isBefore(inquireBoardSearchParam.getEndDate());
-                        result = result && ib.getCreatedAt().isAfter(inquireBoardSearchParam.getStartDate());
+                    if (inquireBoardSearchDTO.getStartDate() != null && inquireBoardSearchDTO.getEndDate() != null) {
+                        result = result && ib.getCreatedAt().isBefore(inquireBoardSearchDTO.getEndDate());
+                        result = result && ib.getCreatedAt().isAfter(inquireBoardSearchDTO.getStartDate());
                     }
-                    if (inquireBoardSearchParam.getOnlyMine()) {
+                    if (inquireBoardSearchDTO.getOnlyMine()) {
                         result = result && ib.getMemberId().equals(memberId);
                     }
                     return result;
@@ -52,19 +53,19 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
     }
 
     @Override
-    public Integer getSearchTotalCount(InquireBoardSearchParam inquireBoardSearchParam, Long memberId) {
+    public Integer getSearchTotalCount(InquireBoardSearchDTO inquireBoardSearchDTO, Long memberId) {
         return (int) INQUIRE_BOARD_STORAGE.stream()
                 .filter((ib) -> {
                     boolean result = true;
-                    if (inquireBoardSearchParam.getKeyWord() != null) {
-                        result = result && ib.getContent().contains(inquireBoardSearchParam.getKeyWord());
-                        result = result && ib.getTitle().contains(inquireBoardSearchParam.getKeyWord());
+                    if (inquireBoardSearchDTO.getKeyWord() != null) {
+                        result = result && ib.getContent().contains(inquireBoardSearchDTO.getKeyWord());
+                        result = result && ib.getTitle().contains(inquireBoardSearchDTO.getKeyWord());
                     }
-                    if (inquireBoardSearchParam.getStartDate() != null && inquireBoardSearchParam.getEndDate() != null) {
-                        result = result && ib.getCreatedAt().isBefore(inquireBoardSearchParam.getEndDate());
-                        result = result && ib.getCreatedAt().isAfter(inquireBoardSearchParam.getStartDate());
+                    if (inquireBoardSearchDTO.getStartDate() != null && inquireBoardSearchDTO.getEndDate() != null) {
+                        result = result && ib.getCreatedAt().isBefore(inquireBoardSearchDTO.getEndDate());
+                        result = result && ib.getCreatedAt().isAfter(inquireBoardSearchDTO.getStartDate());
                     }
-                    if (inquireBoardSearchParam.getOnlyMine()) {
+                    if (inquireBoardSearchDTO.getOnlyMine()) {
                         result = result && ib.getMemberId().equals(memberId);
                     }
                     return result;
@@ -73,10 +74,11 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
     }
 
     @Override
-    public Optional<InquireBoard> findById(Long inquireBoardId) {
-        return INQUIRE_BOARD_STORAGE.stream()
-                .filter(inquireBoard -> inquireBoard.getInquireBoardId().equals(inquireBoardId))
-                .findFirst();
+    public Optional<InquireBoardResponseDTO> findById(Long inquireBoardId) {
+//        return INQUIRE_BOARD_STORAGE.stream()
+//                .filter(inquireBoard -> inquireBoard.getInquireBoardId().equals(inquireBoardId))
+//                .findFirst();
+        return Optional.empty();
     }
 
     @Override

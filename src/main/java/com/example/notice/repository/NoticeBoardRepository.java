@@ -1,6 +1,6 @@
 package com.example.notice.repository;
 
-import com.example.notice.dto.NoticeBoardSearchParam;
+import com.example.notice.dto.request.NoticeBoardSearchDTO;
 import com.example.notice.entity.NoticeBoard;
 import com.example.notice.page.PageRequest;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,24 +31,24 @@ public interface NoticeBoardRepository {
 
     /**
      * 상단 고정된 공지 게시글을 제외한 나머지 공지 게시글을 반환
-     * @param noticeBoardSearchParam 공지글 검색 파라미터
+     * @param noticeBoardSearchDTO 공지글 검색 파라미터
      * @param pageRequest 페이지 요청 파라미터
      * @param maxFixedNoticeCount 최대 상단 고정 공지 게시글 수
      * @return 상단 고정된 공지글들을 제외한 공지글들
      */
     List<NoticeBoard> findNoneFixedNoticeBoardBySearchParam(
-            @Param("search") NoticeBoardSearchParam noticeBoardSearchParam,
+            @Param("search") NoticeBoardSearchDTO noticeBoardSearchDTO,
             @Param("page") PageRequest pageRequest,
             @Param("fixedNoticeLimit") Integer maxFixedNoticeCount);
 
     /**
      * 상단 고정된 공지 게시글을 제외한 나머지 공지 게시글 수를 반환
-     * @param noticeBoardSearchParam 공지글 검색 파라미터
+     * @param noticeBoardSearchDTO 공지글 검색 파라미터
      * @param maxFixedNoticeCount 최대 상단 고정 공지 게시글 수
      * @return 상단 고정된 공지글들을 제외한 공지글 수
      */
     Integer findNoneFixedNoticeBoardCountBySearchParam(
-            @Param("search") NoticeBoardSearchParam noticeBoardSearchParam,
+            @Param("search") NoticeBoardSearchDTO noticeBoardSearchDTO,
             @Param("fixedNoticeLimit") Integer maxFixedNoticeCount);
 
     /**

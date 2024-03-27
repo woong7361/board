@@ -1,8 +1,7 @@
-package com.example.notice.dto;
+package com.example.notice.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -11,11 +10,13 @@ import java.time.LocalDateTime;
  */
 @Getter
 @AllArgsConstructor
-public class FreeBoardSearchParam {
+public class NoticeBoardSearchDTO {
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
     private String category;
     private String keyWord;
+
+
 }

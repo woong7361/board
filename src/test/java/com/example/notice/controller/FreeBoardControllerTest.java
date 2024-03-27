@@ -3,7 +3,6 @@ package com.example.notice.controller;
 import com.example.notice.auth.AuthenticationHolder;
 import com.example.notice.auth.principal.MemberPrincipal;
 import com.example.notice.auth.principal.Principal;
-import com.example.notice.constant.ResponseConstant;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.exception.BadRequestParamException;
@@ -76,7 +75,7 @@ class FreeBoardControllerTest {
                     .build();
 
             long boardId = 10L;
-            when(freeBoardService.createFreeBoard(any())).thenReturn(boardId);
+            when(freeBoardService.createFreeBoard(any(), files, member.getMemberId())).thenReturn(boardId);
             //when
             //then
             mockMvc.perform(MockMvcRequestBuilders.post(FREE_BOARD_CREATE_URI)

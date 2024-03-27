@@ -1,6 +1,7 @@
 package com.example.notice.controller;
 
 import com.example.notice.constant.ResponseConstant;
+import com.example.notice.dto.response.InquireBoardResponseDTO;
 import com.example.notice.entity.InquireBoard;
 import com.example.notice.mock.util.MockMemberLogin;
 import com.example.notice.service.InquireBoardService;
@@ -148,17 +149,20 @@ class InquireBoardControllerTest {
                     .memberId(485641534L)
                     .build();
 
+            InquireBoardResponseDTO board = InquireBoardResponseDTO.builder()
+                    .inquireBoard(findBoard)
+                    .build();
             //when
             Mockito.when(inquireBoardService.getBoardById(boardId))
-                    .thenReturn(findBoard);
+                    .thenReturn(board);
             //then
             mockMvc.perform(MockMvcRequestBuilders.get(GET_BOARD_CONTROLLER_URI.formatted(boardId)))
                     .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoardId").value(boardId))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.content").value(findBoard.getContent()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(findBoard.getTitle()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.views").value(findBoard.getViews()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.memberId").value(findBoard.getMemberId()));
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoard.inquireBoardId").value(boardId))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoard.content").value(board.getInquireBoard().getContent()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoard.title").value(board.getInquireBoard().getTitle()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoard.views").value(board.getInquireBoard().getViews()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoard.memberId").value(board.getInquireBoard().getMemberId()));
 
         }
     }

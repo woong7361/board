@@ -1,6 +1,6 @@
 package com.example.notice.mock.repository;
 
-import com.example.notice.dto.FreeBoardSearchParam;
+import com.example.notice.dto.request.FreeBoardSearchDTO;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.page.PageRequest;
@@ -40,21 +40,21 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
     }
 
     @Override
-    public List<FreeBoard> findBoardsBySearchParam(FreeBoardSearchParam freeBoardSearchParam, PageRequest pageRequest) {
+    public List<FreeBoard> findBoardsBySearchParam(FreeBoardSearchDTO freeBoardSearchDTO, PageRequest pageRequest) {
         return FREE_BOARD_STORAGE.stream()
                 .filter((fd) -> {
                     boolean result = true;
-                    if (freeBoardSearchParam.getCategory() != null) {
-                        result = result && fd.getCategory().equals(freeBoardSearchParam.getCategory());
+                    if (freeBoardSearchDTO.getCategory() != null) {
+                        result = result && fd.getCategory().equals(freeBoardSearchDTO.getCategory());
                     }
-                    if (freeBoardSearchParam.getKeyWord() != null) {
-                        result = result && fd.getContent().contains(freeBoardSearchParam.getKeyWord());
-                        result = result && fd.getTitle().contains(freeBoardSearchParam.getKeyWord());
-                        result = result && fd.getMemberName().contains(freeBoardSearchParam.getKeyWord());
+                    if (freeBoardSearchDTO.getKeyWord() != null) {
+                        result = result && fd.getContent().contains(freeBoardSearchDTO.getKeyWord());
+                        result = result && fd.getTitle().contains(freeBoardSearchDTO.getKeyWord());
+                        result = result && fd.getMemberName().contains(freeBoardSearchDTO.getKeyWord());
                     }
-                    if (freeBoardSearchParam.getStartDate() != null && freeBoardSearchParam.getEndDate() != null) {
-                        result = result && fd.getCreatedAt().isBefore(freeBoardSearchParam.getEndDate());
-                        result = result && fd.getCreatedAt().isAfter(freeBoardSearchParam.getStartDate());
+                    if (freeBoardSearchDTO.getStartDate() != null && freeBoardSearchDTO.getEndDate() != null) {
+                        result = result && fd.getCreatedAt().isBefore(freeBoardSearchDTO.getEndDate());
+                        result = result && fd.getCreatedAt().isAfter(freeBoardSearchDTO.getStartDate());
                     }
                     return result;
                 })
@@ -62,21 +62,21 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
     }
 
     @Override
-    public Integer getTotalCountBySearchParam(FreeBoardSearchParam freeBoardSearchParam) {
+    public Integer getTotalCountBySearchParam(FreeBoardSearchDTO freeBoardSearchDTO) {
         return (int) FREE_BOARD_STORAGE.stream()
                 .filter((fd) -> {
                     boolean result = true;
-                    if (freeBoardSearchParam.getCategory() != null) {
-                        result = result && fd.getCategory().equals(freeBoardSearchParam.getCategory());
+                    if (freeBoardSearchDTO.getCategory() != null) {
+                        result = result && fd.getCategory().equals(freeBoardSearchDTO.getCategory());
                     }
-                    if (freeBoardSearchParam.getKeyWord() != null) {
-                        result = result && fd.getContent().contains(freeBoardSearchParam.getKeyWord());
-                        result = result && fd.getTitle().contains(freeBoardSearchParam.getKeyWord());
-                        result = result && fd.getMemberName().contains(freeBoardSearchParam.getKeyWord());
+                    if (freeBoardSearchDTO.getKeyWord() != null) {
+                        result = result && fd.getContent().contains(freeBoardSearchDTO.getKeyWord());
+                        result = result && fd.getTitle().contains(freeBoardSearchDTO.getKeyWord());
+                        result = result && fd.getMemberName().contains(freeBoardSearchDTO.getKeyWord());
                     }
-                    if (freeBoardSearchParam.getStartDate() != null && freeBoardSearchParam.getEndDate() != null) {
-                        result = result && fd.getCreatedAt().isBefore(freeBoardSearchParam.getEndDate());
-                        result = result && fd.getCreatedAt().isAfter(freeBoardSearchParam.getStartDate());
+                    if (freeBoardSearchDTO.getStartDate() != null && freeBoardSearchDTO.getEndDate() != null) {
+                        result = result && fd.getCreatedAt().isBefore(freeBoardSearchDTO.getEndDate());
+                        result = result && fd.getCreatedAt().isAfter(freeBoardSearchDTO.getStartDate());
                     }
                     return result;
                 })

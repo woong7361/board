@@ -1,7 +1,7 @@
 package com.example.notice.service;
 
-import com.example.notice.dto.IdList;
-import com.example.notice.dto.SuccessesAndFails;
+import com.example.notice.dto.common.IdList;
+import com.example.notice.dto.common.SuccessesAndFails;
 import com.example.notice.entity.AttachmentFile;
 import org.springframework.web.multipart.MultipartFile;
 

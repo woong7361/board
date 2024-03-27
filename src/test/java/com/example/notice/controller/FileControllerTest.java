@@ -2,14 +2,11 @@ package com.example.notice.controller;
 
 import com.example.notice.auth.AuthenticationHolder;
 import com.example.notice.auth.principal.MemberPrincipal;
-import com.example.notice.constant.ResponseConstant;
-import com.example.notice.dto.IdList;
+import com.example.notice.dto.common.IdList;
 import com.example.notice.entity.Member;
 import com.example.notice.service.FileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,9 +15,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.bind.MissingServletRequestParameterException;
-
-import java.io.File;
 
 import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
 

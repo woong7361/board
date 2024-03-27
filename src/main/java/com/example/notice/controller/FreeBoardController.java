@@ -2,7 +2,7 @@ package com.example.notice.controller;
 
 import com.example.notice.auth.AuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
-import com.example.notice.dto.FreeBoardSearchParam;
+import com.example.notice.dto.request.FreeBoardSearchDTO;
 import com.example.notice.exception.BadRequestParamException;
 import com.example.notice.page.PageRequest;
 import com.example.notice.entity.FreeBoard;
@@ -13,8 +13,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Map;
 
 import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
@@ -22,7 +24,6 @@ import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
 /**
  * 자유 게시판 컨트롤러
  */
-// TODO MSA의 transactional 처리?
 @RestController
 @RequiredArgsConstructor
 public class FreeBoardController {
@@ -38,13 +39,14 @@ public class FreeBoardController {
      */
     @PostMapping("/api/boards/free")
     public ResponseEntity<Map<String, Long>> createFreeBoard(
-            @Valid @RequestBody FreeBoard freeBoard,
+            @Valid @ModelAttribute FreeBoard freeBoard,
+            @RequestParam List<MultipartFile> files,
             @AuthenticationPrincipal Principal<Member> principal
     ) {
         Member member = principal.getAuthentication();
         freeBoard.setOwner(member);
 
-        Long freeBoardId = freeBoardService.createFreeBoard(freeBoard);
+        Long freeBoardId = freeBoardService.createFreeBoard(freeBoard, files, member.getMemberId());
 
         return ResponseEntity
                 .ok(Map.of(FREE_BOARD_ID_PARAM, freeBoardId));
@@ -69,18 +71,18 @@ public class FreeBoardController {
     /**
      * 자유게시판 게시글 리스트 조회/검색
      *
-     * @param freeBoardSearchParam 게시글 검색 파라미터
+     * @param freeBoardSearchDTO 게시글 검색 파라미터
      * @param pageRequest          페이지네이션 요청 파라미터
      * @return 게시글 페이지
      */
     @GetMapping("/api/boards/free")
     public ResponseEntity<PageResponse<FreeBoard>> getFreeBoards(
-            @ModelAttribute FreeBoardSearchParam freeBoardSearchParam,
+            @ModelAttribute FreeBoardSearchDTO freeBoardSearchDTO,
             @Valid @ModelAttribute PageRequest pageRequest
     ) {
-        checkSearchRange(freeBoardSearchParam);
+        checkSearchRange(freeBoardSearchDTO);
 
-        PageResponse<FreeBoard> boards = freeBoardService.getBoardsBySearchParams(freeBoardSearchParam, pageRequest);
+        PageResponse<FreeBoard> boards = freeBoardService.getBoardsBySearchParams(freeBoardSearchDTO, pageRequest);
 
         return ResponseEntity.ok(boards);
     }
@@ -111,31 +113,32 @@ public class FreeBoardController {
      */
     @PutMapping("/api/boards/free/{freeBoardId}")
     public ResponseEntity<Object> updateBoard(
-            @Valid @RequestBody FreeBoard freeBoard,
+            @Valid @ModelAttribute FreeBoard freeBoard,
+            @RequestParam List<MultipartFile> saveFiles,
+            @RequestParam List<Long> deleteFileIds,
             @PathVariable(name = "freeBoardId") Long freeBoardId,
             @AuthenticationPrincipal Principal<Member> principal) {
         Member member = principal.getAuthentication();
         freeBoardService.checkFreeBoardAuthorization(freeBoardId, member.getMemberId());
 
-        // TODO 구조를 어떻게 해야할지 - setter? - 새로이 build? - 그대로?
-        freeBoardService.updateFreeBoardById(freeBoard, freeBoardId);
+        freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId);
 
         return ResponseEntity
                 .ok(Map.of(FREE_BOARD_ID_PARAM, freeBoardId));
     }
 
-    private static void checkSearchRange(FreeBoardSearchParam freeBoardSearchParam) {
-        if (freeBoardSearchParam.getEndDate() == null || freeBoardSearchParam.getStartDate() == null) {
+    private static void checkSearchRange(FreeBoardSearchDTO freeBoardSearchDTO) {
+        if (freeBoardSearchDTO.getEndDate() == null || freeBoardSearchDTO.getStartDate() == null) {
             return;
         }
 
-        if (isSearchRangeMoreThan1Year(freeBoardSearchParam)) {
+        if (isSearchRangeMoreThan1Year(freeBoardSearchDTO)) {
             throw new BadRequestParamException("최대 날짜 범위는 1년 이하 입니다.");
         }
     }
 
-    private static boolean isSearchRangeMoreThan1Year(FreeBoardSearchParam freeBoardSearchParam) {
-        return ChronoUnit.YEARS.between(freeBoardSearchParam.getStartDate(), freeBoardSearchParam.getEndDate()) > 0;
+    private static boolean isSearchRangeMoreThan1Year(FreeBoardSearchDTO freeBoardSearchDTO) {
+        return ChronoUnit.YEARS.between(freeBoardSearchDTO.getStartDate(), freeBoardSearchDTO.getEndDate()) > 0;
     }
 }
 

@@ -1,11 +1,8 @@
 package com.example.notice.controller;
 
-import com.example.notice.constant.ResponseConstant;
-import com.example.notice.constant.SessionConstant;
-import com.example.notice.dto.NoticeBoardSearchParam;
+import com.example.notice.dto.request.NoticeBoardSearchDTO;
 import com.example.notice.entity.Member;
 import com.example.notice.entity.NoticeBoard;
-import com.example.notice.mock.repository.MockNoticeBoardRepository;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
 import com.example.notice.service.NoticeBoardService;
@@ -16,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,12 +26,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static com.example.notice.constant.ResponseConstant.FIXED_NOTICE_BOARDS_PARAM;
-import static com.example.notice.constant.ResponseConstant.NONE_FIXED_NOTICE_BOARDS_PARAM;
 import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
 import static com.example.notice.mock.repository.MockNoticeBoardRepository.NO_FK_NOTICE_BOARD;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -206,7 +200,7 @@ class NoticeBoardControllerTest {
             int totalCount = 123;
             PageRequest pageRequest = new PageRequest(5, 0, null, null);
             List<NoticeBoard> noticeBoards = List.of(NO_FK_NOTICE_BOARD);
-            Mockito.when(noticeBoardService.getNoneFixedNoticeBoards(any(NoticeBoardSearchParam.class), any(PageRequest.class)))
+            Mockito.when(noticeBoardService.getNoneFixedNoticeBoards(any(NoticeBoardSearchDTO.class), any(PageRequest.class)))
                     .thenReturn(
                             new PageResponse<>(
                                     noticeBoards,
@@ -248,7 +242,7 @@ class NoticeBoardControllerTest {
             int totalCount = 123;
             PageRequest pageRequest = new PageRequest(5, 0, null, null);
             List<NoticeBoard> noticeBoards = List.of(NO_FK_NOTICE_BOARD);
-            Mockito.when(noticeBoardService.getNoneFixedNoticeBoards(any(NoticeBoardSearchParam.class), any(PageRequest.class)))
+            Mockito.when(noticeBoardService.getNoneFixedNoticeBoards(any(NoticeBoardSearchDTO.class), any(PageRequest.class)))
                     .thenReturn(
                             new PageResponse<>(
                                     noticeBoards,

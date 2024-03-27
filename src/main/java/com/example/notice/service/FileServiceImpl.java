@@ -1,8 +1,8 @@
 package com.example.notice.service;
 
 import com.example.notice.config.ConfigurationService;
-import com.example.notice.dto.IdList;
-import com.example.notice.dto.SuccessesAndFails;
+import com.example.notice.dto.common.IdList;
+import com.example.notice.dto.common.SuccessesAndFails;
 import com.example.notice.entity.AttachmentFile;
 import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.EntityNotExistException;
@@ -60,7 +60,7 @@ public class FileServiceImpl implements FileService{
         return physicalFileRepository.getFile(getFileFullPath(attachmentFile));
     }
 
-    private static String getFileFullPath(AttachmentFile attachmentFile) {
+    private String getFileFullPath(AttachmentFile attachmentFile) {
         return attachmentFile.getPath() + "/" + attachmentFile.getPhysicalName();
     }
 

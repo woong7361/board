@@ -1,10 +1,10 @@
 package com.example.notice.controller;
 
-import com.example.notice.auth.AdminAuthenticationPrincipal;
 import com.example.notice.auth.AuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
-import com.example.notice.dto.InquireBoardSearchParam;
-import com.example.notice.dto.InquireBoardSearchResponseDTO;
+import com.example.notice.dto.request.InquireBoardSearchDTO;
+import com.example.notice.dto.response.InquireBoardResponseDTO;
+import com.example.notice.dto.response.InquireBoardSearchResponseDTO;
 import com.example.notice.entity.InquireBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.page.PageRequest;
@@ -51,34 +51,34 @@ public class InquireBoardController {
     /**
      * 문의 게시판 검색
      *
-     * @param inquireBoardSearchParam 문의 게시판 검색 파라미터
+     * @param inquireBoardSearchDTO 문의 게시판 검색 파라미터
      * @param pageRequest             페이지 요청 파라미터
      * @param principal               회원 인증 객체
      * @return 검색 결과
      */
     @GetMapping("/api/boards/inquire")
     public ResponseEntity<PageResponse<InquireBoardSearchResponseDTO>> searchInquireBoard(
-            @ModelAttribute InquireBoardSearchParam inquireBoardSearchParam,
+            @ModelAttribute InquireBoardSearchDTO inquireBoardSearchDTO,
             @ModelAttribute PageRequest pageRequest,
             @AuthenticationPrincipal Principal<Member> principal) {
         Member member = principal.getAuthentication();
 
         PageResponse<InquireBoardSearchResponseDTO> inquireBoards =
-                inquireBoardService.searchInquireBoard(inquireBoardSearchParam, pageRequest, member.getMemberId());
+                inquireBoardService.searchInquireBoard(inquireBoardSearchDTO, pageRequest, member.getMemberId());
 
         return ResponseEntity
                 .ok(inquireBoards);
     }
 
     /**
-     * 문의 게시판 게시글 상세보기
+     * 문의 게시판 게시글 조회
      *
      * @param inquireBoardId 문의 게시판 게시글 식별자
      * @return 해당하는 게시글의 내용
      */
     @GetMapping("/api/boards/inquire/{inquireBoardId}")
-    public ResponseEntity<InquireBoard> getInquireBoard(@PathVariable Long inquireBoardId) {
-        InquireBoard inquireBoard = inquireBoardService.getBoardById(inquireBoardId);
+    public ResponseEntity<InquireBoardResponseDTO> getInquireBoard(@PathVariable Long inquireBoardId) {
+        InquireBoardResponseDTO inquireBoard = inquireBoardService.getBoardById(inquireBoardId);
 
         return ResponseEntity
                 .ok(inquireBoard);

@@ -1,6 +1,6 @@
 package com.example.notice.service;
 
-import com.example.notice.dto.FreeBoardSearchParam;
+import com.example.notice.dto.request.FreeBoardSearchDTO;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.exception.AuthorizationException;
@@ -40,7 +40,7 @@ class FreeBoardServiceTest {
                     .build();
             //when
             //then
-            freeBoardService.createFreeBoard(board);
+            freeBoardService.createFreeBoard(board, files, member.getMemberId());
         }
     }
 
@@ -79,7 +79,7 @@ class FreeBoardServiceTest {
         @Test
         public void success() throws Exception {
             //given
-            FreeBoardSearchParam freeBoardSearchParam = new FreeBoardSearchParam(
+            FreeBoardSearchDTO freeBoardSearchDTO = new FreeBoardSearchDTO(
                     LocalDateTime.now().minusMonths(2L),
                     LocalDateTime.now(),
                     "category",
@@ -87,7 +87,7 @@ class FreeBoardServiceTest {
             PageRequest pageRequest = new PageRequest(5, 0, null, null);
             //when
             //then
-            PageResponse<FreeBoard> result = freeBoardService.getBoardsBySearchParams(freeBoardSearchParam, pageRequest);
+            PageResponse<FreeBoard> result = freeBoardService.getBoardsBySearchParams(freeBoardSearchDTO, pageRequest);
 
             Assertions.assertThat(result.getContents().size()).isEqualTo(result.getTotalCount());
             Assertions.assertThat(result.getPageSize()).isEqualTo(pageRequest.getSize());

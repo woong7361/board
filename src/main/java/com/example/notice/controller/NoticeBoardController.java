@@ -2,7 +2,7 @@ package com.example.notice.controller;
 
 import com.example.notice.auth.AdminAuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
-import com.example.notice.dto.NoticeBoardSearchParam;
+import com.example.notice.dto.request.NoticeBoardSearchDTO;
 import com.example.notice.entity.Member;
 import com.example.notice.entity.NoticeBoard;
 import com.example.notice.page.PageRequest;
@@ -62,17 +62,17 @@ public class NoticeBoardController {
     /**
      * 고정으로 반환된 공지글 말고 남은 공지글을 반환
      *
-     * @param noticeBoardSearchParam 공지글 검색 파라미터
+     * @param noticeBoardSearchDTO 공지글 검색 파라미터
      * @param pageRequest            페이지 요청 파라미터
      * @return 고정 공지글이 아닌 공지글들 반환
      */
     @GetMapping("/api/boards/notice")
     public ResponseEntity<PageResponse<NoticeBoard>> getNoticeBoardsWithoutFixed(
-            @ModelAttribute NoticeBoardSearchParam noticeBoardSearchParam,
+            @ModelAttribute NoticeBoardSearchDTO noticeBoardSearchDTO,
             @Valid @ModelAttribute PageRequest pageRequest) {
 
         PageResponse<NoticeBoard> noneFixedNoticeBoards =
-                noticeBoardService.getNoneFixedNoticeBoards(noticeBoardSearchParam, pageRequest);
+                noticeBoardService.getNoneFixedNoticeBoards(noticeBoardSearchDTO, pageRequest);
         return ResponseEntity
                 .ok(noneFixedNoticeBoards);
     }
@@ -127,14 +127,13 @@ public class NoticeBoardController {
     // 삭제
     // 답변 생성 - 관리자만
     // 답변 삭제
+    //자유 게시판 수정 & 생성 컨트롤러 단일화
 
     //자유게시판 - 관리자용
     // 생성
     // 수정
     // 삭제
 
-    //자유 게시판 수정 & 생성 컨트롤러 단일화
-    //문의 게시판 조회 답변까지
 
     //에러 메시지 프로퍼티화
     //filter interceptor로 변환

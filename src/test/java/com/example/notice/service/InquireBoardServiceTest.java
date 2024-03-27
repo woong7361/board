@@ -1,7 +1,8 @@
 package com.example.notice.service;
 
-import com.example.notice.dto.InquireBoardSearchParam;
-import com.example.notice.dto.InquireBoardSearchResponseDTO;
+import com.example.notice.dto.request.InquireBoardSearchDTO;
+import com.example.notice.dto.response.InquireBoardResponseDTO;
+import com.example.notice.dto.response.InquireBoardSearchResponseDTO;
 import com.example.notice.entity.InquireBoard;
 import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.EntityNotExistException;
@@ -78,8 +79,8 @@ class InquireBoardServiceTest {
                     .memberId(45343L)
                     .build();
 
-            InquireBoardSearchParam searchParam =
-                    new InquireBoardSearchParam(LocalDateTime.now().minusYears(1L), LocalDateTime.now(), "key", false);
+            InquireBoardSearchDTO searchParam =
+                    new InquireBoardSearchDTO(LocalDateTime.now().minusYears(1L), LocalDateTime.now(), "key", false);
             PageRequest pageRequest = new PageRequest(10, 2, null, null);
             Long memberId = 53145L;
 
@@ -96,8 +97,8 @@ class InquireBoardServiceTest {
         @Test
         public void emptyRepository() throws Exception{
             //given
-            InquireBoardSearchParam searchParam =
-                    new InquireBoardSearchParam(LocalDateTime.now().minusYears(1L), LocalDateTime.now(), "key", false);
+            InquireBoardSearchDTO searchParam =
+                    new InquireBoardSearchDTO(LocalDateTime.now().minusYears(1L), LocalDateTime.now(), "key", false);
             PageRequest pageRequest = new PageRequest(10, 2, null, null);
             Long memberId = 53145L;
 
@@ -127,13 +128,18 @@ class InquireBoardServiceTest {
                     .isSecret(false)
                     .build();
 
+            InquireBoardResponseDTO response = InquireBoardResponseDTO.builder()
+                    .inquireBoard(inquireBoard)
+                    .build();
+
             Mockito.when(mockitoInquireBoardRepository.findById(inquireBoardId))
-                    .thenReturn(Optional.of(inquireBoard));
+                    .thenReturn(Optional.of(response));
             //when
-            InquireBoard findBoard = mockitoInquireBoardService.getBoardById(inquireBoardId);
+            InquireBoardResponseDTO findBoard = mockitoInquireBoardService.getBoardById(inquireBoardId);
 
             //then
-            Assertions.assertThat(findBoard).usingRecursiveComparison()
+            Assertions.assertThat(findBoard.getInquireBoard())
+                    .usingRecursiveComparison()
                     .isEqualTo(inquireBoard);
         }
 

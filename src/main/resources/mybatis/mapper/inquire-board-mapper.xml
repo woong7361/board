@@ -2,6 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.notice.repository.InquireBoardRepository">
 
+    <resultMap id="boardWithAnswer" type="com.example.notice.dto.response.InquireBoardResponseDTO">
+        <result property="title" column="title"/>
+        <association property="inquireBoard" resultMap="boardMap">
+        </association>
+        <collection property="inquireAnswers" javaType="java.util.List" ofType="com.example.notice.entity.InquireAnswer">
+            <id property="inquireAnswerId" column="inquire_answer_id"/>
+            <result property="answer" column="answer"/>
+            <result property="member.memberId" column="answer_member_id"/>
+            <result property="member.name" column="answer_member_name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="boardMap" type="com.example.notice.entity.InquireBoard">
+        <id property="inquireBoardId" column="inquire_board_id" />
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="isSecret" column="is_secret"/>
+        <result property="views" column="views"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="modifiedAt" column="modified_at"/>
+        <result property="member.memberId" column="board_member_id"/>
+        <result property="member.name" column="board_member_name"/>
+    </resultMap>
+
+    <resultMap id="answerMap" type="com.example.notice.entity.InquireAnswer">
+        <id property="inquireAnswerId" column="inquire_answer_id"/>
+        <result property="answer" column="answer"/>
+        <result property="member.memberId" column="answer_member_id"/>
+        <result property="member.name" column="answer_member_name"/>
+    </resultMap>
+
     <sql id="searchCondition">
         <where>
             <choose>
@@ -54,7 +85,7 @@
         <include refid="searchCondition"/>
     </select>
 
-    <select id="search" resultType="com.example.notice.dto.InquireBoardSearchResponseDTO">
+    <select id="search" resultType="com.example.notice.dto.response.InquireBoardSearchResponseDTO">
         SELECT
             ib.*,
             m.name AS 'member.name', m.member_id AS 'member.memberId',
@@ -76,12 +107,16 @@
         LIMIT #{page.offset}, #{page.size}
     </select>
 
-    <select id="findById" resultType="com.example.notice.entity.InquireBoard">
+    <select id="findById" resultMap="boardWithAnswer">
         SELECT
             ib.*,
-            m.member_id AS 'member.memberId', m.name AS 'member.name'
+            ia.*,
+            bm.member_id AS 'board_member_id', bm.name AS 'board_member_name',
+            am.member_id AS 'answer_member_id', am.name AS 'answer_member_name'
         FROM inquire_board ib
-             LEFT JOIN member m on m.member_id = ib.member_id
+                 LEFT JOIN member bm on bm.member_id = ib.member_id
+                 LEFT JOIN inquire_answer ia on ib.inquire_board_id = ia.inquire_board_id
+                 LEFT JOIN member am on ia.member_id = am.member_id
         WHERE ib.inquire_board_id = #{inquireBoardId}
     </select>
 

@@ -1,7 +1,7 @@
 package com.example.notice.service;
 
 
-import com.example.notice.dto.IdList;
+import com.example.notice.dto.common.IdList;
 import com.example.notice.entity.AttachmentFile;
 import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.EntityNotExistException;

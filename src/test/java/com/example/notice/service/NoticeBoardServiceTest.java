@@ -1,6 +1,6 @@
 package com.example.notice.service;
 
-import com.example.notice.dto.NoticeBoardSearchParam;
+import com.example.notice.dto.request.NoticeBoardSearchDTO;
 import com.example.notice.entity.NoticeBoard;
 import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.mock.database.MemoryDataBase;
@@ -125,8 +125,8 @@ class NoticeBoardServiceTest {
                 noticeBoardRepository.save(notFixedBoard, null);
             }
 
-            NoticeBoardSearchParam param =
-                    new NoticeBoardSearchParam(null, null, null, null);
+            NoticeBoardSearchDTO param =
+                    new NoticeBoardSearchDTO(null, null, null, null);
             PageRequest pageRequest = new PageRequest(5, 0, null, null);
 
             //when

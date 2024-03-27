@@ -1,7 +1,7 @@
 package com.example.notice.service;
 
 import com.example.notice.config.ConfigurationService;
-import com.example.notice.dto.NoticeBoardSearchParam;
+import com.example.notice.dto.request.NoticeBoardSearchDTO;
 import com.example.notice.entity.NoticeBoard;
 import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.page.PageRequest;
@@ -36,13 +36,13 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
     }
 
     @Override
-    public PageResponse<NoticeBoard> getNoneFixedNoticeBoards(NoticeBoardSearchParam noticeBoardSearchParam, PageRequest pageRequest) {
+    public PageResponse<NoticeBoard> getNoneFixedNoticeBoards(NoticeBoardSearchDTO noticeBoardSearchDTO, PageRequest pageRequest) {
         Integer totalCount = noticeBoardRepository.findNoneFixedNoticeBoardCountBySearchParam(
-                noticeBoardSearchParam,
+                noticeBoardSearchDTO,
                 configurationService.getMaxNoticeFixedCount());
 
         List<NoticeBoard> noneFixedNoticeBoards = noticeBoardRepository.findNoneFixedNoticeBoardBySearchParam(
-                noticeBoardSearchParam,
+                noticeBoardSearchDTO,
                 pageRequest,
                 configurationService.getMaxNoticeFixedCount());
 

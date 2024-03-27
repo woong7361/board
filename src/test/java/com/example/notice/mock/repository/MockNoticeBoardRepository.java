@@ -1,6 +1,6 @@
 package com.example.notice.mock.repository;
 
-import com.example.notice.dto.NoticeBoardSearchParam;
+import com.example.notice.dto.request.NoticeBoardSearchDTO;
 import com.example.notice.entity.NoticeBoard;
 import com.example.notice.page.PageRequest;
 import com.example.notice.repository.NoticeBoardRepository;
@@ -42,7 +42,7 @@ public class MockNoticeBoardRepository implements NoticeBoardRepository {
     }
 
     @Override
-    public List<NoticeBoard> findNoneFixedNoticeBoardBySearchParam(NoticeBoardSearchParam noticeBoardSearchParam, PageRequest pageRequest, Integer maxFixedNoticeCount) {
+    public List<NoticeBoard> findNoneFixedNoticeBoardBySearchParam(NoticeBoardSearchDTO noticeBoardSearchDTO, PageRequest pageRequest, Integer maxFixedNoticeCount) {
         List<Long> fixedIdList = NOTICE_BOARD_STORAGE.stream()
                 .filter(noticeBoard -> noticeBoard.getIsFixed().equals(true))
                 .limit(maxFixedNoticeCount)
@@ -53,17 +53,17 @@ public class MockNoticeBoardRepository implements NoticeBoardRepository {
                 .filter(noticeBoard -> !fixedIdList.contains(noticeBoard.getNoticeBoardId()))
                 .filter((nb) -> {
                     boolean result = true;
-                    if (noticeBoardSearchParam.getCategory() != null) {
-                        result = result && nb.getCategory().equals(noticeBoardSearchParam.getCategory());
+                    if (noticeBoardSearchDTO.getCategory() != null) {
+                        result = result && nb.getCategory().equals(noticeBoardSearchDTO.getCategory());
                     }
-                    if (noticeBoardSearchParam.getKeyWord() != null) {
-                        result = result && nb.getContent().contains(noticeBoardSearchParam.getKeyWord());
-                        result = result && nb.getTitle().contains(noticeBoardSearchParam.getKeyWord());
-                        result = result && nb.getMemberName().contains(noticeBoardSearchParam.getKeyWord());
+                    if (noticeBoardSearchDTO.getKeyWord() != null) {
+                        result = result && nb.getContent().contains(noticeBoardSearchDTO.getKeyWord());
+                        result = result && nb.getTitle().contains(noticeBoardSearchDTO.getKeyWord());
+                        result = result && nb.getMemberName().contains(noticeBoardSearchDTO.getKeyWord());
                     }
-                    if (noticeBoardSearchParam.getStartDate() != null && noticeBoardSearchParam.getEndDate() != null) {
-                        result = result && nb.getCreatedAt().isBefore(noticeBoardSearchParam.getEndDate());
-                        result = result && nb.getCreatedAt().isAfter(noticeBoardSearchParam.getStartDate());
+                    if (noticeBoardSearchDTO.getStartDate() != null && noticeBoardSearchDTO.getEndDate() != null) {
+                        result = result && nb.getCreatedAt().isBefore(noticeBoardSearchDTO.getEndDate());
+                        result = result && nb.getCreatedAt().isAfter(noticeBoardSearchDTO.getStartDate());
                     }
                     return result;
                 })
@@ -72,7 +72,7 @@ public class MockNoticeBoardRepository implements NoticeBoardRepository {
     }
 
     @Override
-    public Integer findNoneFixedNoticeBoardCountBySearchParam(NoticeBoardSearchParam noticeBoardSearchParam, Integer maxFixedNoticeCount) {
+    public Integer findNoneFixedNoticeBoardCountBySearchParam(NoticeBoardSearchDTO noticeBoardSearchDTO, Integer maxFixedNoticeCount) {
         List<Long> fixedIdList = NOTICE_BOARD_STORAGE.stream()
                 .filter(noticeBoard -> noticeBoard.getIsFixed().equals(true))
                 .limit(maxFixedNoticeCount)
@@ -83,17 +83,17 @@ public class MockNoticeBoardRepository implements NoticeBoardRepository {
                 .filter(noticeBoard -> !fixedIdList.contains(noticeBoard.getNoticeBoardId()))
                 .filter((nb) -> {
                     boolean result = true;
-                    if (noticeBoardSearchParam.getCategory() != null) {
-                        result = result && nb.getCategory().equals(noticeBoardSearchParam.getCategory());
+                    if (noticeBoardSearchDTO.getCategory() != null) {
+                        result = result && nb.getCategory().equals(noticeBoardSearchDTO.getCategory());
                     }
-                    if (noticeBoardSearchParam.getKeyWord() != null) {
-                        result = result && nb.getContent().contains(noticeBoardSearchParam.getKeyWord());
-                        result = result && nb.getTitle().contains(noticeBoardSearchParam.getKeyWord());
-                        result = result && nb.getMemberName().contains(noticeBoardSearchParam.getKeyWord());
+                    if (noticeBoardSearchDTO.getKeyWord() != null) {
+                        result = result && nb.getContent().contains(noticeBoardSearchDTO.getKeyWord());
+                        result = result && nb.getTitle().contains(noticeBoardSearchDTO.getKeyWord());
+                        result = result && nb.getMemberName().contains(noticeBoardSearchDTO.getKeyWord());
                     }
-                    if (noticeBoardSearchParam.getStartDate() != null && noticeBoardSearchParam.getEndDate() != null) {
-                        result = result && nb.getCreatedAt().isBefore(noticeBoardSearchParam.getEndDate());
-                        result = result && nb.getCreatedAt().isAfter(noticeBoardSearchParam.getStartDate());
+                    if (noticeBoardSearchDTO.getStartDate() != null && noticeBoardSearchDTO.getEndDate() != null) {
+                        result = result && nb.getCreatedAt().isBefore(noticeBoardSearchDTO.getEndDate());
+                        result = result && nb.getCreatedAt().isAfter(noticeBoardSearchDTO.getStartDate());
                     }
                     return result;
                 })

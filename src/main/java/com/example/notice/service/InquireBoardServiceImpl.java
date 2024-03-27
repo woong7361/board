@@ -1,7 +1,8 @@
 package com.example.notice.service;
 
-import com.example.notice.dto.InquireBoardSearchParam;
-import com.example.notice.dto.InquireBoardSearchResponseDTO;
+import com.example.notice.dto.request.InquireBoardSearchDTO;
+import com.example.notice.dto.response.InquireBoardResponseDTO;
+import com.example.notice.dto.response.InquireBoardSearchResponseDTO;
 import com.example.notice.entity.InquireBoard;
 import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.EntityNotExistException;
@@ -30,17 +31,17 @@ public class InquireBoardServiceImpl implements InquireBoardService {
     }
 
     @Override
-    public PageResponse<InquireBoardSearchResponseDTO> searchInquireBoard(InquireBoardSearchParam inquireBoardSearchParam, PageRequest pageRequest, Long memberId) {
-        Integer searchTotalCount = inquireBoardRepository.getSearchTotalCount(inquireBoardSearchParam, memberId);
+    public PageResponse<InquireBoardSearchResponseDTO> searchInquireBoard(InquireBoardSearchDTO inquireBoardSearchDTO, PageRequest pageRequest, Long memberId) {
+        Integer searchTotalCount = inquireBoardRepository.getSearchTotalCount(inquireBoardSearchDTO, memberId);
 
         List<InquireBoardSearchResponseDTO> inquireBoards =
-                inquireBoardRepository.search(inquireBoardSearchParam, pageRequest, memberId);
+                inquireBoardRepository.search(inquireBoardSearchDTO, pageRequest, memberId);
 
         return new PageResponse<>(inquireBoards, pageRequest, searchTotalCount);
     }
 
     @Override
-    public InquireBoard getBoardById(Long inquireBoardId) {
+    public InquireBoardResponseDTO getBoardById(Long inquireBoardId) {
         return inquireBoardRepository.findById(inquireBoardId)
                 .orElseThrow(() -> new EntityNotExistException("해당하는 문의 게시판이 존재하지 않습니다."));
     }

@@ -2,10 +2,7 @@ package com.example.notice.entity;
 
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
@@ -14,6 +11,7 @@ public class InquireAnswer {
 
     private Long inquireAnswerId;
     private Long inquireBoardId;
+    @Getter(AccessLevel.PRIVATE)
     private Member member;
 
     @NotBlank
@@ -27,5 +25,13 @@ public class InquireAnswer {
                 .memberId(memberId)
                 .build();
         this.answer = answer;
+    }
+
+    public Long getMemberId() {
+        return member.getMemberId();
+    }
+
+    public String getMemberName() {
+        return member.getName();
     }
 }
