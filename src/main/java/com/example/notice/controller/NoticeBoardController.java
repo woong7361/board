@@ -125,9 +125,7 @@ public class NoticeBoardController {
     // 조회
     // 수정
     // 삭제
-
     // 답변 생성 - 관리자만
-    // 답변 조회
     // 답변 삭제
 
     //자유게시판 - 관리자용
@@ -136,6 +134,7 @@ public class NoticeBoardController {
     // 삭제
 
     //자유 게시판 수정 & 생성 컨트롤러 단일화
+    //문의 게시판 조회 답변까지
 
     //에러 메시지 프로퍼티화
     //filter interceptor로 변환

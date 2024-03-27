@@ -19,4 +19,10 @@ public interface InquireAnswerRepository {
     void save(@Param("inquireAnswer") InquireAnswer inquireAnswer,
             @Param("inquireBoardId") Long inquireBoardId,
             @Param("memberId") Long memberId);
+
+    /**
+     * 문의 게시글에 대한 답변 식별자를 통해 삭제
+     * @param inquireAnswerId 게시글 답변 식별자
+     */
+    void deleteById(@Param("inquireAnswerId") Long inquireAnswerId);
 }

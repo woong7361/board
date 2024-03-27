@@ -28,9 +28,10 @@ public class InquireAnswerController {
 
     /**
      * 문의게시판 문의에 대한 답변 생성
-     * @param inquireAnswer 문의 게시판 답변 생성 파라미터
+     *
+     * @param inquireAnswer  문의 게시판 답변 생성 파라미터
      * @param inquireBoardId 문의 게시판 게시글 식별자
-     * @param principal 답변하는 관리자의 인증 객체
+     * @param principal      답변하는 관리자의 인증 객체
      * @return 문의의 생성된 답변 식별자
      */
     @PostMapping("/api/boards/inquire/{inquireBoardId}/answers")
@@ -46,4 +47,17 @@ public class InquireAnswerController {
                 .ok(Map.of(INQUIRE_ANSWER_ID_PARAM, inquireAnswerId));
     }
 
+    /**
+     * 문의 게시판 게시글 문의 답변 삭제
+     * @param inquireAnswerId 문의 답변 식별자
+     * @return 200 ok
+     */
+    @DeleteMapping("/api/boards/inquire/answers/{inquireAnswerId}")
+    public ResponseEntity<Object> deleteInquireAnswer(
+            @PathVariable Long inquireAnswerId) {
+        inquireAnswerService.deleteById(inquireAnswerId);
+
+        return ResponseEntity.ok()
+                .build();
+    }
 }

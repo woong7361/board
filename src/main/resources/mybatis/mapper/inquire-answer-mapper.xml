@@ -11,4 +11,9 @@
              NOW(), NOW())
     </insert>
 
+    <delete id="deleteById">
+        DELETE FROM inquire_answer
+        WHERE inquire_answer_id = #{inquireAnswerId}
+    </delete>
+
 </mapper>

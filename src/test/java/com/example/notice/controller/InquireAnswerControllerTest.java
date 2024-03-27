@@ -1,7 +1,6 @@
 package com.example.notice.controller;
 
 import com.example.notice.entity.InquireAnswer;
-import com.example.notice.entity.InquireBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.service.InquireAnswerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -112,5 +111,23 @@ class InquireAnswerControllerTest {
             );
         }
 
+    }
+
+    @Nested
+    @DisplayName("문의 게시판 문의 답변 삭제 컨트롤러 테스트")
+    public class InquireAnswerDeleteControllerTest {
+
+        private static final String INQUIRE_ANSWER_DELETE_URI = "/api/boards/inquire/answers/%s";
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            long inquireAnswerId = 415341L;
+
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.delete(INQUIRE_ANSWER_DELETE_URI.formatted(inquireAnswerId)))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+        }
     }
 }

@@ -39,4 +39,19 @@ class InquireAnswerServiceTest {
                     .isEqualTo(newAnswer.getInquireAnswerId());
         }
     }
+
+    @Nested
+    @DisplayName("문의 게시판 게시글에 대한 답변 삭제 테스트")
+    public class InquireAnswerDeleteTest {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            long inquireAnswerId = 4156341L;
+
+            //when
+            inquireAnswerService.deleteById(inquireAnswerId);
+            //then
+        }
+    }
 }

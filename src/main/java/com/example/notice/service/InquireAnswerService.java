@@ -18,4 +18,9 @@ public interface InquireAnswerService {
      */
     Long createAnswer(InquireAnswer inquireAnswer, Long inquireBoardId, Long memberId);
 
+    /**
+     * 문의 게시글 답변 삭제
+     * @param inquireAnswerId 문의 답변 식별자
+     */
+    void deleteById(Long inquireAnswerId);
 }
