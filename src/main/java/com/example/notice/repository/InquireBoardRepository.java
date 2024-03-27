@@ -21,9 +21,8 @@ public interface InquireBoardRepository {
      *
      * @param inquireBoard 문의 게시판 게시글 생성 파라미터
      * @param memberId 게시글 작성자의 식별자
-     * @return 문의 게시판 게시글 식별자
      */
-    Long save(@Param("inquireBoard") InquireBoard inquireBoard, @Param("memberId") Long memberId);
+    void save(@Param("inquireBoard") InquireBoard inquireBoard, @Param("memberId") Long memberId);
 
     /**
      * 문의 게시판 게시글 검색

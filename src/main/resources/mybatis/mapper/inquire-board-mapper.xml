@@ -33,7 +33,7 @@
         </where>
     </sql>
 
-    <insert id="save" useGeneratedKeys="true">
+    <insert id="save" useGeneratedKeys="true" keyProperty="inquireBoard.inquireBoardId">
         INSERT INTO inquire_board
             (member_id, title, content,
              views, is_secret,

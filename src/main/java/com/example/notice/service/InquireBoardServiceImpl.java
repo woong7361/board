@@ -24,7 +24,9 @@ public class InquireBoardServiceImpl implements InquireBoardService {
     @Transactional
     @Override
     public Long createBoard(InquireBoard inquireBoard, Long memberId) {
-        return inquireBoardRepository.save(inquireBoard, memberId);
+        inquireBoardRepository.save(inquireBoard, memberId);
+
+        return inquireBoard.getInquireBoardId();
     }
 
     @Override

@@ -16,14 +16,14 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
 
 
     @Override
-    public Long save(InquireBoard inquireBoard, Long memberId) {
+    public void save(InquireBoard inquireBoard, Long memberId) {
         InquireBoard saveBoard = InquireBoardBuilderMapper(inquireBoard)
                 .memberId(memberId)
                 .build();
 
         INQUIRE_BOARD_STORAGE.add(saveBoard);
 
-        return saveBoard.getInquireBoardId();
+//        return saveBoard.getInquireBoardId();
     }
 
     @Override

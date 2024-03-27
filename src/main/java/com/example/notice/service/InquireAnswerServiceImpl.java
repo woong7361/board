@@ -12,7 +12,7 @@ public class InquireAnswerServiceImpl implements InquireAnswerService {
     private final InquireAnswerRepository inquireAnswerRepository;
 
     @Override
-    public Long createAnswer(InquireAnswer inquireAnswer, String inquireBoardId, Long memberId) {
+    public Long createAnswer(InquireAnswer inquireAnswer, Long inquireBoardId, Long memberId) {
         inquireAnswerRepository.save(inquireAnswer, inquireBoardId, memberId);
 
         return inquireAnswer.getInquireAnswerId();

@@ -1,6 +1,7 @@
 package com.example.notice.controller;
 
 import com.example.notice.auth.AdminAuthenticationPrincipal;
+import com.example.notice.auth.AuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
 import com.example.notice.entity.InquireAnswer;
 import com.example.notice.entity.Member;
@@ -8,12 +9,12 @@ import com.example.notice.service.InquireAnswerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+
+import static com.example.notice.constant.ResponseConstant.INQUIRE_ANSWER_ID_PARAM;
 
 /**
  * 문의 게시판 답변 컨트롤러
@@ -22,7 +23,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InquireAnswerController {
 
-    public static final String INQUIRE_ANSWER_ID_PARAM = "inquireAnswerId";
 
     private final InquireAnswerService inquireAnswerService;
 
@@ -36,7 +36,7 @@ public class InquireAnswerController {
     @PostMapping("/api/boards/inquire/{inquireBoardId}/answers")
     public ResponseEntity<Map<String, Long>> createInquireAnswer(
             @Valid @RequestBody InquireAnswer inquireAnswer,
-            @PathVariable String inquireBoardId,
+            @PathVariable Long inquireBoardId,
             @AdminAuthenticationPrincipal Principal<Member> principal) {
         Member admin = principal.getAuthentication();
 
@@ -45,4 +45,5 @@ public class InquireAnswerController {
         return ResponseEntity
                 .ok(Map.of(INQUIRE_ANSWER_ID_PARAM, inquireAnswerId));
     }
+
 }

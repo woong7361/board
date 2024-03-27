@@ -2,6 +2,8 @@ package com.example.notice.service;
 
 import com.example.notice.entity.InquireAnswer;
 
+import java.util.List;
+
 /**
  * 문의 게시판 게시글 답변 서비스 로직
  */
@@ -14,5 +16,6 @@ public interface InquireAnswerService {
      * @param memberId 답변을 작성하는 관리자 식별자
      * @return 문의에 대한 생성된 답변 식별자
      */
-    Long createAnswer(InquireAnswer inquireAnswer, String inquireBoardId, Long memberId);
+    Long createAnswer(InquireAnswer inquireAnswer, Long inquireBoardId, Long memberId);
+
 }

@@ -17,6 +17,6 @@ public interface InquireAnswerRepository {
      * @param memberId 답변을 작성하는 관리자 식별자
      */
     void save(@Param("inquireAnswer") InquireAnswer inquireAnswer,
-            @Param("inquireBoardId") String inquireBoardId,
+            @Param("inquireBoardId") Long inquireBoardId,
             @Param("memberId") Long memberId);
 }
