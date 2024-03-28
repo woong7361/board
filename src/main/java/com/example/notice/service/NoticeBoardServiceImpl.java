@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.example.notice.constant.ErrorMessageConstant.BOARD_NOT_EXIST_MESSAGE;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -54,7 +56,7 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
         noticeBoardRepository.increaseViewsById(noticeBoardId);
 
         return noticeBoardRepository.findById(noticeBoardId)
-                .orElseThrow(() -> new EntityNotExistException("해당하는 게시글이 존재하지 않는다."));
+                .orElseThrow(() -> new EntityNotExistException(BOARD_NOT_EXIST_MESSAGE));
 
     }
 

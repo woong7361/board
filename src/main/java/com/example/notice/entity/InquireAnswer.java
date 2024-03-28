@@ -4,6 +4,9 @@ package com.example.notice.entity;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+/**
+ * 문의 게시글 응답 엔티티
+ */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

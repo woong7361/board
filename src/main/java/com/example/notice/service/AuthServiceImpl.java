@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.example.notice.constant.ErrorMessageConstant.MEMBER_NOT_EXIST_MESSAGE;
+
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public String userAuthentication(Member member) {
         Member findMember = memberRepository.findMemberByLoginIdAndPassword(member)
-                .orElseThrow(() -> new MemberNotExistException("해당하는 멤버 존재 X", member));
+                .orElseThrow(() -> new MemberNotExistException(MEMBER_NOT_EXIST_MESSAGE, member));
 
         return authProvider.createAuthentication(findMember);
     }
@@ -28,6 +30,6 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public Member adminAuthentication(Member member) {
         return memberRepository.findAdminMemberByLoginIdAndPassword(member)
-                .orElseThrow(() -> new MemberNotExistException("해당하는 멤버 존재 X", member));
+                .orElseThrow(() -> new MemberNotExistException(MEMBER_NOT_EXIST_MESSAGE, member));
     }
 }

@@ -7,7 +7,9 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-
+/**
+ * 문의 게시글 엔티티
+ */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

@@ -52,8 +52,8 @@ public class InquireBoardController {
      * 문의 게시판 검색
      *
      * @param inquireBoardSearchDTO 문의 게시판 검색 파라미터
-     * @param pageRequest             페이지 요청 파라미터
-     * @param principal               회원 인증 객체
+     * @param pageRequest 페이지 요청 파라미터
+     * @param principal 회원 인증 객체
      * @return 검색 결과
      */
     @GetMapping("/api/boards/inquire")

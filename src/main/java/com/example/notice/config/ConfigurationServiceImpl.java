@@ -29,6 +29,9 @@ public class ConfigurationServiceImpl implements ConfigurationService{
     @Value("${setting.max-search-range-year}")
     private Long maxSearchYearRange;
 
+    @Value("${setting.jwt.duration}")
+    private Long JwtDuration;
+
     @Override
     public List<String> getAllowExtension() {
         String[] extensions = allowExtension.split(",");
@@ -36,4 +39,5 @@ public class ConfigurationServiceImpl implements ConfigurationService{
                 .map((extension) -> extension.strip())
                 .collect(Collectors.toList());
     }
+
 }

@@ -43,4 +43,9 @@ public class MockConfigurationService implements ConfigurationService {
         return 1L;
     }
 
+    @Override
+    public Long getJwtDuration() {
+        return 60L * 60L * 6L * 1000L;
+    }
+
 }

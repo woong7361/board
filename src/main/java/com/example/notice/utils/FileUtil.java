@@ -10,6 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+import static com.example.notice.constant.ErrorMessageConstant.FILE_IO_EXCEPTION_MESSAGE;
+import static com.example.notice.constant.ErrorMessageConstant.NOT_ALLOWED_FILE_EXTENSION_MESSAGE;
+
 @Component
 @RequiredArgsConstructor
 public class FileUtil {
@@ -18,7 +21,7 @@ public class FileUtil {
 
     public void checkAllowFileExtension(MultipartFile file) throws FileSaveCheckedException {
         if (isNotAllowedExtensionFile(file)) {
-            throw new FileSaveCheckedException("not allow extension exception", file.getOriginalFilename());
+            throw new FileSaveCheckedException(NOT_ALLOWED_FILE_EXTENSION_MESSAGE, file.getOriginalFilename());
         }
     }
 
@@ -31,7 +34,7 @@ public class FileUtil {
         try {
             return multipartFile.getBytes();
         } catch (IOException e) {
-            throw new FileSaveException("temp file output exception");
+            throw new FileSaveException(FILE_IO_EXCEPTION_MESSAGE);
         }
     }
 

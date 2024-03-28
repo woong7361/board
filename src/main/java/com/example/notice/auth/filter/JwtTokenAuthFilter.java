@@ -29,10 +29,8 @@ public class JwtTokenAuthFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String bearerToken = request.getHeader(AUTHORIZATION);
 
-        // TODO token 검증 이후 exception handling 필요
         Member member = authProvider.verify(bearerToken);
 
-        // 방어코드
         AuthenticationHolder.clear();
         try {
             AuthenticationHolder.setPrincipal(new MemberPrincipal(member));

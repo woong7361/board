@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import static com.example.notice.constant.ErrorMessageConstant.BEYOND_MAX_SEARCH_RANGE_MESSAGE;
+
 /**
  * 복잡한 날짜 로직을 검증한다.
  */
@@ -21,12 +23,9 @@ public class DateValidation {
      * @param startDate 시작 기간
      * @param endDate 만료 기간
      */
-
-    // TODO config를 외부로 옮기는 것이 더 좋을까? -> 공용 인터페이스(중복) 부분과 응집도 또한 의존성?
-    // 조금 더 생각해보기
     public void checkMaxSearchRange(LocalDateTime startDate, LocalDateTime endDate) {
         if (getYearPeriodBetween(startDate, endDate) > configurationService.getMaxSearchYearRange()) {
-            throw new BadRequestParamException("최대 날짜 범위는 %s년 이하 입니다.".formatted(configurationService.getMaxSearchYearRange()));
+            throw new BadRequestParamException(BEYOND_MAX_SEARCH_RANGE_MESSAGE);
         }
     }
 

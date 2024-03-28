@@ -24,18 +24,10 @@ public class JwtAuthProvider implements AuthProvider {
 
     private final ConfigurationService configurationService;
 
-
-    private final Long SECOND = 1000L;
-    private final Long MINUTE = 60 * SECOND;
-    private final Long HOUR = 60 * MINUTE;
-    private final Long AUTH_DURATION = 255 * HOUR;
-
-
-
     @Override
     public String createAuthentication(Member member) {
         SecretKey key = getSecretKey();
-        Date date = getExpriationDate(AUTH_DURATION);
+        Date date = getExpriationDate(configurationService.getJwtDuration() * 1000);
 
         return Jwts.builder()
                 .setSubject(SUBJECT)

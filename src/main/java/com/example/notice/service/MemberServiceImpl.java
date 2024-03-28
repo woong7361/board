@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.example.notice.constant.ErrorMessageConstant.DUPLICATE_NAME_MESSAGE;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -17,7 +19,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void createUserRoleMember(Member member) {
-        //TODO 위치가 고민 - 비슷한 느낌 네이밍이냐 혹은 나누냐
         isDuplicateMemberLoginId(member.getLoginId());
 
         member.setUserRole();
@@ -26,7 +27,7 @@ public class MemberServiceImpl implements MemberService {
 
     public void isDuplicateMemberLoginId(String loginId) {
         if (memberRepository.isDuplicateMemberLoginId(loginId)) {
-            throw new BadRequestParamException("duplicate member name");
+            throw new BadRequestParamException(DUPLICATE_NAME_MESSAGE);
         }
     }
 

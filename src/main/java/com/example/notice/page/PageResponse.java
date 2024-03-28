@@ -18,7 +18,6 @@ public class PageResponse<T> {
     private Integer contentSize;
     private Integer pageSize;
 
-    // 방어코드
     public PageResponse(List<T> contents, PageRequest pageRequest, Integer totalCount) {
         this.contents = contents;
         this.pageOffset = pageRequest.getOffset();

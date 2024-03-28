@@ -17,6 +17,4 @@ public class NoticeBoardSearchDTO {
 
     private String category;
     private String keyWord;
-
-
 }

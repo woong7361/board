@@ -6,6 +6,9 @@ import lombok.*;
 
 import java.util.List;
 
+/**
+ * 문의 게시판 조회 응답 DTO
+ */
 @Getter
 @Builder
 @AllArgsConstructor

@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import static com.example.notice.constant.ErrorMessageConstant.INVALID_SESSION_MESSAGE;
+import static com.example.notice.constant.ErrorMessageConstant.NOT_SESSION_MESSAGE;
 import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
 
 /**
@@ -26,11 +28,11 @@ public class AdminSessionInterceptor implements HandlerInterceptor {
 
     private void checkAdminAuthentication(HttpSession session) {
         if (session == null) {
-            throw new AuthenticationException("세션이 없습니다.");
+            throw new AuthenticationException(NOT_SESSION_MESSAGE);
         }
 
         if (session.getAttribute(ADMIN_SESSION_KEY) == null) {
-            throw new AuthenticationException("잘못된 세션입니다.");
+            throw new AuthenticationException(INVALID_SESSION_MESSAGE);
         }
     }
 }

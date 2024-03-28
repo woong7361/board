@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 /**
- * 코멘트
+ * 코멘트 엔티티
  */
 @Getter
 @NoArgsConstructor
@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class Comment {
 
     private Long commentId;
-    //    private Long memberId;
     @Getter(AccessLevel.PRIVATE)
     private Member member;
 
@@ -34,8 +33,6 @@ public class Comment {
         return member.getName();
     }
 
-    //TODO 좀 복잡하게 내부가 들어가있어서 호불호가 갈릴수도 but, 내부를 가릴 수 있어 편하다는 장점 존재
-    // 그 이전 DTO를 생성하지 않기위해 Comment에서 getMemberName()을 정책적으로 허용하느냐의 문제
     @Builder
     protected Comment(Long commentId, Long memberId, Long freeBoardId, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.member = Member.builder()

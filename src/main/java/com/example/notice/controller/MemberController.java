@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.example.notice.constant.ErrorMessageConstant.LOGIN_ID_MUST_NOT_SAME_AS_PASSWORD_MESSAGE;
+
 /**
  * 회원 컨트롤러
  */
@@ -38,9 +40,8 @@ public class MemberController {
 
     private void checkLoginIdSameAsPassword(Member member) {
         if (member.getLoginId().equals(member.getPassword())) {
-            throw new BadRequestParamException("login Id should not be same as password");
+            throw new BadRequestParamException(LOGIN_ID_MUST_NOT_SAME_AS_PASSWORD_MESSAGE);
         }
     }
 
-    // 관리자 로그아웃 구현 해야함
 }

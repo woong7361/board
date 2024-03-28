@@ -128,15 +128,18 @@ public class NoticeBoardController {
     // 답변 생성 - 관리자만
     // 답변 삭제
     //자유 게시판 수정 & 생성 컨트롤러 단일화
+    //filter interceptor로 변환
+    //에러 메시지 상수화
 
     //자유게시판 - 관리자용
     // 생성
     // 수정
     // 삭제
 
-
     //에러 메시지 프로퍼티화
-    //filter interceptor로 변환
+    //date util class로 설정
+    //설정 파일 나누기
+    //test용 설정 파일 따로 만들기
     //인증과 인가 절차 따로?
     //spring rest docs 도입
     //패턴을 쓴다면 게시글 삭제시 파일 queue에 담아놓아 백업 구현?

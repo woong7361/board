@@ -13,6 +13,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import static com.example.notice.constant.ErrorMessageConstant.INVALID_SESSION_MESSAGE;
 import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
 
 /**
@@ -40,7 +41,7 @@ public class AdminAuthenticationHolderResolveHandler implements HandlerMethodArg
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         HttpSession session = request.getSession(false);
         if (session == null){
-            throw new AuthenticationException("관리자 인증 과정이 처리되지 않았습니다.");
+            throw new AuthenticationException(INVALID_SESSION_MESSAGE);
         }
         Member adminMember = (Member) session.getAttribute(ADMIN_SESSION_KEY);
         return new MemberPrincipal(adminMember);

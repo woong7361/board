@@ -60,6 +60,12 @@ public class CommentController {
                 .ok(Map.of(COMMENTS_PARAM, comments));
     }
 
+    /**
+     * 댓글 삭제 엔드포인트
+     * @param commentId 댓글 부모 게시글 식별자
+     * @param principal 댓글 삭제를 요청한 사용자 식별자
+     * @return 200 ok
+     */
     @DeleteMapping("/api/boards/free/comments/{commentId}")
     public ResponseEntity<Object> deleteComment(
             @PathVariable Long commentId,

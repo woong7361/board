@@ -1,6 +1,5 @@
 package com.example.notice.service;
 
-import com.example.notice.dto.common.IdList;
 import com.example.notice.dto.common.SuccessesAndFails;
 import com.example.notice.dto.request.FreeBoardSearchDTO;
 import com.example.notice.entity.AttachmentFile;
@@ -20,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
+import static com.example.notice.constant.ErrorMessageConstant.AUTHORIZATION_EXCEPTION_MESSAGE;
+import static com.example.notice.constant.ErrorMessageConstant.BOARD_NOT_EXIST_MESSAGE;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,7 +51,7 @@ public class FreeBoardServiceImpl implements FreeBoardService{
         freeBoardRepository.increaseViewsByBoardId(freeBoardId);
 
         return freeBoardRepository.findBoardById(freeBoardId)
-                .orElseThrow(() -> new BoardNotExistException("not exist board"));
+                .orElseThrow(() -> new BoardNotExistException(BOARD_NOT_EXIST_MESSAGE));
     }
 
     @Override
@@ -86,7 +88,7 @@ public class FreeBoardServiceImpl implements FreeBoardService{
     @Override
     public void checkFreeBoardAuthorization(Long freeBoardId, Long memberId) {
         freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId)
-                .orElseThrow(() -> new AuthorizationException("삭제할 권한이 없습니다."));
+                .orElseThrow(() -> new AuthorizationException(AUTHORIZATION_EXCEPTION_MESSAGE));
     }
 
 

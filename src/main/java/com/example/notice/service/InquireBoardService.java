@@ -24,8 +24,8 @@ public interface InquireBoardService {
      * 문의 게시판 검색
      *
      * @param inquireBoardSearchDTO 문의 게시판 검색 파라미터
-     * @param pageRequest             페이지 요청 파라미터
-     * @param memberId                검색 회원 식별자
+     * @param pageRequest 페이지 요청 파라미터
+     * @param memberId 검색 회원 식별자
      * @return 검색 결과
      */
     PageResponse<InquireBoardSearchResponseDTO> searchInquireBoard(InquireBoardSearchDTO inquireBoardSearchDTO, PageRequest pageRequest, Long memberId);

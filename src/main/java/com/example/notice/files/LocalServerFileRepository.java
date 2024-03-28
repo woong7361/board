@@ -3,6 +3,7 @@ package com.example.notice.files;
 import com.example.notice.config.ConfigurationService;
 import com.example.notice.exception.FileSaveCheckedException;
 import com.example.notice.exception.PhysicalFileNotFoundException;
+import com.example.notice.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

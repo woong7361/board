@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.example.notice.constant.ErrorMessageConstant.AUTHORIZATION_EXCEPTION_MESSAGE;
+import static com.example.notice.constant.ErrorMessageConstant.BOARD_NOT_EXIST_MESSAGE;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -43,7 +46,7 @@ public class InquireBoardServiceImpl implements InquireBoardService {
     @Override
     public InquireBoardResponseDTO getBoardById(Long inquireBoardId) {
         return inquireBoardRepository.findById(inquireBoardId)
-                .orElseThrow(() -> new EntityNotExistException("해당하는 문의 게시판이 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotExistException(BOARD_NOT_EXIST_MESSAGE));
     }
 
     @Override
@@ -64,7 +67,7 @@ public class InquireBoardServiceImpl implements InquireBoardService {
 
     private void checkInquireBoardAuthorization(Long inquireBoardId, Long memberId) {
         inquireBoardRepository.findByInquireBoardIdAndMemberId(inquireBoardId, memberId)
-                .orElseThrow(() -> new AuthorizationException("게시글에 대한 접근 권한이 없습니다."));
+                .orElseThrow(() -> new AuthorizationException(AUTHORIZATION_EXCEPTION_MESSAGE));
     }
 
 }

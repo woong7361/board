@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.example.notice.constant.ErrorMessageConstant.AUTHORIZATION_EXCEPTION_MESSAGE;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class CommentServiceImpl implements CommentService{
     @Override
     public void checkAuthorization(Long commentId, Long memberId) {
         commentRepository.getCommentByCommentIdAndMemberId(commentId, memberId)
-                .orElseThrow(() -> new AuthorizationException("댓글에 대한 권한이 없는 사용자입니다."));
+                .orElseThrow(() -> new AuthorizationException(AUTHORIZATION_EXCEPTION_MESSAGE));
     }
 
     @Override

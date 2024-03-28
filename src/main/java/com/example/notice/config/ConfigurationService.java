@@ -36,4 +36,10 @@ public interface ConfigurationService {
      * @return 최대 검색 기간
      */
     Long getMaxSearchYearRange();
+
+    /**
+     * JWT 만료 시간을 가져온다.
+     * @return JWT 만료 시간 millis
+     */
+    Long getJwtDuration();
 }
