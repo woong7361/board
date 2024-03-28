@@ -6,6 +6,7 @@ import com.example.notice.auth.principal.Principal;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.exception.BadRequestParamException;
+import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.service.FreeBoardService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +20,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -33,10 +36,11 @@ import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
 import static com.example.notice.mock.repository.MockFreeBoardRepository.SAVED_FREE_BOARD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 
-@WebMvcTest(FreeBoardController.class)
+@NoFilterMvcTest(FreeBoardController.class)
 class FreeBoardControllerTest {
 
     @Autowired
@@ -68,19 +72,22 @@ class FreeBoardControllerTest {
         @Test
         public void success() throws Exception {
             //given
-            FreeBoard board = FreeBoard.builder()
-                    .title("title")
-                    .content("content")
-                    .category("AAA")
-                    .build();
+            LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("title", "title");
+            params.add("content", "content");
+            params.add("category", "category");
+
+            MockMultipartFile file = new MockMultipartFile("files", "fdsafds".getBytes());
 
             long boardId = 10L;
-            when(freeBoardService.createFreeBoard(any(), files, member.getMemberId())).thenReturn(boardId);
+            when(freeBoardService.createFreeBoard(any(), any(), anyLong()))
+                    .thenReturn(boardId);
+
             //when
             //then
-            mockMvc.perform(MockMvcRequestBuilders.post(FREE_BOARD_CREATE_URI)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(mapper.writeValueAsString(board)))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(FREE_BOARD_CREATE_URI)
+                            .file(file)
+                            .params(params))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$." + FREE_BOARD_ID_PARAM).value(boardId));
 
@@ -273,18 +280,21 @@ class FreeBoardControllerTest {
         public void success() throws Exception {
             //given
             Long freeBoardId = 11L;
-            FreeBoard board = FreeBoard.builder()
-                    .freeBoardId(freeBoardId)
-                    .category("category222")
-                    .title("title222")
-                    .content("content123")
-                    .build();
+            LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("title", "title");
+            params.add("content", "content");
+            params.add("category", "category");
+            params.add("deleteFileIds", "1");
+            params.add("deleteFileIds", "2");
+            params.add("deleteFileIds", "3");
+
+            MockMultipartFile file = new MockMultipartFile("saveFiles", "fdsafds".getBytes());
             //when
 
             //then
-            mockMvc.perform(MockMvcRequestBuilders.put(FREE_BOARD_UPDATE_URI + "/" + freeBoardId.toString())
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(mapper.writeValueAsString(board)))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT, FREE_BOARD_UPDATE_URI + "/" + freeBoardId.toString())
+                            .file(file)
+                            .params(params))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s".formatted(FREE_BOARD_ID_PARAM)).value(freeBoardId));
         }

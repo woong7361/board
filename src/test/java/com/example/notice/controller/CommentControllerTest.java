@@ -1,17 +1,18 @@
 package com.example.notice.controller;
 
 import com.example.notice.auth.AuthenticationHolder;
+import com.example.notice.auth.filter.JwtTokenInterceptor;
 import com.example.notice.auth.principal.MemberPrincipal;
+import com.example.notice.config.WebConfig;
 import com.example.notice.constant.ResponseConstant;
 import com.example.notice.entity.Comment;
 import com.example.notice.entity.Member;
+import com.example.notice.mock.config.NoFilterMvcTest;
+import com.example.notice.mock.config.TestWebConfig;
 import com.example.notice.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,6 +20,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -28,7 +32,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.util.List;
 import java.util.stream.Stream;
 
-@WebMvcTest(CommentController.class)
+@NoFilterMvcTest(value = {CommentController.class})
 class CommentControllerTest {
 
     @Autowired
@@ -52,6 +56,7 @@ class CommentControllerTest {
     @DisplayName("댓글 생성 컨트롤러 테스트")
     public class CommentCreateTest {
         private static final String COMMENT_CREATE_URI = "/api/boards/free/%s/comments";
+
         @DisplayName("정상 처리")
         @Test
         public void createCommentTest() throws Exception {
@@ -74,7 +79,7 @@ class CommentControllerTest {
         @DisplayName("comment 생성 파라미터에 혀용되지 않은 입력값이 들어왔을때")
         @ParameterizedTest
         @MethodSource("invalidCommentParam")
-        public void invalidCommentParameter(String content) throws Exception{
+        public void invalidCommentParameter(String content) throws Exception {
             //given
             Long freeBoardId = 1L;
             Comment comment = Comment.builder()
@@ -105,6 +110,7 @@ class CommentControllerTest {
     @DisplayName("댓글 조회 컨트롤러 테스트")
     public class GetCommentTest {
         private static final String GET_COMMENT_URI = "/api/boards/free/%s/comments";
+
         @DisplayName("정상 처리")
         @Test
         public void success() throws Exception {
@@ -135,7 +141,7 @@ class CommentControllerTest {
 
         @DisplayName("게시글에 댓글이 없을때")
         @Test
-        public void returnBlankComments() throws Exception{
+        public void returnBlankComments() throws Exception {
             //given
             Long freeBoardId = 1L;
             //when
@@ -154,6 +160,7 @@ class CommentControllerTest {
     @DisplayName("댓글 삭제 컨트롤러 테스트")
     public class DeleteCommentTest {
         private static final String DELETE_COMMENT_URI = "/api/boards/free/comments/%s";
+
         @DisplayName("정상 처리")
         @Test
         public void deleteComment() throws Exception {

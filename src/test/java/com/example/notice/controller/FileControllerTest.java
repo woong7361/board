@@ -4,6 +4,7 @@ import com.example.notice.auth.AuthenticationHolder;
 import com.example.notice.auth.principal.MemberPrincipal;
 import com.example.notice.dto.common.IdList;
 import com.example.notice.entity.Member;
+import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.service.FileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
@@ -19,7 +20,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
 
 
-@WebMvcTest(FileController.class)
+//@WebMvcTest(FileController.class)
+@NoFilterMvcTest(FileController.class)
 class FileControllerTest {
 
     @Autowired

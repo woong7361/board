@@ -5,6 +5,7 @@ import com.example.notice.auth.AuthenticationHolderResolveHandler;
 import com.example.notice.auth.filter.AdminSessionInterceptor;
 import com.example.notice.auth.filter.JwtTokenAuthFilter;
 import com.example.notice.auth.AuthProvider;
+import com.example.notice.auth.filter.JwtTokenInterceptor;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -27,6 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
     private final AdminAuthenticationHolderResolveHandler adminAuthenticationHolderResolveHandler;
     private final AdminSessionInterceptor adminSessionInterceptor;
 
+    private final JwtTokenInterceptor jwtTokenInterceptor;
+
 
     /**
      * argumentResolvers에 authenticationHolderResolveHandler 추가
@@ -45,5 +48,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminSessionInterceptor)
                 .addPathPatterns("/admin/**");
+
+        registry.addInterceptor(jwtTokenInterceptor)
+                .addPathPatterns("/api/**");
     }
 }

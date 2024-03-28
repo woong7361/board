@@ -2,6 +2,7 @@ package com.example.notice.controller;
 
 import com.example.notice.entity.Member;
 import com.example.notice.mock.auth.MockAuthProvider;
+import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.mock.service.MockAuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
 
-@WebMvcTest(AuthController.class)
+@NoFilterMvcTest(AuthController.class)
 class AuthControllerTest {
     public static final String LOGIN_URI = "/auth/member/login";
     public static final String ADMIN_LOGIN_URI = "/auth/admin/login";
@@ -31,13 +32,8 @@ class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    //TODO mockBean? 이미 controller test는 webMvcTest로 spring에 종속되어있는데 mocking 라이브러리의 도움을 받는편이 좋다?
     @SpyBean
     private MockAuthService authService;
-
-    // WebMvcConfigure에서 필요
-    @MockBean
-    private MockAuthProvider authProvider;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -57,7 +53,6 @@ class AuthControllerTest {
             //when
             //then
 
-            //TODO 이런 애들 mock 라이브러리를 써야 하는지... 혹은 service mocking을 어떻게 할 것인지
             mockMvc.perform(
                             MockMvcRequestBuilders.post(LOGIN_URI)
                                     .content(body)

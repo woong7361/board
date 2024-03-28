@@ -3,6 +3,7 @@ package com.example.notice.controller;
 
 import com.example.notice.entity.Member;
 import com.example.notice.exception.BadRequestParamException;
+import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.mock.service.MockMemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -19,14 +20,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-@WebMvcTest(MemberController.class)
+@NoFilterMvcTest(MemberController.class)
 class MemberControllerTest {
     public static final String REGISTER_URI = "/api/member";
 
     @Autowired
     private MockMvc mockMvc;
-
-    //TODO mockBean을 쓰는 것으로?
 
     @SpyBean
     private MockMemberService memberService;

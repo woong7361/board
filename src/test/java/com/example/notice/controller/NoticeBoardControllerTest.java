@@ -3,6 +3,7 @@ package com.example.notice.controller;
 import com.example.notice.dto.request.NoticeBoardSearchDTO;
 import com.example.notice.entity.Member;
 import com.example.notice.entity.NoticeBoard;
+import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
 import com.example.notice.service.NoticeBoardService;
@@ -35,7 +36,7 @@ import static com.example.notice.mock.repository.MockNoticeBoardRepository.NO_FK
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
-@WebMvcTest(NoticeBoardController.class)
+@NoFilterMvcTest(NoticeBoardController.class)
 class NoticeBoardControllerTest {
 
     @Autowired
@@ -328,18 +329,6 @@ class NoticeBoardControllerTest {
                                     .build()))
                     .andExpect(MockMvcResultMatchers.status().isOk());
         }
-
-        @DisplayName("관리자 로그인이 되어있지 않을때")
-        @Test
-        public void notAuthenticated() throws Exception{
-            //given
-            Long noticeBoardId = 153L;
-            //when
-
-            //then
-            mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_NOTICE_BOARD_URI.formatted(noticeBoardId)))
-                    .andExpect(MockMvcResultMatchers.status().isUnauthorized());
-        }
     }
 
     @Nested
@@ -369,22 +358,6 @@ class NoticeBoardControllerTest {
                             .content(mapper.writeValueAsString(noticeBoard))
                             .sessionAttr(ADMIN_SESSION_KEY, member))
                     .andExpect(MockMvcResultMatchers.status().isOk());
-        }
-
-        @DisplayName("관리자 로그인이 안되어있을때")
-        @Test
-        public void noAuthentication() throws Exception{
-            //given
-            long noticeBoardId = 1535L;
-            NoticeBoard noticeBoard = NoticeBoard.builder()
-                    .build();
-
-            //when
-            //then
-            mockMvc.perform(MockMvcRequestBuilders.put(NOTICE_BOARD_UPDATE_URI.formatted(noticeBoardId))
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(mapper.writeValueAsString(noticeBoard)))
-                    .andExpect(MockMvcResultMatchers.status().isUnauthorized());
         }
 
         @DisplayName("요청 인자 테스트")

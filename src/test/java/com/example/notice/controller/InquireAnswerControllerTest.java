@@ -2,6 +2,7 @@ package com.example.notice.controller;
 
 import com.example.notice.entity.InquireAnswer;
 import com.example.notice.entity.Member;
+import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.service.InquireAnswerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +28,7 @@ import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
-@WebMvcTest(InquireAnswerController.class)
+@NoFilterMvcTest(InquireAnswerController.class)
 class InquireAnswerControllerTest {
 
     @Autowired

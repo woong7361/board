@@ -5,17 +5,24 @@ import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.BoardNotExistException;
+import com.example.notice.mock.repository.MockAttachmentFileRepository;
 import com.example.notice.mock.repository.MockFreeBoardRepository;
+import com.example.notice.mock.repository.MockPhysicalFileRepository;
+import com.example.notice.mock.service.MockConfigurationService;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
 import com.example.notice.repository.FreeBoardRepository;
+import com.example.notice.utils.FileUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.notice.mock.repository.MockFreeBoardRepository.SAVED_FREE_BOARD;
@@ -24,7 +31,16 @@ import static com.example.notice.mock.repository.MockFreeBoardRepository.SAVED_F
 class FreeBoardServiceTest {
 
     FreeBoardRepository freeBoardRepository = new MockFreeBoardRepository();
-    FreeBoardService freeBoardService = new FreeBoardServiceImpl(freeBoardRepository);
+
+    MockPhysicalFileRepository physicalFileRepository = new MockPhysicalFileRepository();
+    MockAttachmentFileRepository attachmentFileRepository = new MockAttachmentFileRepository();
+    MockConfigurationService configurationService = new MockConfigurationService();
+    FileUtil fileUtil = new FileUtil(configurationService);
+    FreeBoardService freeBoardService = new FreeBoardServiceImpl(
+            freeBoardRepository,
+            attachmentFileRepository,
+            physicalFileRepository,
+            fileUtil);
 
     @Nested
     @DisplayName("게시글 생성 테스트")
@@ -38,9 +54,14 @@ class FreeBoardServiceTest {
                     .category("category")
                     .content("content")
                     .build();
+
+            long memberId = 154641L;
+            MockMultipartFile file = new MockMultipartFile("file", "fdava".getBytes());
+            List<MultipartFile> multipartFiles = List.of(file);
+
             //when
             //then
-            freeBoardService.createFreeBoard(board, files, member.getMemberId());
+            freeBoardService.createFreeBoard(board, multipartFiles, memberId);
         }
     }
 

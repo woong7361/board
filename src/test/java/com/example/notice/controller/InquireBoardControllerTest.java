@@ -3,6 +3,7 @@ package com.example.notice.controller;
 import com.example.notice.constant.ResponseConstant;
 import com.example.notice.dto.response.InquireBoardResponseDTO;
 import com.example.notice.entity.InquireBoard;
+import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.mock.util.MockMemberLogin;
 import com.example.notice.service.InquireBoardService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +27,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
-@WebMvcTest(InquireBoardController.class)
+@NoFilterMvcTest(InquireBoardController.class)
 class InquireBoardControllerTest {
 
     @Autowired
