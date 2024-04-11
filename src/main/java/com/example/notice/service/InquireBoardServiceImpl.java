@@ -45,6 +45,7 @@ public class InquireBoardServiceImpl implements InquireBoardService {
 
     @Override
     public InquireBoardResponseDTO getBoardById(Long inquireBoardId) {
+        //TODO 비밀글 여부 확인 후 렌더링 확인
         return inquireBoardRepository.findById(inquireBoardId)
                 .orElseThrow(() -> new EntityNotExistException(BOARD_NOT_EXIST_MESSAGE));
     }

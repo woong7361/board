@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 
 class DateValidationTest {
 
-    ConfigurationService configurationService = new MockConfigurationService();
-    private DateValidation dateValidation = new DateValidation(configurationService);
+    private DateValidation dateValidation = new DateValidation();
 
 
     @Nested
@@ -28,19 +27,19 @@ class DateValidationTest {
 
             //when
             //then
-            dateValidation.checkMaxSearchRange(startDate, endDate);
+            dateValidation.checkMaxRange(startDate, endDate, 1L);
         }
 
         @DisplayName("지정한 최대 검색 범위를 넘어갈때")
         @Test
         public void beyondMaxRange() throws Exception{
             //given
-            LocalDateTime startDate = LocalDateTime.now().minusYears(configurationService.getMaxSearchYearRange()+1);
+            LocalDateTime startDate = LocalDateTime.now().minusYears(2L);
             LocalDateTime endDate = LocalDateTime.now();
 
             //when
             //then
-            Assertions.assertThatThrownBy(() -> dateValidation.checkMaxSearchRange(startDate, endDate))
+            Assertions.assertThatThrownBy(() -> dateValidation.checkMaxRange(startDate, endDate, 1L))
                     .isInstanceOf(BadRequestParamException.class);
         }
     }

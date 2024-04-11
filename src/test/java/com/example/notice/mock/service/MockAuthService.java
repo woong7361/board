@@ -10,9 +10,6 @@ public class MockAuthService implements AuthService {
 
     public static final String AUTHENTICATION = "authentication";
 
-    /**
-     * @implSpec login 성공시 인증 문자열을 반환한다. -> MockAuthService.AUTHENTICATION
-     */
     @Override
     public String userAuthentication(Member member) {
         return AUTHENTICATION;
@@ -21,5 +18,9 @@ public class MockAuthService implements AuthService {
     @Override
     public Member adminAuthentication(Member member) {
         return member;
+    }
+
+    @Override
+    public void checkDuplicateLoginId(String loginId) {
     }
 }

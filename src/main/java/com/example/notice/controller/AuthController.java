@@ -29,6 +29,7 @@ public class AuthController {
 
     /**
      * 일반 유저 로그인 컨트롤러
+     *
      * @param member 회원 정보
      * @return 인증된 jwt token
      */
@@ -46,6 +47,7 @@ public class AuthController {
 
     /**
      * 관리자 로그인 컨트롤러
+     *
      * @param member 로그인 요청 정보
      * @return 200 ok
      */
@@ -58,5 +60,22 @@ public class AuthController {
         httpSession.setAttribute(ADMIN_SESSION_KEY, adminMember);
 
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 로그인 아이디 중복 확인 컨트롤러
+     * @param loginId 로그인 아이디
+     * @return 200 ok
+     */
+    @PostMapping("/auth/member/login-id")
+    public ResponseEntity<Object> checkDuplicateLoginId(
+            @RequestBody String loginId
+    ) {
+
+        authService.checkDuplicateLoginId(loginId);
+
+        return ResponseEntity
+                .ok()
+                .build();
     }
 }

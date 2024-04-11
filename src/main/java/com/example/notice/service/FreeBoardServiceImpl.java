@@ -71,6 +71,7 @@ public class FreeBoardServiceImpl implements FreeBoardService{
         if (freeBoardRepository.hasCommentByBoardId(freeBoardId)) {
             freeBoardRepository.deleteContentAndMemberByBoardId(freeBoardId);
         } else {
+            attachmentFileRepository.deleteByFreeBoardId(freeBoardId);
             freeBoardRepository.deleteByBoardId(freeBoardId);
         }
 

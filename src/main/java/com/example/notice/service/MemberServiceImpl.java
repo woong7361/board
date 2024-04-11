@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.example.notice.constant.ErrorMessageConstant.DUPLICATE_NAME_MESSAGE;
+import static com.example.notice.constant.ErrorMessageConstant.DUPLICATE_LOGIN_ID_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class MemberServiceImpl implements MemberService {
 
     public void isDuplicateMemberLoginId(String loginId) {
         if (memberRepository.isDuplicateMemberLoginId(loginId)) {
-            throw new BadRequestParamException(DUPLICATE_NAME_MESSAGE);
+            throw new BadRequestParamException(DUPLICATE_LOGIN_ID_MESSAGE);
         }
     }
 

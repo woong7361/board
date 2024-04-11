@@ -1,5 +1,6 @@
 package com.example.notice.mock.repository;
 
+import com.example.notice.dto.response.FileResponseDTO;
 import com.example.notice.entity.AttachmentFile;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.mock.database.MemoryDataBase;
@@ -8,6 +9,7 @@ import com.example.notice.repository.AttachmentFileRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.notice.mock.database.MemoryDataBase.ATTACHMENT_FILE_STORAGE;
 import static com.example.notice.mock.database.MemoryDataBase.FREE_BOARD_STORAGE;
@@ -44,6 +46,18 @@ public class MockAttachmentFileRepository implements AttachmentFileRepository {
                             .filter((fb) -> af.getFreeBoardId().equals(fb.getFreeBoardId()))
                             .anyMatch((fb) -> fb.getMemberId().equals(memberId)))
                 .findFirst();
+    }
+
+    @Override
+    public List<FileResponseDTO> findByFreeBoardId(Long freeBoardId) {
+        return ATTACHMENT_FILE_STORAGE.stream()
+                .filter((af) -> af.getFreeBoardId().equals(freeBoardId))
+                .map(attachmentFile -> FileResponseDTO.builder()
+                        .freeBoardId(attachmentFile.getFreeBoardId())
+                        .fileId(attachmentFile.getFileId())
+                        .originalName(attachmentFile.getOriginalName())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public static AttachmentFile.AttachmentFileBuilder attachmentFileBuilderMapper(AttachmentFile file) {

@@ -22,7 +22,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @NoFilterMvcTest(MemberController.class)
 class MemberControllerTest {
-    public static final String REGISTER_URI = "/api/member";
+    public static final String REGISTER_URI = "/auth/member";
 
     @Autowired
     private MockMvc mockMvc;

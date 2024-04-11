@@ -16,10 +16,10 @@ public class PageRequest {
     @NotNull
     private Integer currentPage;
 
-    @Pattern(regexp = "[a-zA-z]")
+    @Pattern(regexp = "[a-zA-z]{0,}")
     private String orderColumn;
 
-    @Pattern(regexp = "[a-zA-z_]")
+    @Pattern(regexp = "[a-zA-z_]{0,}")
     private String orderType;
 
     public Integer getOffset() {

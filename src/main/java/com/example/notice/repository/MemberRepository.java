@@ -38,4 +38,10 @@ public interface MemberRepository {
      * @return nullable 관리자
      */
     Optional<Member> findAdminMemberByLoginIdAndPassword(@Param("member") Member member);
+
+    /**
+     * 로그인 아이디로 회원을 찾는다.
+     * @param loginId 로그인 아이디
+     */
+    Optional<Member> findMemberByLoginId(@Param("loginId") String loginId);
 }

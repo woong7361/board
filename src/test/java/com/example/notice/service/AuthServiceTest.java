@@ -2,9 +2,12 @@ package com.example.notice.service;
 
 
 import com.example.notice.entity.Member;
+import com.example.notice.exception.BadRequestParamException;
 import com.example.notice.exception.MemberNotExistException;
 import com.example.notice.mock.auth.MockAuthProvider;
+import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.mock.repository.MockMemberRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -53,6 +56,38 @@ class AuthServiceTest {
             //when
             //then
             assertThatThrownBy(() -> authService.userAuthentication(member)).isInstanceOf(MemberNotExistException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("로그인 아이디 중복 체크 테스트")
+    public class LoginIdDuplicateCheckTest {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            String loginId = "loginId";
+
+            //when
+            //then
+            authService.checkDuplicateLoginId(loginId);
+        }
+
+        @DisplayName("중복되는 아이디가 존재할때")
+        @Test
+        public void test() throws Exception{
+            //given
+            Member member = Member.builder()
+                    .loginId("duplicateLoginId")
+                    .build();
+
+            MemoryDataBase.MEMBER_STORAGE
+                    .add(member);
+            //when
+            //then
+            Assertions.assertThatThrownBy(() -> authService.checkDuplicateLoginId(member.getLoginId()))
+                    .isInstanceOf(BadRequestParamException.class);
+
         }
     }
 

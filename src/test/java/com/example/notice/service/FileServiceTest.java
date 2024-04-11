@@ -1,12 +1,16 @@
 package com.example.notice.service;
 
 
+import com.example.notice.dto.response.FileResponseDTO;
+import com.example.notice.entity.AttachmentFile;
 import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.mock.repository.MockAttachmentFileRepository;
 import com.example.notice.mock.repository.MockPhysicalFileRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
+
+import java.util.List;
 
 
 class FileServiceTest {
@@ -217,6 +221,37 @@ class FileServiceTest {
             //when
 
             //then
+        }
+    }
+
+    @Nested
+    @DisplayName("자유게시판 게시글에 속한 파일 가져오기")
+    public class GetFileByFreeBoardId {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            Long freeBoardId = 1454314L;
+
+            AttachmentFile file1 = AttachmentFile.builder()
+                    .freeBoardId(freeBoardId)
+                    .fileId(44561L)
+                    .originalName("name23")
+                    .build();
+
+            AttachmentFile file2 = AttachmentFile.builder()
+                    .freeBoardId(freeBoardId)
+                    .build();
+
+            fileRepository.saveWithFreeBoardId(file1, freeBoardId);
+            fileRepository.saveWithFreeBoardId(file2, freeBoardId);
+
+            //when
+            List<FileResponseDTO> results = fileService.getFileByFreeBoardId(freeBoardId);
+            //then
+
+            Assertions.assertThat(results.size()).isEqualTo(2);
+            Assertions.assertThat(results.get(0)).usingRecursiveComparison().isEqualTo(file1);
         }
     }
 }

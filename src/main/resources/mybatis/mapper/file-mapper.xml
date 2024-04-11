@@ -29,6 +29,23 @@
             AND fb.member_id = #{memberId}
     </select>
 
+    <select id="findByFreeBoardId" resultType="com.example.notice.dto.response.FileResponseDTO">
+        SELECT *
+        FROM file
+        WHERE file.free_board_id = #{freeBoardId}
+    </select>
+
+    <select id="findOriginalNameById">
+        SELECT file.original_name
+        FROM file
+        WHERE file.file_id = #{fileId}
+    </select>
+
+    <delete id="deleteByFreeBoardId">
+        DELETE FROM file
+        WHERE free_board_id = #{freeBoardId}
+    </delete>
+
 
 
 </mapper>

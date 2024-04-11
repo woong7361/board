@@ -39,4 +39,10 @@
             AND member.role = 'ADMIN'
     </select>
 
+    <select id="findMemberByLoginId" resultType="com.example.notice.entity.Member">
+        SELECT *
+        FROM member
+        WHERE member.login_id = #{loginId}
+    </select>
+
 </mapper>

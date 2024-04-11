@@ -1,9 +1,11 @@
 package com.example.notice.repository;
 
+import com.example.notice.dto.response.FileResponseDTO;
 import com.example.notice.entity.AttachmentFile;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -39,4 +41,24 @@ public interface AttachmentFileRepository {
      * @param memberId 파일 요청자의 식별자
      */
     Optional<AttachmentFile> findByFileIdAndMemberId(@Param("fileId") Long fileId, @Param("memberId") Long memberId);
+
+    /**
+     * 자유게시판 게시글 식별자로 파일 가져오기
+     * @param freeBoardId 자유게시판 식별자
+     * @return 파일 리스트
+     */
+    List<FileResponseDTO> findByFreeBoardId(@Param("freeBoardId") Long freeBoardId);
+
+    /**
+     * 파일 식별자에 해당하는 원본이름 가져오기
+     * @param fileId 파일 식별자
+     * @return 원본 이름
+     */
+    String findOriginalNameById(@Param("fileId") Long fileId);
+
+    /**
+     * 게시판 게시글 식별자에 해당하는 파일 삭제
+     * @param freeBoardId 게시글 식별자
+     */
+    void deleteByFreeBoardId(@Param("freeBoardId") Long freeBoardId);
 }

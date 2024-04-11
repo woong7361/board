@@ -17,11 +17,17 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @RequiredArgsConstructor
 public class JwtTokenInterceptor implements HandlerInterceptor {
 
+    public static final String OPTIONS_METHOD = "OPTIONS";
     private final AuthProvider authProvider;
     public static final String AUTHORIZATION = "Authorization";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        //TODO 따로 해결할 방법
+        if (request.getMethod().equals(OPTIONS_METHOD)) {
+            return true;
+        }
+
         String bearerToken = request.getHeader(AUTHORIZATION);
 
         Member member = authProvider.verify(bearerToken);

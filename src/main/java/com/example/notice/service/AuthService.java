@@ -21,4 +21,10 @@ public interface AuthService {
      * @return 관리자 정보
      */
     Member adminAuthentication(Member member);
+
+    /**
+     * 로그인 아이디 중복 확인
+     * @param loginId 중복 확인하려는 로그인 아이디
+     */
+    void checkDuplicateLoginId(String loginId);
 }

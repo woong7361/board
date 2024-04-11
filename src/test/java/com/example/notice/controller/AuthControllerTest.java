@@ -1,19 +1,14 @@
 package com.example.notice.controller;
 
 import com.example.notice.entity.Member;
-import com.example.notice.mock.auth.MockAuthProvider;
 import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.mock.service.MockAuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpSession;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
@@ -130,5 +125,26 @@ class AuthControllerTest {
                     .usingRecursiveComparison().isEqualTo(member);
         }
 
+    }
+
+    @Nested
+    @DisplayName("로그인 아이디 중복 확인 테스트")
+    public class LoginIdDuplicateControllerTest {
+
+        private static final String LOGIN_ID_DUPLICATE_CHECK_URI = "/auth/member/login-id";
+
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            String loginId = "loginId";
+
+            //when
+            //then
+            mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_ID_DUPLICATE_CHECK_URI)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(loginId)))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+        }
     }
 }

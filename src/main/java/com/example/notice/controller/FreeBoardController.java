@@ -1,7 +1,9 @@
 package com.example.notice.controller;
 
+import com.example.notice.auth.AdminAuthenticationPrincipal;
 import com.example.notice.auth.AuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
+import com.example.notice.constant.ResponseConstant;
 import com.example.notice.dto.request.FreeBoardSearchDTO;
 import com.example.notice.exception.BadRequestParamException;
 import com.example.notice.page.PageRequest;
@@ -40,7 +42,7 @@ public class FreeBoardController {
     @PostMapping("/api/boards/free")
     public ResponseEntity<Map<String, Long>> createFreeBoard(
             @Valid @ModelAttribute FreeBoard freeBoard,
-            @RequestParam List<MultipartFile> files,
+            @RequestParam(required = false) List<MultipartFile> files,
             @AuthenticationPrincipal Principal<Member> principal
     ) {
         Member member = principal.getAuthentication();
@@ -60,7 +62,7 @@ public class FreeBoardController {
      */
     @GetMapping("/api/boards/free/{freeBoardId}")
     public ResponseEntity<FreeBoard> getFreeBoard(
-            @PathVariable(name = "freeBoardId") Long freeBoardId
+            @PathVariable Long freeBoardId
     ) {
         FreeBoard freeBoard = freeBoardService.getBoardById(freeBoardId);
 
@@ -94,10 +96,9 @@ public class FreeBoardController {
      */
     @DeleteMapping("/api/boards/free/{freeBoardId}")
     public ResponseEntity<Object> deleteFreeBoard(
-            @PathVariable(name = "freeBoardId") Long freeBoardId,
+            @PathVariable Long freeBoardId,
             @AuthenticationPrincipal Principal<Member> principal) {
         Member member = principal.getAuthentication();
-        //
         freeBoardService.checkFreeBoardAuthorization(freeBoardId, member.getMemberId());
 
         freeBoardService.deleteFreeBoardById(freeBoardId);
@@ -116,11 +117,67 @@ public class FreeBoardController {
             @Valid @ModelAttribute FreeBoard freeBoard,
             @RequestParam List<MultipartFile> saveFiles,
             @RequestParam List<Long> deleteFileIds,
-            @PathVariable(name = "freeBoardId") Long freeBoardId,
+            @PathVariable Long freeBoardId,
             @AuthenticationPrincipal Principal<Member> principal) {
         Member member = principal.getAuthentication();
         freeBoardService.checkFreeBoardAuthorization(freeBoardId, member.getMemberId());
 
+        freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId);
+
+        return ResponseEntity
+                .ok(Map.of(FREE_BOARD_ID_PARAM, freeBoardId));
+    }
+
+    /**
+     * 관리자 자유게시판 게시글 생성
+     * @param freeBoard 게시글 생성 파라미터
+     * @param files 게시글 첨부파일들
+     * @param principal 관리자 인증 객체
+     * @return 생성된 자유게시판 식별자
+     */
+    @PostMapping("/admin/boards/free")
+    public ResponseEntity<Map<String, Long>> createFreeBoardByAdmin(
+            @Valid @ModelAttribute FreeBoard freeBoard,
+            @RequestParam List<MultipartFile> files,
+            @AdminAuthenticationPrincipal Principal<Member> principal
+    ) {
+        Member admin = principal.getAuthentication();
+
+        Long freeBoardId = freeBoardService.createFreeBoard(freeBoard, files, admin.getMemberId());
+
+        return ResponseEntity
+                .ok(Map.of(FREE_BOARD_ID_PARAM, freeBoardId));
+    }
+
+    /**
+     * 관리자 자유게시판 게시글 삭제
+     * @param freeBoardId 자유게시판 게시글 식별자
+     * @return 200 ok
+     */
+    @DeleteMapping("/admin/boards/free/{freeBoardId}")
+    public ResponseEntity<Object> deleteFreeBoardByAdmin(
+            @PathVariable Long freeBoardId) {
+        freeBoardService.deleteFreeBoardById(freeBoardId);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+
+    /**
+     * 관리자 자유게시판 게시글 수정
+     * @param freeBoard 게시글 수정 파라미터
+     * @param saveFiles 추가로 저장할 첨부파일들
+     * @param deleteFileIds 삭제할 첨부파일 식별자들
+     * @param freeBoardId 수정할 자유게시판 게시글 식별자
+     * @return 200 ok
+     */
+    @PutMapping("/admin/boards/free/{freeBoardId}")
+    public ResponseEntity<Object> updateFreeBoardByAdmin(
+            @Valid @ModelAttribute FreeBoard freeBoard,
+            @RequestParam List<MultipartFile> saveFiles,
+            @RequestParam List<Long> deleteFileIds,
+            @PathVariable Long freeBoardId) {
         freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId);
 
         return ResponseEntity

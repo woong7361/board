@@ -1,6 +1,8 @@
 package com.example.notice.controller;
 
 
+import com.example.notice.dto.response.FileResponseDTO;
+import com.example.notice.entity.AttachmentFile;
 import com.example.notice.exception.PhysicalFileNotFoundException;
 import com.example.notice.service.FileService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * 파일 컨트롤러
@@ -34,20 +37,35 @@ public class FileController {
     public ResponseEntity<InputStreamResource> downloadFile(
             @PathVariable Long fileId) {
         File file = fileService.getPhysicalFile(fileId);
+        String originalName = fileService.getFileOriginalNameById(fileId);
 
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .contentLength(file.length())
-                .header(HttpHeaders.CONTENT_DISPOSITION, getContentDispositionValue(file))
+                .header(HttpHeaders.CONTENT_DISPOSITION, getContentDispositionValue(originalName))
                 .body(getInputStreamResource(file));
     }
 
 
-    private String getContentDispositionValue(File file) {
+    /**
+     * 자유게시판 게시글 식별자로 파일 가져오기
+     * @param freeBoardId 자유게시판 식별자
+     * @return 파일 리스트
+     */
+    @GetMapping("/api/boards/free/{freeBoardId}/files")
+    public ResponseEntity<List<FileResponseDTO>> getFiles(@PathVariable Long freeBoardId) {
+        List<FileResponseDTO> files = fileService.getFileByFreeBoardId(freeBoardId);
+
+        return ResponseEntity
+                .ok(files);
+    }
+
+
+    private String getContentDispositionValue(String originalName) {
         return ContentDisposition
                 .attachment()
-                .filename(file.getName(), StandardCharsets.UTF_8)
+                .filename(originalName, StandardCharsets.UTF_8)
                 .build()
                 .toString();
     }

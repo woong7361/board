@@ -68,4 +68,11 @@ public class MockMemberRepository implements MemberRepository {
                 .findFirst();
     }
 
+    @Override
+    public Optional<Member> findMemberByLoginId(String loginId) {
+        return MEMBER_STORAGE.stream()
+                .filter(member -> member.getLoginId().equals(loginId))
+                .findFirst();
+    }
+
 }

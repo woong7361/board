@@ -71,7 +71,7 @@
 
     <select id="findBoardsBySearchParam" resultType="com.example.notice.entity.FreeBoard">
         SELECT
-            free_board_id, title, views, created_at,
+            free_board_id, title, views, created_at, modified_at,
             ct.value as 'category',
             m.name as 'member.name', m.member_id as 'member.memberId',
             (SELECT count(*) > 0 from file) as have_file
@@ -114,7 +114,8 @@
 
     <delete id="deleteByBoardId">
         DELETE FROM free_board
-        WHERE free_board_id = #{freeBoardId}
+        WHERE
+            free_board_id = #{freeBoardId}
     </delete>
 
     <select id="findBoardByIdAndMemberId">

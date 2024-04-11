@@ -27,8 +27,9 @@ public class MemberController {
      * @param member 새로운 멤버 요청 파라미터
      * @return 200 ok
      */
-    @PostMapping("/api/member")
-    public ResponseEntity<Object> register(@Validated(MemberRegisterValidationGroup.class) @RequestBody Member member) {
+    @PostMapping("/auth/member")
+    public ResponseEntity<Object> register(
+            @Validated(MemberRegisterValidationGroup.class) @RequestBody Member member) {
         checkLoginIdSameAsPassword(member);
         memberService.createUserRoleMember(member);
 

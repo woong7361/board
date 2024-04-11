@@ -3,6 +3,7 @@ package com.example.notice.dto.response;
 import com.example.notice.entity.InquireBoard;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
  * 문의 게시판 검색 응답 DTO
  */
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class InquireBoardSearchResponseDTO extends InquireBoard {

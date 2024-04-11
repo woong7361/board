@@ -52,6 +52,7 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
     }
 
     @Override
+    @Transactional
     public NoticeBoard getNoticeBoardById(Long noticeBoardId) {
         noticeBoardRepository.increaseViewsById(noticeBoardId);
 
