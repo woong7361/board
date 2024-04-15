@@ -32,9 +32,10 @@ public class InquireBoard {
     private Long views;
 
     @Builder
-    public InquireBoard(Long inquireBoardId, Long memberId, LocalDateTime createdAt, LocalDateTime modifiedAt, String title, String content, Long views, Boolean isSecret) {
+    public InquireBoard(Long inquireBoardId, Long memberId, String memberName, LocalDateTime createdAt, LocalDateTime modifiedAt, String title, String content, Long views, Boolean isSecret) {
         this.member = Member.builder()
                 .memberId(memberId)
+                .name(memberName)
                 .build();
         this.inquireBoardId = inquireBoardId;
         this.createdAt = createdAt;

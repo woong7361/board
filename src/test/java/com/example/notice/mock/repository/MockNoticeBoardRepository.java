@@ -22,6 +22,9 @@ public class MockNoticeBoardRepository implements NoticeBoardRepository {
             .isFixed(true)
             .views(0L)
             .createdAt(LocalDateTime.now())
+            .modifiedAt(LocalDateTime.now())
+            .memberId(1534L)
+            .memberName("name")
             .build();
 
 

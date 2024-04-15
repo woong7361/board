@@ -1,0 +1,198 @@
+= Spring REST Docs Test
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:seclinks:
+
+// === TEST
+// include::test.adoc[]
+
+=== 회원 가입
+==== 요청
+include::{snippets}/register/success/http-request.adoc[]
+include::{snippets}/register/success/request-fields.adoc[]
+==== 응답
+include::{snippets}/register/success/http-response.adoc[]
+
+=== 회원 로그인
+==== 요청
+include::{snippets}/login-test/success/http-request.adoc[]
+include::{snippets}/login-test/success/request-fields.adoc[]
+==== 응답
+include::{snippets}/login-test/success/http-response.adoc[]
+include::{snippets}/login-test/success/response-fields.adoc[]
+
+=== 관리자 로그인
+==== 요청
+include::{snippets}/admin-login/success/http-request.adoc[]
+include::{snippets}/admin-login/success/request-fields.adoc[]
+==== 응답
+include::{snippets}/admin-login/success/http-response.adoc[]
+
+
+=== 댓글 생성
+===== 요청
+include::{snippets}/comment-create-test/success/http-request.adoc[]
+===== Request Body
+include::{snippets}/comment-create-test/success/request-fields.adoc[]
+===== Request Header
+include::{snippets}/comment-create-test/success/request-headers.adoc[]
+==== 응답
+include::{snippets}/comment-create-test/success/http-response.adoc[]
+
+=== 댓글 리스트 조회
+==== 요청
+include::{snippets}/get-comment-test/success/http-request.adoc[]
+===== Path Variable
+include::{snippets}/get-comment-test/success/path-parameters.adoc[]
+==== 응답
+include::{snippets}/get-comment-test/success/http-response.adoc[]
+===== Response Body
+include::{snippets}/get-comment-test/success/response-fields.adoc[]
+
+
+=== 댓글 삭제
+==== 요청
+include::{snippets}/delete-comment-test/success/http-request.adoc[]
+include::{snippets}/delete-comment-test/success/path-parameters.adoc[]
+include::{snippets}/delete-comment-test/success/request-headers.adoc[]
+==== 응답
+include::{snippets}/delete-comment-test/success/http-response.adoc[]
+
+
+
+=== 파일 조회
+==== 요청
+include::{snippets}/file-get/http-request.adoc[]
+include::{snippets}/file-get/path-parameters.adoc[]
+==== 응답
+include::{snippets}/file-get/http-response.adoc[]
+include::{snippets}/file-get/response-fields.adoc[]
+
+
+
+=== 파일 다운도르
+==== 요청
+include::{snippets}/file.download/http-request.adoc[]
+include::{snippets}/file.download//path-parameters.adoc[]
+==== 응답
+include::{snippets}/file.download//http-response.adoc[]
+
+
+=== 문의 게시글 생성
+==== 요청
+include::{snippets}/inquire-board-create-controller-test/success/http-request.adoc[]
+include::{snippets}/inquire-board-create-controller-test/success/request-fields.adoc[]
+==== 응답
+include::{snippets}/inquire-board-create-controller-test/success/http-response.adoc[]
+include::{snippets}/inquire-board-create-controller-test/success/response-fields.adoc[]
+
+
+=== 문의 게시글 검색
+==== 요청
+include::{snippets}/inquire-board-search-controller-test/success/http-request.adoc[]
+include::{snippets}/inquire-board-search-controller-test/success/query-parameters.adoc[]
+==== 응답
+include::{snippets}/inquire-board-search-controller-test/success/http-response.adoc[]
+include::{snippets}/inquire-board-search-controller-test/success/response-fields.adoc[]
+
+
+=== 문의 게시글 조회
+==== 요청
+include::{snippets}/inquire-board-get-controller-test/success/http-request.adoc[]
+include::{snippets}/inquire-board-get-controller-test/success/path-parameters.adoc[]
+==== 응답
+include::{snippets}/inquire-board-get-controller-test/success/http-response.adoc[]
+include::{snippets}/inquire-board-get-controller-test/success/response-fields.adoc[]
+
+
+=== 문의 게시글 수정
+==== 요청
+include::{snippets}/inquire-board-update-controller-test/success/http-request.adoc[]
+include::{snippets}/inquire-board-update-controller-test/success/path-parameters.adoc[]
+==== 응답
+include::{snippets}/inquire-board-update-controller-test/success/http-response.adoc[]
+
+
+=== 문의 게시글 삭제
+==== 요청
+include::{snippets}/inquire-board-delete-controller-test/success/http-request.adoc[]
+include::{snippets}/inquire-board-delete-controller-test/success/path-parameters.adoc[]
+==== 응답
+include::{snippets}/inquire-board-delete-controller-test/success/http-response.adoc[]
+
+
+=== 공지 게시글 생성
+==== 요청
+include::{snippets}/notice-board-create/success/http-request.adoc[]
+include::{snippets}/notice-board-create/success/request-fields.adoc[]
+==== 응답
+include::{snippets}/notice-board-create/success/http-response.adoc[]
+include::{snippets}/notice-board-create/success/response-fields.adoc[]
+
+
+=== 공지 게시글 조회
+==== 요청
+include::{snippets}/get-notice-board/success/http-request.adoc[]
+include::{snippets}/get-notice-board/success/path-parameters.adoc[]
+==== 응답
+include::{snippets}/get-notice-board/success/http-response.adoc[]
+include::{snippets}/get-notice-board/success/response-fields.adoc[]
+
+
+=== 공지 게시글 검색
+==== 요청
+include::{snippets}/get-none-fixed-notice-test/success/http-request.adoc[]
+include::{snippets}/get-none-fixed-notice-test/success/query-parameters.adoc[]
+==== 응답
+include::{snippets}/get-none-fixed-notice-test/success/http-response.adoc[]
+include::{snippets}/get-none-fixed-notice-test/success/response-fields.adoc[]
+
+
+=== 공지 게시글 - 상단 고정 조회
+==== 요청
+include::{snippets}/get-fixed-notice-board/success/http-request.adoc[]
+==== 응답
+include::{snippets}/get-fixed-notice-board/success/http-response.adoc[]
+include::{snippets}/get-fixed-notice-board/success/response-fields.adoc[]
+
+
+=== 공지 게시글 수정
+==== 요청
+include::{snippets}/update-notice-board-test/success/http-request.adoc[]
+include::{snippets}/update-notice-board-test/success/path-parameters.adoc[]
+include::{snippets}/update-notice-board-test/success/request-fields.adoc[]
+==== 응답
+include::{snippets}/update-notice-board-test/success/http-response.adoc[]
+
+
+=== 공지 게시글 삭제
+==== 요청
+include::{snippets}/delete-notice-board-by-id/success/http-request.adoc[]
+include::{snippets}/delete-notice-board-by-id/success/path-parameters.adoc[]
+==== 응답
+include::{snippets}/delete-notice-board-by-id/success/http-response.adoc[]
+
+
+
+=== 문의 답변 생성
+==== 요청
+include::{snippets}/inquire-answer-create-controller-test/success/http-request.adoc[]
+include::{snippets}/inquire-answer-create-controller-test/success/path-parameters.adoc[]
+include::{snippets}/inquire-answer-create-controller-test/success/request-fields.adoc[]
+include::{snippets}/inquire-answer-create-controller-test/success/request-headers.adoc[]
+==== 응답
+include::{snippets}/inquire-answer-create-controller-test/success/http-response.adoc[]
+
+
+=== 문의 답변 삭제
+==== 요청
+include::{snippets}/inquire-answer-delete-controller-test/success/http-request.adoc[]
+include::{snippets}/inquire-answer-delete-controller-test/success/path-parameters.adoc[]
+include::{snippets}/inquire-answer-delete-controller-test/success/request-headers.adoc[]
+==== 응답
+include::{snippets}/inquire-answer-delete-controller-test/success/http-response.adoc[]
+
+
+

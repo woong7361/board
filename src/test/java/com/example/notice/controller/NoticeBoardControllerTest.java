@@ -6,8 +6,11 @@ import com.example.notice.entity.NoticeBoard;
 import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
+import com.example.notice.restdocs.RestDocsHelper;
 import com.example.notice.service.NoticeBoardService;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,7 +23,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.LinkedMultiValueMap;
@@ -35,17 +41,21 @@ import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
 import static com.example.notice.mock.repository.MockNoticeBoardRepository.NO_FK_NOTICE_BOARD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 
-@NoFilterMvcTest(NoticeBoardController.class)
-class NoticeBoardControllerTest {
-
-    @Autowired
-    MockMvc mockMvc;
+@WebMvcTest(NoticeBoardController.class)
+class NoticeBoardControllerTest extends RestDocsHelper {
 
     @MockBean
     NoticeBoardService noticeBoardService;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    @BeforeEach
+    public void initMapper() {
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
 
     @Nested
     @DisplayName("공지 게시판 게시글 생성 컨트롤러 테스트")
@@ -66,12 +76,36 @@ class NoticeBoardControllerTest {
             mockHttpSession.setAttribute(ADMIN_SESSION_KEY, Member.builder().build());
 
             //when
+            ResultActions action = mockMvc.perform(MockMvcRequestBuilders.post(NOTICE_BOARD_CREATE_URI)
+                    .headers(authenticationTestUtil.getLoginTokenHeaders(45341L))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(board))
+                    .session(mockHttpSession));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.post(NOTICE_BOARD_CREATE_URI)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(mapper.writeValueAsString(board))
-                            .session(mockHttpSession))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+            action
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+
+                    .andDo(restDocs.document(
+                            requestFields(
+                                    fieldWithPath("category").description("카테고리"),
+                                    fieldWithPath("title").description("제목"),
+                                    fieldWithPath("content").description("내용"),
+                                    fieldWithPath("isFixed").description("상단 고정 여부")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            requestHeaders(
+                                    headerWithName("Authorization").description("JWT token")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            responseFields(
+                                    fieldWithPath("noticeBoardId").description("게시글 식별자")
+                            )
+                    ))
+            ;
+
         }
 
         @DisplayName("요청 인자 테스트")
@@ -91,6 +125,7 @@ class NoticeBoardControllerTest {
             //when
             //then
             mockMvc.perform(MockMvcRequestBuilders.post(NOTICE_BOARD_CREATE_URI)
+                            .headers(authenticationTestUtil.getLoginTokenHeaders(45341L))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(mapper.writeValueAsString(board))
                             .session(mockHttpSession))
@@ -121,18 +156,24 @@ class NoticeBoardControllerTest {
             //given
             NoticeBoard board = NoticeBoard.builder()
                     .noticeBoardId(156L)
-                    .title("title1")
-                    .category("category1")
+                    .title("title")
+                    .category("category")
+                    .content("content")
                     .views(123L)
                     .isFixed(true)
+                    .createdAt(LocalDateTime.now())
+                    .modifiedAt(LocalDateTime.now())
                     .memberId(1531L)
+                    .memberName("name")
                     .build();
             //when
             Mockito.when(noticeBoardService.getFixedNoticeBoardWithoutContent())
                     .thenReturn(List.of(board));
 
+            ResultActions action = mockMvc.perform(MockMvcRequestBuilders.get(GET_FIXED_NOTICE_BOARD_URI));
             //then
-            mockMvc.perform(MockMvcRequestBuilders.get(GET_FIXED_NOTICE_BOARD_URI))
+
+            action
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers
                             .jsonPath("$.%s[0].noticeBoardId".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getNoticeBoardId()))
@@ -141,13 +182,26 @@ class NoticeBoardControllerTest {
                     .andExpect(MockMvcResultMatchers
                             .jsonPath("$.%s[0].title".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getTitle()))
                     .andExpect(MockMvcResultMatchers
-                            .jsonPath("$.%s[0].createdAt".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getCreatedAt()))
-                    .andExpect(MockMvcResultMatchers
                             .jsonPath("$.%s[0].isFixed".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getIsFixed()))
                     .andExpect(MockMvcResultMatchers
                             .jsonPath("$.%s[0].memberId".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getMemberId()))
                     .andExpect(MockMvcResultMatchers
                             .jsonPath("$.%s[0].memberName".formatted(FIXED_NOTICE_BOARDS_PARAM)).value(board.getMemberName()));
+
+            action.andDo(restDocs.document(
+                    responseFields(
+                            fieldWithPath("fixedNoticeBoards[].noticeBoardId").description("게시글 식별자"),
+                            fieldWithPath("fixedNoticeBoards[].category").description("카테고리"),
+                            fieldWithPath("fixedNoticeBoards[].title").description("제목"),
+                            fieldWithPath("fixedNoticeBoards[].content").description("내용"),
+                            fieldWithPath("fixedNoticeBoards[].views").description("조회수"),
+                            fieldWithPath("fixedNoticeBoards[].createdAt").description("생성 일자"),
+                            fieldWithPath("fixedNoticeBoards[].modifiedAt").description("수정 일자"),
+                            fieldWithPath("fixedNoticeBoards[].isFixed").description("상단 고정 여부"),
+                            fieldWithPath("fixedNoticeBoards[].memberId").description("작성자 식별자"),
+                            fieldWithPath("fixedNoticeBoards[].memberName").description("작성자 이름")
+                    )
+            ));
         }
 
         @DisplayName("여러개 있을때")
@@ -196,8 +250,8 @@ class NoticeBoardControllerTest {
             params.add("keyWord", "keyWord");
             params.add("size", "5");
             params.add("currentPage", "0");
-            //when
 
+            //when
             int totalCount = 123;
             PageRequest pageRequest = new PageRequest(5, 0, null, null);
             List<NoticeBoard> noticeBoards = List.of(NO_FK_NOTICE_BOARD);
@@ -208,9 +262,11 @@ class NoticeBoardControllerTest {
                                     pageRequest,
                                     totalCount));
 
+            ResultActions action = mockMvc.perform(MockMvcRequestBuilders.get(GET_NONE_FIXED_NOTICE_BOARDS_URI)
+                    .params(params));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.get(GET_NONE_FIXED_NOTICE_BOARDS_URI)
-                            .params(params))
+            action
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].noticeBoardId".formatted("contents"))
                             .value(NO_FK_NOTICE_BOARD.getNoticeBoardId()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].category".formatted("contents"))
@@ -219,13 +275,41 @@ class NoticeBoardControllerTest {
                             .value(NO_FK_NOTICE_BOARD.getTitle()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].views".formatted("contents"))
                             .value(NO_FK_NOTICE_BOARD.getViews()))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].createdAt".formatted("contents"))
-//                            .value(NO_FK_NOTICE_BOARD.getCreatedAt()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].memberName".formatted("contents"))
                             .value(NO_FK_NOTICE_BOARD.getMemberName()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].memberId".formatted("contents"))
                             .value(NO_FK_NOTICE_BOARD.getMemberId()))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+
+                    .andDo(restDocs.document(
+                            queryParameters(
+                                    parameterWithName("startDate").description("검색 시작 일자"),
+                                    parameterWithName("endDate").description("검색 종료 일자"),
+                                    parameterWithName("category").description("카테고리"),
+                                    parameterWithName("keyWord").description("검색 키워드"),
+                                    parameterWithName("size").description("페이지 크기"),
+                                    parameterWithName("currentPage").description("현재 페이지")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            responseFields(
+                                    fieldWithPath("contents[].noticeBoardId").description("게시글 식별자"),
+                                    fieldWithPath("contents[].category").description("카테고리"),
+                                    fieldWithPath("contents[].title").description("제목"),
+                                    fieldWithPath("contents[].content").description("내용"),
+                                    fieldWithPath("contents[].views").description("조회수"),
+                                    fieldWithPath("contents[].isFixed").description("상단 고정 여부"),
+                                    fieldWithPath("contents[].createdAt").description("생성 일자"),
+                                    fieldWithPath("contents[].modifiedAt").description("수정 일자"),
+                                    fieldWithPath("contents[].memberName").description("작성자 이름"),
+                                    fieldWithPath("contents[].memberId").description("작성자 식별자"),
+                                    fieldWithPath("pageOffset").description("offset"),
+                                    fieldWithPath("currentPage").description("현재 페이지"),
+                                    fieldWithPath("totalCount").description("전체 게시글 개수"),
+                                    fieldWithPath("contentSize").description("현재 페이지 게시글 개수"),
+                                    fieldWithPath("pageSize").description("페이지 크기")
+                            )
+                    ));
         }
 
         @DisplayName("정렬 인자에 특수문자가 들어갈때")
@@ -271,7 +355,7 @@ class NoticeBoardControllerTest {
     @Nested
     @DisplayName("게시글 아이디로 공지 게시글 조회 컨트롤러 테스트")
     public class GetNoticeBoard {
-        private static final String GET_NOTICE_BOARD_URI = "/api/boards/notice/%s";
+        private static final String GET_NOTICE_BOARD_URI = "/api/boards/notice/{noticeBoardId}";
 
         @DisplayName("정상 처리")
         @Test
@@ -284,36 +368,61 @@ class NoticeBoardControllerTest {
                     .title("title")
                     .content("content")
                     .createdAt(LocalDateTime.now())
+                    .modifiedAt(LocalDateTime.now())
                     .isFixed(false)
                     .memberId(1563L)
+                    .memberName("name")
+                    .views(4153L)
                     .build();
             //when
             Mockito.when(noticeBoardService.getNoticeBoardById(noticeBoardId))
                     .thenReturn(noticeBoard);
+
+            ResultActions action = mockMvc.perform(RestDocumentationRequestBuilders.get(GET_NOTICE_BOARD_URI, noticeBoardId));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.get(GET_NOTICE_BOARD_URI.formatted(noticeBoardId)))
+            action
                     .andExpect(MockMvcResultMatchers
                             .jsonPath("$.noticeBoardId").value(noticeBoard.getNoticeBoardId()))
                     .andExpect(MockMvcResultMatchers
                             .jsonPath("$.category").value(noticeBoard.getCategory()))
                     .andExpect(MockMvcResultMatchers
                             .jsonPath("$.title").value(noticeBoard.getTitle()))
-//                    .andExpect(MockMvcResultMatchers
-//                            .jsonPath("$.createdAt").value(noticeBoard.getCreatedAt().toString()))
                     .andExpect(MockMvcResultMatchers
                             .jsonPath("$.isFixed").value(noticeBoard.getIsFixed()))
                     .andExpect(MockMvcResultMatchers
                             .jsonPath("$.memberId").value(noticeBoard.getMemberId()))
                     .andExpect(MockMvcResultMatchers
                             .jsonPath("$.memberName").value(noticeBoard.getMemberName()))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+
+                    .andDo(restDocs.document(
+                            pathParameters(
+                                    parameterWithName("noticeBoardId").description("공지 게시글 식별자")
+                            )
+                    ))
+
+                    .andDo(restDocs.document(
+                            responseFields(
+                                    fieldWithPath("noticeBoardId").description("게시글 식별지"),
+                                    fieldWithPath("category").description("카테고리"),
+                                    fieldWithPath("title").description("제목"),
+                                    fieldWithPath("content").description("내용"),
+                                    fieldWithPath("isFixed").description("상단 고정 여부"),
+                                    fieldWithPath("views").description("조회수"),
+                                    fieldWithPath("createdAt").description("생성 일자"),
+                                    fieldWithPath("modifiedAt").description("수정 일자"),
+                                    fieldWithPath("memberId").description("작성자 식별자"),
+                                    fieldWithPath("memberName").description("작성자 이름")
+                            )
+                    ));
         }
     }
 
     @Nested
     @DisplayName("게시글 아이디로 공지 게시글 삭제 컨트롤러 테스트")
     public class DeleteNoticeBoardById {
-        private static final String DELETE_NOTICE_BOARD_URI = "/admin/boards/notice/%s";
+        private static final String DELETE_NOTICE_BOARD_URI = "/admin/boards/notice/{noticeBoardId}";
         @DisplayName("정상 처리")
         @Test
         public void success() throws Exception {
@@ -322,12 +431,26 @@ class NoticeBoardControllerTest {
             Long memberId = 15153L;
             //when
 
+            ResultActions action = mockMvc.perform(RestDocumentationRequestBuilders.delete(DELETE_NOTICE_BOARD_URI, noticeBoardId)
+                    .headers(authenticationTestUtil.getLoginTokenHeaders(memberId))
+                    .sessionAttr(ADMIN_SESSION_KEY, Member.builder()
+                            .memberId(memberId)
+                            .build()));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_NOTICE_BOARD_URI.formatted(noticeBoardId))
-                            .sessionAttr(ADMIN_SESSION_KEY, Member.builder()
-                                    .memberId(memberId)
-                                    .build()))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+            action
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+
+                    .andDo(restDocs.document(
+                            pathParameters(
+                                    parameterWithName("noticeBoardId").description("공지 게시글 식별자")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            requestHeaders(
+                                    headerWithName("Authorization").description("JWT token")
+                            )
+                    ));
         }
     }
 
@@ -335,7 +458,7 @@ class NoticeBoardControllerTest {
     @DisplayName("게시글 아이디로 공지 게시글 수정 컨트롤러 테스트")
     public class UpdateNoticeBoardTest {
 
-        private static final String NOTICE_BOARD_UPDATE_URI = "/admin/boards/notice/%s";
+        private static final String NOTICE_BOARD_UPDATE_URI = "/admin/boards/notice/{noticeBoardId}";
         @DisplayName("정상 처리")
         @Test
         public void success() throws Exception {
@@ -351,13 +474,36 @@ class NoticeBoardControllerTest {
             Member member = Member.builder()
                     .memberId(1534L)
                     .build();
+
             //when
+            ResultActions action = mockMvc.perform(RestDocumentationRequestBuilders.put(NOTICE_BOARD_UPDATE_URI, noticeBoardId)
+                    .headers(authenticationTestUtil.getLoginTokenHeaders(7345L))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(noticeBoard))
+                    .sessionAttr(ADMIN_SESSION_KEY, member));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.put(NOTICE_BOARD_UPDATE_URI.formatted(noticeBoardId))
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(mapper.writeValueAsString(noticeBoard))
-                            .sessionAttr(ADMIN_SESSION_KEY, member))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+            action
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+
+                    .andDo(restDocs.document(
+                            pathParameters(
+                                    parameterWithName("noticeBoardId").description("공지 게시글 식별자")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            requestFields(
+                                    fieldWithPath("category").description("카테고리"),
+                                    fieldWithPath("title").description("제목"),
+                                    fieldWithPath("content").description("내용"),
+                                    fieldWithPath("isFixed").description("상단 고정 여부")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            requestHeaders(
+                                    headerWithName("Authorization").description("JWT token")
+                            )
+                    ));
         }
 
         @DisplayName("요청 인자 테스트")
@@ -378,7 +524,8 @@ class NoticeBoardControllerTest {
                     .build();
             //when
             //then
-            mockMvc.perform(MockMvcRequestBuilders.put(NOTICE_BOARD_UPDATE_URI.formatted(noticeBoardId))
+            mockMvc.perform(MockMvcRequestBuilders.put(NOTICE_BOARD_UPDATE_URI, noticeBoardId)
+                            .headers(authenticationTestUtil.getLoginTokenHeaders(73464L))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(mapper.writeValueAsString(board))
                             .sessionAttr(ADMIN_SESSION_KEY, member))

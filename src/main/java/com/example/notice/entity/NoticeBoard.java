@@ -39,9 +39,10 @@ public class NoticeBoard {
     private LocalDateTime modifiedAt;
 
     @Builder
-    private NoticeBoard(Long noticeBoardId, Long memberId, String category, String title, String content, Boolean isFixed, Long views, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    private NoticeBoard(Long noticeBoardId, Long memberId, String memberName, String category, String title, String content, Boolean isFixed, Long views, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.member = Member.builder()
                 .memberId(memberId)
+                .name(memberName)
                 .build();
 
         this.noticeBoardId = noticeBoardId;

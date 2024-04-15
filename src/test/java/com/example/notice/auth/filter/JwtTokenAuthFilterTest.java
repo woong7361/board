@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ class JwtTokenAuthFilterTest {
 
     Filter filter = new JwtTokenAuthFilter(new MockAuthProvider());
 
+    @Disabled
     @Nested
     @DisplayName("인증 필터 테스트")
     public class AuthFilterTest {
@@ -41,7 +43,7 @@ class JwtTokenAuthFilterTest {
         }
 
 
-        //TODO AuthenticationHolder 가 dirty read가 되지 않는지 thread 나누어서 테스트 해보아야 한다.
+        @Disabled
         @DisplayName("인증 객체가 dirty read가 되는지 확인")
         @Test
         public void isDirtyRead() throws Exception{

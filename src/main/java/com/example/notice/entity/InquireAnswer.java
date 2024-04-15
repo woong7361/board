@@ -21,11 +21,12 @@ public class InquireAnswer {
     private String answer;
 
     @Builder
-    public InquireAnswer(Long inquireAnswerId, Long inquireBoardId, Long memberId, String answer) {
+    public InquireAnswer(Long inquireAnswerId, Long inquireBoardId, Long memberId, String memberName, String answer) {
         this.inquireAnswerId = inquireAnswerId;
         this.inquireBoardId = inquireBoardId;
         this.member = Member.builder()
                 .memberId(memberId)
+                .name(memberName)
                 .build();
         this.answer = answer;
     }

@@ -3,24 +3,34 @@ package com.example.notice.controller;
 import com.example.notice.entity.Member;
 import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.mock.service.MockAuthService;
+import com.example.notice.restdocs.RestDocsHelper;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.restdocs.headers.HeaderDocumentation;
+import org.springframework.restdocs.payload.PayloadDocumentation;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@NoFilterMvcTest(AuthController.class)
-class AuthControllerTest {
+@WebMvcTest(AuthController.class)
+//@AutoConfigureRestDocs
+class AuthControllerTest extends RestDocsHelper {
     public static final String LOGIN_URI = "/auth/member/login";
     public static final String ADMIN_LOGIN_URI = "/auth/admin/login";
 
@@ -32,6 +42,12 @@ class AuthControllerTest {
 
     private ObjectMapper mapper = new ObjectMapper();
 
+    @BeforeEach
+    public void initMapper() {
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
+
+
     @Nested
     @DisplayName("일반 유저 로그인 테스트")
     public class LoginTest {
@@ -41,20 +57,35 @@ class AuthControllerTest {
         public void success() throws Exception {
             //given
             Member member = Member.builder()
-                    .loginId("id123")
-                    .password("pw123")
+                    .loginId("loginId153")
+                    .password("password45")
                     .build();
-            String body = mapper.writeValueAsString(member);
-            //when
-            //then
 
-            mockMvc.perform(
-                            MockMvcRequestBuilders.post(LOGIN_URI)
-                                    .content(body)
-                                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.token").value(MockAuthService.AUTHENTICATION));
+            String body = mapper.writeValueAsString(member);
+
+            //when
+            ResultActions action = mockMvc.perform(
+                    MockMvcRequestBuilders.post(LOGIN_URI)
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            action
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.token").exists())
+                    .andExpect(jsonPath("$.token").value(MockAuthService.AUTHENTICATION))
+
+            //rest docs
+                    .andDo(restDocs.document(
+                            PayloadDocumentation.requestFields(
+                                    PayloadDocumentation.fieldWithPath("loginId").description("로그인 아이디"),
+                                    PayloadDocumentation.fieldWithPath("password").description("비밀번호")
+                            )))
+                    .andDo(restDocs.document(
+                            PayloadDocumentation.responseFields(
+                                    PayloadDocumentation.fieldWithPath("token")
+                                            .description("인증 토큰")
+                            )));
         }
 
         @DisplayName("아이디 혹은 비밀번호가 null 일때")
@@ -75,7 +106,7 @@ class AuthControllerTest {
                     .andExpect(
                             result -> Assertions.assertThat(result.getResolvedException()).isInstanceOf(MethodArgumentNotValidException.class)
                     )
-                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                    .andExpect(status().isBadRequest());
 
             //given
             Member nullPasswordMember = Member.builder()
@@ -92,7 +123,7 @@ class AuthControllerTest {
                     .andExpect(
                             result -> Assertions.assertThat(result.getResolvedException()).isInstanceOf(MethodArgumentNotValidException.class)
                     )
-                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                    .andExpect(status().isBadRequest());
         }
     }
 
@@ -103,23 +134,30 @@ class AuthControllerTest {
         @Test
         public void success() throws Exception {
             //given
-            long memberId = 10L;
             Member member = Member.builder()
-                    .memberId(memberId)
-                    .loginId("id123")
-                    .password("pw123")
+                    .loginId("loginId12")
+                    .password("password46")
                     .build();
             String body = mapper.writeValueAsString(member);
             MockHttpSession mockHttpSession = new MockHttpSession();
 
             //when
+            ResultActions action = mockMvc.perform(
+                    MockMvcRequestBuilders.post(ADMIN_LOGIN_URI)
+                            .session(mockHttpSession)
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON));
+
             //then
-            mockMvc.perform(
-                            MockMvcRequestBuilders.post(ADMIN_LOGIN_URI)
-                                    .session(mockHttpSession)
-                                    .content(body)
-                                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+            action
+                    .andExpect(status().isOk())
+
+            //rest docs
+                    .andDo(restDocs.document(
+                            PayloadDocumentation.requestFields(
+                                    PayloadDocumentation.fieldWithPath("loginId").description("로그인 아이디"),
+                                    PayloadDocumentation.fieldWithPath("password").description("비밀번호")
+                            )));
 
             Assertions.assertThat(mockHttpSession.getAttribute(ADMIN_SESSION_KEY))
                     .usingRecursiveComparison().isEqualTo(member);
@@ -144,7 +182,7 @@ class AuthControllerTest {
             mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_ID_DUPLICATE_CHECK_URI)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(mapper.writeValueAsString(loginId)))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+                    .andExpect(status().isOk());
         }
     }
 }

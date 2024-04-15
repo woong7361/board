@@ -1,0 +1,15 @@
+setting:
+  #  page-size: 3
+  file-path: /home/woong/workspace/project/notice/file
+  allow-extension: "jpg, gif, png, zip"
+  max-search-range-year: 1
+
+
+  notice-board:
+    max-fixed-size: 5
+
+  jwt:
+    duration: 999999999999
+
+
+secret: "secret123456789123456789123456789asdfbfcdsafgfdsg45313"

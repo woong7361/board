@@ -34,9 +34,10 @@ public class Comment {
     }
 
     @Builder
-    protected Comment(Long commentId, Long memberId, Long freeBoardId, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    protected Comment(Long commentId, Long memberId, String memberName, Long freeBoardId, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.member = Member.builder()
                 .memberId(memberId)
+                .name(memberName)
                 .build();
 
         this.commentId = commentId;

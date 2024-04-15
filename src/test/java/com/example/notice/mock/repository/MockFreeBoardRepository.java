@@ -22,6 +22,7 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
             .content("content111")
             .category("CATEGORY")
             .createdAt(LocalDateTime.now())
+            .modifiedAt(LocalDateTime.now())
             .member(MockMemberRepository.SAVED_MEMBER)
             .build();
 

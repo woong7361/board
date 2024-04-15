@@ -35,16 +35,16 @@ public class InquireAnswerController {
      * @return 문의의 생성된 답변 식별자
      */
     @PostMapping("/api/boards/inquire/{inquireBoardId}/answers")
-    public ResponseEntity<Map<String, Long>> createInquireAnswer(
+    public ResponseEntity<Object> createInquireAnswer(
             @Valid @RequestBody InquireAnswer inquireAnswer,
             @PathVariable Long inquireBoardId,
             @AdminAuthenticationPrincipal Principal<Member> principal) {
         Member admin = principal.getAuthentication();
 
-        Long inquireAnswerId = inquireAnswerService.createAnswer(inquireAnswer, inquireBoardId, admin.getMemberId());
+        inquireAnswerService.createAnswer(inquireAnswer, inquireBoardId, admin.getMemberId());
 
-        return ResponseEntity
-                .ok(Map.of(INQUIRE_ANSWER_ID_PARAM, inquireAnswerId));
+        return ResponseEntity.ok()
+                .build();
     }
 
     /**

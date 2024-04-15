@@ -60,6 +60,16 @@ public class MockAttachmentFileRepository implements AttachmentFileRepository {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public String findOriginalNameById(Long fileId) {
+        return null;
+    }
+
+    @Override
+    public void deleteByFreeBoardId(Long freeBoardId) {
+
+    }
+
     public static AttachmentFile.AttachmentFileBuilder attachmentFileBuilderMapper(AttachmentFile file) {
         return AttachmentFile.builder()
                 .fileId(file.getFileId())

@@ -47,8 +47,8 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
                     return result;
                 })
                 //TODO JOIN 해결해야함
-                .map(ib -> new InquireBoardSearchResponseDTO(ib.getInquireBoardId(), ib.getMemberId(), ib.getCreatedAt(),
-                        ib.getModifiedAt(), ib.getTitle(), ib.getContent(), ib.getViews(), ib.getIsSecret(), false))
+                .map(ib -> new InquireBoardSearchResponseDTO(ib.getInquireBoardId(), ib.getMemberId(), ib.getMemberName(), ib.getCreatedAt(),
+                        ib.getModifiedAt(), ib.getTitle(), ib.getContent(), ib.getIsSecret(), ib.getViews(), ib.getIsSecret()))
                 .collect(Collectors.toList());
     }
 

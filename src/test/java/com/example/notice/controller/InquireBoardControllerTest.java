@@ -2,10 +2,16 @@ package com.example.notice.controller;
 
 import com.example.notice.constant.ResponseConstant;
 import com.example.notice.dto.response.InquireBoardResponseDTO;
+import com.example.notice.dto.response.InquireBoardSearchResponseDTO;
+import com.example.notice.entity.InquireAnswer;
 import com.example.notice.entity.InquireBoard;
 import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.mock.util.MockMemberLogin;
+import com.example.notice.page.PageRequest;
+import com.example.notice.page.PageResponse;
+import com.example.notice.restdocs.RestDocsHelper;
 import com.example.notice.service.InquireBoardService;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,36 +25,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.LinkedMultiValueMap;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Stream;
 
-@NoFilterMvcTest(InquireBoardController.class)
-class InquireBoardControllerTest {
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-    @Autowired
-    MockMvc mockMvc;
+@WebMvcTest(InquireBoardController.class)
+class InquireBoardControllerTest extends RestDocsHelper {
 
     @MockBean
     InquireBoardService inquireBoardService;
 
-    private final ObjectMapper mapper = new ObjectMapper();
-
+    @BeforeEach
+    public void initMapper() {
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
 
     @Nested
     @DisplayName("문의 게시판 게시글 생성 컨트롤러 테스트")
     public class InquireBoardCreateControllerTest {
         private static final String INQUIRE_BOARD_CREATE_URI = "/api/boards/inquire";
-
-        @BeforeEach
-        public void memberLogin() {
-            Long memberId = 654153L;
-            MockMemberLogin.memberLogin(memberId);
-        }
 
         @DisplayName("정상 처리")
         @Test
@@ -61,13 +72,36 @@ class InquireBoardControllerTest {
                     .build();
 
             //when
+            ResultActions action = mockMvc.perform(MockMvcRequestBuilders.post(INQUIRE_BOARD_CREATE_URI)
+                    .headers(authenticationTestUtil.getLoginTokenHeaders(4561L))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(inquireBoard)));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.post(INQUIRE_BOARD_CREATE_URI)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(mapper.writeValueAsString(inquireBoard)))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$." + ResponseConstant.INQUIRE_BOARD_ID_PARAM)
-                            .exists());
+            action
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$." + ResponseConstant.INQUIRE_BOARD_ID_PARAM)
+                            .exists())
+
+                    .andDo(restDocs.document(
+                            PayloadDocumentation.requestFields(
+                                    PayloadDocumentation.fieldWithPath("title")
+                                            .description("제목"),
+                                    PayloadDocumentation.fieldWithPath("content")
+                                            .description("내용"),
+                                    PayloadDocumentation.fieldWithPath("isSecret")
+                                            .description("비밀글 여부"))))
+
+                    //rest docs
+                    .andDo(restDocs.document(
+                            responseFields(
+                                    fieldWithPath("inquireBoardId")
+                                            .description("게시글 식별자"))))
+                    .andDo(restDocs.document(
+                            requestHeaders(
+                                    headerWithName("Authorization").description("JWT token")
+                            )
+                    ));;
         }
 
         @DisplayName("유효하지 않은 입력값이 들어올때")
@@ -83,9 +117,10 @@ class InquireBoardControllerTest {
             //when
             //then
             mockMvc.perform(MockMvcRequestBuilders.post(INQUIRE_BOARD_CREATE_URI)
+                            .headers(authenticationTestUtil.getLoginTokenHeaders(45634L))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(mapper.writeValueAsString(inquireBoard)))
-                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                    .andExpect(status().isBadRequest());
         }
 
         private static Stream<Arguments> invalidInquireBoardParam() {
@@ -105,12 +140,6 @@ class InquireBoardControllerTest {
     public class InquireBoardSearchControllerTest {
 
         private static final String INQUIRE_BOARD_SEARCH_URI = "/api/boards/inquire";
-        @BeforeEach
-        public void memberLogin() {
-            Long memberId = 654153L;
-            MockMemberLogin.memberLogin(memberId);
-        }
-
 
         @DisplayName("정상 처리")
         @Test
@@ -121,11 +150,88 @@ class InquireBoardControllerTest {
             params.add("currentPage", "0");
             params.add("keyWord", "4153");
             params.add("onlyMine", "false");
+
+            PageRequest pageRequest = new PageRequest(5, 0, null, null);
+
+            InquireBoardSearchResponseDTO b1 = InquireBoardSearchResponseDTO.builder()
+                    .inquireBoardId(1231L)
+                    .title("board title1")
+                    .content("board content1")
+                    .isSecret(false)
+                    .views(4153L)
+                    .createdAt(LocalDateTime.now())
+                    .modifiedAt(LocalDateTime.now())
+                    .memberId(5341456L)
+                    .memberName("member name1")
+                    .isAnswered(true)
+                    .build();
+
+            InquireBoardSearchResponseDTO b2 = InquireBoardSearchResponseDTO.builder()
+                    .inquireBoardId(123112L)
+                    .title("board title2")
+                    .content("board content2")
+                    .isSecret(true)
+                    .views(4155633L)
+                    .createdAt(LocalDateTime.now())
+                    .modifiedAt(LocalDateTime.now())
+                    .memberId(53414561L)
+                    .memberName("member name2")
+                    .isAnswered(false)
+                    .build();
+
+            PageResponse<InquireBoardSearchResponseDTO> result =
+                    new PageResponse<>(List.of(b1, b2), pageRequest, 2);
+
             //when
+            Mockito.when(inquireBoardService.searchInquireBoard(any(), any(), any()))
+                    .thenReturn(result);
+
+            ResultActions action = mockMvc.perform(MockMvcRequestBuilders.get(INQUIRE_BOARD_SEARCH_URI)
+                            .headers(authenticationTestUtil.getLoginTokenHeaders(54341L))
+                    .params(params));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.get(INQUIRE_BOARD_SEARCH_URI)
-                            .params(params))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+            action
+                    .andExpect(status().isOk())
+
+
+            //rest docs
+                    .andDo(restDocs.document(
+                            queryParameters(
+                                    parameterWithName("size")
+                                            .description("가져올 개수"),
+                                    parameterWithName("currentPage")
+                                            .description("현재 페이지"),
+                                    parameterWithName("keyWord")
+                                            .description("검색 키워드"),
+                                    parameterWithName("onlyMine")
+                                            .description("자신의 것만 검색할지")
+                            )))
+                    .andDo(restDocs.document(
+                            responseFields(
+                                    fieldWithPath("pageOffset").description("offset"),
+                                    fieldWithPath("currentPage").description("현재 페이지"),
+                                    fieldWithPath("totalCount").description("전체 개수"),
+                                    fieldWithPath("contentSize").description("반환한 content 수"),
+                                    fieldWithPath("pageSize").description("페이지 크기"),
+                                    fieldWithPath("contents[].inquireBoardId").description("페이지 크기"),
+                                    fieldWithPath("contents[].memberId").description("회원 식별자"),
+                                    fieldWithPath("contents[].memberName").description("회원 이름"),
+                                    fieldWithPath("contents[].createdAt").description("생성 일자"),
+                                    fieldWithPath("contents[].modifiedAt").description("수정 일자"),
+                                    fieldWithPath("contents[].title").description("제목"),
+                                    fieldWithPath("contents[].content").description("내용"),
+                                    fieldWithPath("contents[].isSecret").description("비밀글 여부"),
+                                    fieldWithPath("contents[].views").description("조회수"),
+                                    fieldWithPath("contents[].isAnswered").description("응답 여부")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            requestHeaders(
+                                    headerWithName("Authorization").description("JWT token")
+                            )
+                    ));
+
         }
     }
 
@@ -133,7 +239,7 @@ class InquireBoardControllerTest {
     @Nested
     @DisplayName("문의 게시판 게시글 조회 컨트롤러 테스트")
     public class InquireBoardGetControllerTest {
-        private static final String GET_BOARD_CONTROLLER_URI = "/api/boards/inquire/%s";
+        private static final String GET_BOARD_CONTROLLER_URI = "/api/boards/inquire/{inquireBoardId}";
         @DisplayName("정상 처리")
         @Test
         public void success() throws Exception {
@@ -148,22 +254,69 @@ class InquireBoardControllerTest {
                     .modifiedAt(LocalDateTime.now())
                     .views(153452L)
                     .memberId(485641534L)
+                    .memberName("member name")
+                    .build();
+
+            InquireAnswer answer = InquireAnswer.builder()
+                    .inquireAnswerId(54135L)
+                    .inquireBoardId(findBoard.getInquireBoardId())
+                    .answer("inquire answer")
+                    .memberId(354114L)
+                    .memberName("member name")
                     .build();
 
             InquireBoardResponseDTO board = InquireBoardResponseDTO.builder()
                     .inquireBoard(findBoard)
+                    .inquireAnswers(List.of(answer))
                     .build();
             //when
             Mockito.when(inquireBoardService.getBoardById(boardId))
                     .thenReturn(board);
+
+            ResultActions action = mockMvc.perform(RestDocumentationRequestBuilders
+                    .get(GET_BOARD_CONTROLLER_URI, boardId)
+                    .headers(authenticationTestUtil.getLoginTokenHeaders(456L)));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.get(GET_BOARD_CONTROLLER_URI.formatted(boardId)))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoard.inquireBoardId").value(boardId))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoard.content").value(board.getInquireBoard().getContent()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoard.title").value(board.getInquireBoard().getTitle()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoard.views").value(board.getInquireBoard().getViews()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.inquireBoard.memberId").value(board.getInquireBoard().getMemberId()));
+            action
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.inquireBoard.inquireBoardId").value(boardId))
+                    .andExpect(jsonPath("$.inquireBoard.content").value(board.getInquireBoard().getContent()))
+                    .andExpect(jsonPath("$.inquireBoard.title").value(board.getInquireBoard().getTitle()))
+                    .andExpect(jsonPath("$.inquireBoard.views").value(board.getInquireBoard().getViews()))
+                    .andExpect(jsonPath("$.inquireBoard.memberId").value(board.getInquireBoard().getMemberId()))
+
+            //rest docs
+                    .andDo(restDocs.document(
+                            pathParameters(
+                                    parameterWithName("inquireBoardId")
+                                            .description("문의 게시글 식별자")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            responseFields(
+                                    fieldWithPath("inquireBoard.inquireBoardId").description("게시글 식별자"),
+                                    fieldWithPath("inquireBoard.createdAt").description("생성 일자"),
+                                    fieldWithPath("inquireBoard.modifiedAt").description("수정 일자"),
+                                    fieldWithPath("inquireBoard.title").description("제목"),
+                                    fieldWithPath("inquireBoard.content").description("내용"),
+                                    fieldWithPath("inquireBoard.isSecret").description("비밀글 여부"),
+                                    fieldWithPath("inquireBoard.views").description("조회수"),
+                                    fieldWithPath("inquireBoard.memberName").description("작성자 이름"),
+                                    fieldWithPath("inquireBoard.memberId").description("작성자 식별자"),
+                                    fieldWithPath("inquireAnswers[].inquireAnswerId").description("답변 식별자"),
+                                    fieldWithPath("inquireAnswers[].inquireBoardId").description("게시글 식별자"),
+                                    fieldWithPath("inquireAnswers[].answer").description("답변 내용"),
+                                    fieldWithPath("inquireAnswers[].memberName").description("답변 작성자 이름"),
+                                    fieldWithPath("inquireAnswers[].memberId").description("답변 작성자 식별자")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            requestHeaders(
+                                    headerWithName("Authorization").description("JWT token")
+                            )
+                    ));
+
 
         }
     }
@@ -172,13 +325,7 @@ class InquireBoardControllerTest {
     @DisplayName("문의 게시판 게시글 수정 컨트롤러 테스트")
     public class InquireBoardUpdateControllerTest {
 
-        private static final String UPDATE_INQUIRE_BOARD_URI = "/api/boards/inquire/%s";
-
-        @BeforeEach
-        public void memberLogin() {
-            Long memberId = 654153L;
-            MockMemberLogin.memberLogin(memberId);
-        }
+        private static final String UPDATE_INQUIRE_BOARD_URI = "/api/boards/inquire/{inquireBoardId}";
 
         @DisplayName("정상 처리")
         @Test
@@ -186,17 +333,39 @@ class InquireBoardControllerTest {
             //given
             long boardId = 1546743L;
             InquireBoard inputBoard = InquireBoard.builder()
-                    .title("tiutle")
-                    .content("consgsda")
+                    .title("title")
+                    .content("board content")
                     .isSecret(false)
                     .build();
 
             //when
+            ResultActions action = mockMvc.perform(RestDocumentationRequestBuilders.put(UPDATE_INQUIRE_BOARD_URI, boardId)
+                    .headers(authenticationTestUtil.getLoginTokenHeaders(21564L))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(inputBoard)));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.put(UPDATE_INQUIRE_BOARD_URI.formatted(boardId))
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(mapper.writeValueAsString(inputBoard)))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+            action
+                    .andExpect(status().isOk())
+
+                    .andDo(restDocs.document(
+                            pathParameters(
+                                    parameterWithName("inquireBoardId")
+                                            .description("문의 게시글 식별자")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            requestFields(
+                                    fieldWithPath("title").description("제목"),
+                                    fieldWithPath("content").description("내용"),
+                                    fieldWithPath("isSecret").description("비밀글 여부")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            requestHeaders(
+                                    headerWithName("Authorization").description("JWT token")
+                            )
+                    ));
         }
 
         @DisplayName("유효하지 않은 입력값이 들어올때")
@@ -212,10 +381,11 @@ class InquireBoardControllerTest {
                     .build();
             //when
             //then
-            mockMvc.perform(MockMvcRequestBuilders.put(UPDATE_INQUIRE_BOARD_URI.formatted(boardId))
+            mockMvc.perform(MockMvcRequestBuilders.put(UPDATE_INQUIRE_BOARD_URI, boardId)
+                            .headers(authenticationTestUtil.getLoginTokenHeaders(455341L))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(mapper.writeValueAsString(inquireBoard)))
-                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                    .andExpect(status().isBadRequest());
         }
 
         private static Stream<Arguments> invalidInquireBoardParam() {
@@ -235,7 +405,7 @@ class InquireBoardControllerTest {
     @DisplayName("문의 게시판 게시글 삭제 컨트롤러 테스트")
     public class InquireBoardDeleteControllerTest {
 
-        private static final String INQUIRE_BOARD_DELETE_URI = "/api/boards/inquire/%s";
+        private static final String INQUIRE_BOARD_DELETE_URI = "/api/boards/inquire/{inquireBoardId}";
         @DisplayName("정상 처리")
         @Test
         public void success() throws Exception {
@@ -243,9 +413,25 @@ class InquireBoardControllerTest {
             Long boardId = 41564L;
 
             //when
+            ResultActions action = mockMvc.perform(RestDocumentationRequestBuilders
+                    .delete(INQUIRE_BOARD_DELETE_URI, boardId)
+                    .headers(authenticationTestUtil.getLoginTokenHeaders(54341L)));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.delete(INQUIRE_BOARD_DELETE_URI.formatted(boardId)))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+            action
+                    .andExpect(status().isOk())
+            //rest docs
+                    .andDo(restDocs.document(
+                            pathParameters(
+                                    parameterWithName("inquireBoardId").description("게시글 식별자")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            requestHeaders(
+                                    headerWithName("Authorization").description("JWT token")
+                            )
+                    ));
+
         }
     }
 }

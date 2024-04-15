@@ -1,0 +1,2 @@
+== RestDocsTestController
+operation::/members/findMemberById[snippets="http-request,http-response"]
