@@ -48,7 +48,7 @@
                               FROM category
                               WHERE category.value = #{noticeBoard.category}),
                 #{noticeBoard.title}, #{noticeBoard.content}, #{noticeBoard.isFixed},
-                0, NOW(), null);
+                0, NOW(), NOW());
     </insert>
 
     <select id="findFixedNoticeBoardByLimit" resultType="com.example.notice.entity.NoticeBoard">

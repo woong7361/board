@@ -126,7 +126,7 @@ class FreeBoardServiceTest {
             FreeBoard board = FreeBoard.builder()
                     .freeBoardId(999L)
                     .build();
-            freeBoardRepository.save(board);
+            freeBoardRepository.save(board, 15631L);
 
 
             //when
@@ -174,7 +174,7 @@ class FreeBoardServiceTest {
                     .build();
 
             //when
-            freeBoardRepository.save(oldBoard);
+            freeBoardRepository.save(oldBoard, 10L);
             freeBoardRepository.update(newBoard, oldBoard.getFreeBoardId());
             FreeBoard findBoard = freeBoardRepository.findBoardById(oldBoard.getFreeBoardId())
                     .get();

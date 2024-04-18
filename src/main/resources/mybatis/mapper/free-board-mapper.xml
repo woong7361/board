@@ -32,17 +32,19 @@
         </where>
     </sql>
 
-    <insert id="save" useGeneratedKeys="true" keyProperty="freeBoardId">
+    <insert id="save" useGeneratedKeys="true" keyProperty="freeBoard.freeBoardId">
         INSERT INTO free_board
         (
-            title, content, views,
-            member_id, created_at,
+            title, content,
+            views, member_id,
+            created_at, modified_at,
             category_id
         )
         VALUES
         (
-            #{freeBoard.title}, #{freeBoard.content}, 0,
-            #{freeBoard.memberId}, NOW(),
+            #{freeBoard.title}, #{freeBoard.content},
+            0, #{memberId},
+            NOW(), NOW(),
             (
                 SELECT category.category_id
                 FROM category

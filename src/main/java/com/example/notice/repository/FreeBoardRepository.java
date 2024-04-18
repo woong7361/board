@@ -18,7 +18,7 @@ public interface FreeBoardRepository {
      * 게시글 저장
      * @param freeBoard 자유게시판 게시글
      */
-    void save(@Param("freeBoard") FreeBoard freeBoard);
+    void save(@Param("freeBoard") FreeBoard freeBoard, @Param("memberId") Long memberId);
 
     /**
      * 게시글 식별자에 맞는 게시글 검색

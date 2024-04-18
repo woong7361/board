@@ -23,7 +23,7 @@ public class PageRequest {
     private String orderType;
 
     public Integer getOffset() {
-        return size != null && currentPage != null ? size * currentPage : null;
+        return size != null && currentPage != null ? size * (currentPage - 1) : null;
     }
 }
 

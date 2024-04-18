@@ -30,6 +30,52 @@ include::{snippets}/admin-login/success/request-fields.adoc[]
 ==== 응답
 include::{snippets}/admin-login/success/http-response.adoc[]
 
+=== 자유게시판 게시글 생성
+===== 요청
+include::{snippets}/free-board-create-test/success/http-request.adoc[]
+===== Request Part
+include::{snippets}/free-board-create-test/success/request-parts.adoc[]
+===== freeBoard 하위
+include::{snippets}/free-board-create-test/success/request-part-freeBoard-fields.adoc[]
+===== Request Header
+include::{snippets}/free-board-create-test/success/request-headers.adoc[]
+==== 응답
+include::{snippets}/free-board-create-test/success/http-response.adoc[]
+include::{snippets}/free-board-create-test/success/response-body.adoc[]
+
+=== 자유게시판 게시글 조회
+===== 요청
+include::{snippets}/get-free-board-test/success/http-request.adoc[]
+include::{snippets}/get-free-board-test/success/path-parameters.adoc[]
+==== 응답
+include::{snippets}/get-free-board-test/success/http-response.adoc[]
+include::{snippets}/get-free-board-test/success/response-fields.adoc[]
+
+=== 자유게시판 게시글 검색
+===== 요청
+include::{snippets}/free-board-search-test/success/http-request.adoc[]
+include::{snippets}/free-board-search-test/success/query-parameters.adoc[]
+==== 응답
+include::{snippets}/free-board-search-test/success/http-response.adoc[]
+include::{snippets}/free-board-search-test/success/response-fields.adoc[]
+
+=== 자유게시판 게시글 수정
+===== 요청
+include::{snippets}/free-board-update-test/success/http-request.adoc[]
+include::{snippets}/free-board-update-test/success/request-headers.adoc[]
+include::{snippets}/free-board-update-test/success/request-parts.adoc[]
+include::{snippets}/free-board-update-test/success/request-part-freeBoard-fields.adoc[]
+include::{snippets}/free-board-update-test/success/request-part-deleteIds-fields.adoc[]
+==== 응답
+include::{snippets}/free-board-update-test/success/http-response.adoc[]
+
+=== 자유게시판 게시글 삭제
+===== 요청
+include::{snippets}/free-board-delete-test/success/http-request.adoc[]
+include::{snippets}/free-board-delete-test/success/path-parameters.adoc[]
+include::{snippets}/free-board-delete-test/success/request-headers.adoc[]
+==== 응답
+include::{snippets}/free-board-delete-test/success/http-response.adoc[]
 
 === 댓글 생성
 ===== 요청

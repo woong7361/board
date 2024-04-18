@@ -2,12 +2,23 @@
 - filter 부분 삭제하기
     - test부분 interceptor로 이식하면서
 
+- 자유게시판 게시글 생성할때 파일 없어도 생성 되도록 수정하기
+
 - interceptor 인증 인가 부분으로 나눌것인가? -> 아마 하는게 좋을듯함
 
 - 관리자 api 미완료 된 부분 작성해야함
+- category 얻는 api 작성 해야함
+
+- 파일 없어도 생성 되도록 모든 api 수정해야함
+    - freeBoard 수정 부분
+
+- 먼저 authorization check하는 부분 없애기 (통일감)
+    - freeBoard에 존재
 
 --- 테스트 ---
 - test용 config 작성
+
+- constraint -> gradlew clean build 빌드로 만들어지나 테스트해보기
 
 
 

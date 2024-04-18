@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,10 @@ public class FreeBoardController {
             @RequestParam(required = false) List<MultipartFile> files,
             @AuthenticationPrincipal Principal<Member> principal
     ) {
+        if (files == null) {
+            files = new ArrayList<>();
+        }
+
         Member member = principal.getAuthentication();
         freeBoard.setOwner(member);
 
@@ -115,10 +120,14 @@ public class FreeBoardController {
     @PutMapping("/api/boards/free/{freeBoardId}")
     public ResponseEntity<Object> updateBoard(
             @Valid @ModelAttribute FreeBoard freeBoard,
-            @RequestParam List<MultipartFile> saveFiles,
-            @RequestParam List<Long> deleteFileIds,
+            @RequestParam(required = false) List<MultipartFile> saveFiles,
+            @RequestParam(required = false) List<Long> deleteFileIds,
             @PathVariable Long freeBoardId,
             @AuthenticationPrincipal Principal<Member> principal) {
+
+        if (saveFiles == null) saveFiles = new ArrayList<>();
+        if (deleteFileIds == null) deleteFileIds = new ArrayList<>();
+
         Member member = principal.getAuthentication();
         freeBoardService.checkFreeBoardAuthorization(freeBoardId, member.getMemberId());
 

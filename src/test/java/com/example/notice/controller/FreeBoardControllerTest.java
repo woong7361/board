@@ -122,6 +122,11 @@ class FreeBoardControllerTest extends RestDocsHelper {
                             requestHeaders(
                                     headerWithName("Authorization").description("JWT token")
                             )
+                    ))
+                    .andDo(restDocs.document(
+                            responseFields(
+                                    fieldWithPath("freeBoardId").description("생성한 게시글 식별자")
+                            )
                     ));
 
 
@@ -219,7 +224,7 @@ class FreeBoardControllerTest extends RestDocsHelper {
 
     @Nested
     @DisplayName("자유게시판 게시글 검색 테스트")
-    public class SearchTest {
+    public class FreeBoardSearchTest {
         private static final String GET_BOARDS_URI = "/api/boards/free";
 
         @DisplayName("정상 처리")

@@ -36,7 +36,7 @@ public class FreeBoardServiceImpl implements FreeBoardService{
     @Override
     @Transactional
     public Long createFreeBoard(FreeBoard freeBoard, List<MultipartFile> files, Long memberId) {
-        freeBoardRepository.save(freeBoard);
+        freeBoardRepository.save(freeBoard, memberId);
         SuccessesAndFails<AttachmentFile> fileResult = saveFiles(files, freeBoard.getFreeBoardId());
 
         return freeBoard.getFreeBoardId();

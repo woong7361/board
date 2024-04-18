@@ -7,7 +7,7 @@
     INSERT INTO comment
         (member_id, free_board_id, content, created_at, modified_at)
     VALUES
-        (#{memberId}, #{freeBoardId}, #{comment.content}, NOW(), null)
+        (#{memberId}, #{freeBoardId}, #{comment.content}, NOW(), NOW())
 
 </insert>
 
@@ -21,6 +21,7 @@
             LEFT JOIN member m on c.member_id = m.member_id
         WHERE
             free_board_id = #{freeBoardId}
+        ORDER BY c.created_at DESC
     </select>
 
     <select id="getCommentByCommentIdAndMemberId">

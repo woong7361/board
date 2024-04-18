@@ -27,7 +27,7 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
             .build();
 
     @Override
-    public void save(FreeBoard freeBoard) {
+    public void save(FreeBoard freeBoard, Long memberId) {
         FREE_BOARD_STORAGE.add(freeBoard);
     }
 
@@ -157,7 +157,7 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
                             .category(freeBoard.getCategory())
                             .views(fd.getViews())
                             .build();
-                    save(updateBoard);
+                    save(updateBoard, freeBoard.getMemberId());
                 });
     }
 
