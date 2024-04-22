@@ -61,4 +61,11 @@ public interface FreeBoardService {
      * @param memberId 사용자 식별자
      */
     void checkFreeBoardAuthorization(Long freeBoardId, Long memberId);
+
+    /**
+     * 관리자의 자유게시판 게시글 삭제
+     * @param freeBoardId 게시글 식별자
+     * @param memberId 관리자 식별자
+     */
+    void deleteFreeBoardByAdmin(Long freeBoardId, Long memberId);
 }

@@ -4,6 +4,8 @@ package com.example.notice.entity;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 /**
  * 문의 게시글 응답 엔티티
  */
@@ -14,14 +16,18 @@ public class InquireAnswer {
 
     private Long inquireAnswerId;
     private Long inquireBoardId;
+
     @Getter(AccessLevel.PRIVATE)
     private Member member;
 
     @NotBlank
     private String answer;
 
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
+
     @Builder
-    public InquireAnswer(Long inquireAnswerId, Long inquireBoardId, Long memberId, String memberName, String answer) {
+    public InquireAnswer(Long inquireAnswerId, Long inquireBoardId, Long memberId, String memberName, String answer, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.inquireAnswerId = inquireAnswerId;
         this.inquireBoardId = inquireBoardId;
         this.member = Member.builder()
@@ -29,6 +35,8 @@ public class InquireAnswer {
                 .name(memberName)
                 .build();
         this.answer = answer;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
     }
 
     public Long getMemberId() {

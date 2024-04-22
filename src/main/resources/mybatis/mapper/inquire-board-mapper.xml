@@ -11,6 +11,8 @@
             <result property="answer" column="answer"/>
             <result property="member.memberId" column="answer_member_id"/>
             <result property="member.name" column="answer_member_name"/>
+            <result property="createdAt" column="answer_created_at"/>
+            <result property="modifiedAt" column="answer_modified_at"/>
         </collection>
     </resultMap>
 
@@ -59,7 +61,7 @@
 
             <if test="search.onlyMine == true">
                 AND
-                ib.memberId = #{memberId}
+                ib.member_id = #{memberId}
             </if>
         </where>
     </sql>
@@ -88,7 +90,7 @@
     <select id="search" resultType="com.example.notice.dto.response.InquireBoardSearchResponseDTO">
         SELECT
             ib.*,
-            m.name AS 'member.name', m.member_id AS 'member.memberId',
+            m.name AS 'memberName', m.member_id AS 'memberId',
             (SELECT count(*)
              FROM inquire_answer AS ia
              WHERE ia.inquire_board_id = ib.inquire_board_id) AS isAnswered
@@ -111,6 +113,7 @@
         SELECT
             ib.*,
             ia.*,
+            ia.created_at AS 'answer_created_at', ia.modified_at AS 'answer_modified_at',
             bm.member_id AS 'board_member_id', bm.name AS 'board_member_name',
             am.member_id AS 'answer_member_id', am.name AS 'answer_member_name'
         FROM inquire_board ib

@@ -42,4 +42,10 @@ public interface CommentRepository {
      * @param commentId 댓글 식별자
      */
     void deleteById(@Param("commentId") Long commentId);
+
+    /**
+     * 관리자가 다른 사용자가 생성한 댓글을 삭제 처리한다.
+     * @param commentId 댓글 식별자
+     */
+    void deleteByIdToAdmin(@Param("commentId") Long commentId);
 }

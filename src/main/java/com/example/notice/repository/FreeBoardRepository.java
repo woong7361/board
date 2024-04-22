@@ -81,4 +81,11 @@ public interface FreeBoardRepository {
      * @param freeBoardId 게시글 식별자
      */
     void update(@Param("freeBoard") FreeBoard freeBoard, @Param("freeBoardId") Long freeBoardId);
+
+    /**
+     * 관리자의 다른 회원 게시글 삭제
+     *
+     * @param freeBoardId 게시글 식별자
+     */
+    void deleteByAdmin(@Param("freeBoardId") Long freeBoardId);
 }

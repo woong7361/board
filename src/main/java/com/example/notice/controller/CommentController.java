@@ -1,5 +1,6 @@
 package com.example.notice.controller;
 
+import com.example.notice.auth.AdminAuthenticationPrincipal;
 import com.example.notice.auth.AuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
 import com.example.notice.entity.Comment;
@@ -75,6 +76,42 @@ public class CommentController {
         commentService.checkAuthorization(commentId, member.getMemberId());
 
         commentService.delete(commentId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 관리자 댓글 생성 엔드포인트
+     * @param freeBoardId 댓글 부모 게시글 식별자
+     * @param principal 관리자 인증 객체
+     * @param comment 댓글 생성 인자
+     * @return 200 ok
+     */
+    @PostMapping("/admin/boards/free/{freeBoardId}/comments")
+    public ResponseEntity<Object> createCommentByAdmin(
+            @PathVariable Long freeBoardId,
+            @AdminAuthenticationPrincipal Principal<Member> principal,
+            @Valid @RequestBody Comment comment
+    ) {
+        Member member = principal.getAuthentication();
+        commentService.createComment(comment, freeBoardId, member.getMemberId());
+
+        return ResponseEntity.ok()
+                .build();
+    }
+
+    /**
+     * 관리자 댓글 삭제 엔드포인트
+     * @param commentId 댓글 부모 게시글 식별자
+     * @return 200 ok
+     */
+    @DeleteMapping("/admin/boards/free/comments/{commentId}")
+    public ResponseEntity<Object> deleteCommentByAdmin(
+            @PathVariable Long commentId,
+            @AdminAuthenticationPrincipal Principal<Member> principal) {
+        Member member = principal.getAuthentication();
+
+        commentService.deleteByAdmin(commentId, member.getMemberId());
 
         return ResponseEntity.ok().build();
     }

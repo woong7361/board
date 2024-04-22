@@ -31,10 +31,4 @@ public class InquireBoardSearchResponseDTO {
 
     private Long views;
     private Boolean isAnswered;
-
-//    @Builder
-//    public InquireBoardSearchResponseDTO(Long inquireBoardId, Long memberId, String memberName, LocalDateTime createdAt, LocalDateTime modifiedAt, String title, String content, Long views, Boolean isSecret, Boolean isAnswered) {
-//        super(inquireBoardId, memberId, memberName, createdAt, modifiedAt, title, content, views, isSecret);
-//        this.isAnswered = isAnswered;
-//    }
 }

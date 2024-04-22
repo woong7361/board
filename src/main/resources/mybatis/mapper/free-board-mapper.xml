@@ -141,5 +141,13 @@
         WHERE free_board_id = #{freeBoardId}
     </update>
 
+    <update id="deleteByAdmin">
+        UPDATE free_board
+        SET
+            title = '[관리자에 의해 삭제된 게시글입니다.]',
+            content = ' ',
+            modified_at = NOW()
+        WHERE free_board_id = #{freeBoardId}
+    </update>
 
 </mapper>

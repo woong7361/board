@@ -147,9 +147,13 @@ public class FreeBoardController {
     @PostMapping("/admin/boards/free")
     public ResponseEntity<Map<String, Long>> createFreeBoardByAdmin(
             @Valid @ModelAttribute FreeBoard freeBoard,
-            @RequestParam List<MultipartFile> files,
+            @RequestParam(required = false) List<MultipartFile> files,
             @AdminAuthenticationPrincipal Principal<Member> principal
     ) {
+        if (files == null) {
+            files = List.of();
+        }
+
         Member admin = principal.getAuthentication();
 
         Long freeBoardId = freeBoardService.createFreeBoard(freeBoard, files, admin.getMemberId());
@@ -165,8 +169,11 @@ public class FreeBoardController {
      */
     @DeleteMapping("/admin/boards/free/{freeBoardId}")
     public ResponseEntity<Object> deleteFreeBoardByAdmin(
-            @PathVariable Long freeBoardId) {
-        freeBoardService.deleteFreeBoardById(freeBoardId);
+            @PathVariable Long freeBoardId,
+            @AdminAuthenticationPrincipal Principal<Member> principal) {
+        Member admin = principal.getAuthentication();
+
+        freeBoardService.deleteFreeBoardByAdmin(freeBoardId, admin.getMemberId());
 
         return ResponseEntity
                 .ok()
@@ -184,9 +191,16 @@ public class FreeBoardController {
     @PutMapping("/admin/boards/free/{freeBoardId}")
     public ResponseEntity<Object> updateFreeBoardByAdmin(
             @Valid @ModelAttribute FreeBoard freeBoard,
-            @RequestParam List<MultipartFile> saveFiles,
-            @RequestParam List<Long> deleteFileIds,
+            @RequestParam(required = false) List<MultipartFile> saveFiles,
+            @RequestParam(required = false) List<Long> deleteFileIds,
             @PathVariable Long freeBoardId) {
+        if (saveFiles == null) {
+            saveFiles = List.of();
+        }
+        if (deleteFileIds == null) {
+            deleteFileIds = List.of();
+        }
+
         freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId);
 
         return ResponseEntity

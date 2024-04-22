@@ -92,6 +92,20 @@ public class FreeBoardServiceImpl implements FreeBoardService{
                 .orElseThrow(() -> new AuthorizationException(AUTHORIZATION_EXCEPTION_MESSAGE));
     }
 
+    @Override
+    @Transactional
+    public void deleteFreeBoardByAdmin(Long freeBoardId, Long memberId) {
+        freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId)
+                .ifPresentOrElse(
+                        (b) -> {freeBoardRepository.deleteByBoardId(freeBoardId);},
+                        () -> {
+                            freeBoardRepository.deleteByAdmin(freeBoardId);
+                            //TODO 실파일 삭제해야함
+                            attachmentFileRepository.deleteByFreeBoardId(freeBoardId);
+                        }
+                );
+    }
+
 
     private SuccessesAndFails<AttachmentFile> saveFiles(List<MultipartFile> multipartFiles, Long boardId) {
         SuccessesAndFails<AttachmentFile> results = SuccessesAndFails.emptyList();

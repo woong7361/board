@@ -52,14 +52,14 @@ public class AuthController {
      * @return 200 ok
      */
     @PostMapping("/auth/admin/login")
-    public ResponseEntity<Object> adminLogin(
+    public ResponseEntity<Member> adminLogin(
             @Validated(MemberLoginValidationGroup.class) @RequestBody Member member,
             HttpSession httpSession) {
         Member adminMember = authService.adminAuthentication(member);
 
         httpSession.setAttribute(ADMIN_SESSION_KEY, adminMember);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(adminMember);
     }
 
     /**

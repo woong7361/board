@@ -35,4 +35,12 @@ public interface CommentService {
      * @param commentId 댓글 식별자
      */
     void delete(Long commentId);
+
+    /**
+     * 관리자가 댓글을 삭제한다.
+     *
+     * @param commentId 댓글 식별자
+     * @param memberId 관리자 식별자
+     */
+    void deleteByAdmin(Long commentId, Long memberId);
 }

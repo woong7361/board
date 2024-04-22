@@ -78,6 +78,7 @@ public class InquireBoardController {
      */
     @GetMapping("/api/boards/inquire/{inquireBoardId}")
     public ResponseEntity<InquireBoardResponseDTO> getInquireBoard(@PathVariable Long inquireBoardId) {
+        //TODO 인증 인가 필터 구현후 구현하는게 맞을듯
         InquireBoardResponseDTO inquireBoard = inquireBoardService.getBoardById(inquireBoardId);
 
         return ResponseEntity

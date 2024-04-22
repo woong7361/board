@@ -18,9 +18,14 @@ import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
  */
 @Component
 public class AdminSessionInterceptor implements HandlerInterceptor {
+    public static final String OPTIONS_METHOD = "OPTIONS";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (request.getMethod().equals(OPTIONS_METHOD)) {
+            return true;
+        }
+
         checkAdminAuthentication(request.getSession(false));
 
         return true;

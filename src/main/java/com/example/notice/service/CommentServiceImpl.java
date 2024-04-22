@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.notice.constant.ErrorMessageConstant.AUTHORIZATION_EXCEPTION_MESSAGE;
 
@@ -39,5 +40,14 @@ public class CommentServiceImpl implements CommentService{
     @Transactional
     public void delete(Long commentId) {
         commentRepository.deleteById(commentId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByAdmin(Long commentId, Long memberId) {
+        commentRepository.getCommentByCommentIdAndMemberId(commentId, memberId)
+                .ifPresentOrElse(
+                        (c) -> {commentRepository.deleteById(commentId);},
+                        () -> {commentRepository.deleteByIdToAdmin(commentId);});
     }
 }

@@ -1,26 +1,34 @@
 해야할일
-- filter 부분 삭제하기
-    - test부분 interceptor로 이식하면서
-
-- 자유게시판 게시글 생성할때 파일 없어도 생성 되도록 수정하기
-
 - interceptor 인증 인가 부분으로 나눌것인가? -> 아마 하는게 좋을듯함
 
 - 관리자 api 미완료 된 부분 작성해야함
 - category 얻는 api 작성 해야함
 
-- 파일 없어도 생성 되도록 모든 api 수정해야함
-    - freeBoard 수정 부분
+- inquireBoard에서 작성자와 로그인 회원이 다르면 에러 내도록 수정
+- 문의 게시판 비회원일때 안보이는데 -> 상세조회를 못하는 거지 리스트는 볼 수 있도록 하기
 
+- 관리자가 삭제 or 수정?
+    - 관리자에 의해 삭제된글 or 수정된글입니다. 표시하는게 나을듯 그냥 싸그리 지우는것보단
+
+- 기본적으로 수정일시로 정렬 하기
+
+리팩토링
 - 먼저 authorization check하는 부분 없애기 (통일감)
     - freeBoard에 존재
+
+- filter 부분 삭제하기
+    - test부분 interceptor로 이식하면서
+
+- admin login에서 password response로 나가는거 제어
+
+- 관리자가 다른 회원 게시글 삭제 수정? 이름 바꿔줘야할듯 ToAdmin? ByAdmin?
 
 --- 테스트 ---
 - test용 config 작성
 
 - constraint -> gradlew clean build 빌드로 만들어지나 테스트해보기
 
-
+- 테스트 커버리지 향상
 
 
 
@@ -29,4 +37,4 @@
 
 알아볼일
 - excludeFilters의 FilterType을 알아보아야 한다.
-
+- 현재 테스트의 통일성이 망가져있는 상활 그냥 가도 좋을까?

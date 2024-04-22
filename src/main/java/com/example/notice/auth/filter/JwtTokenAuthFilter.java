@@ -29,6 +29,9 @@ public class JwtTokenAuthFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String bearerToken = request.getHeader(AUTHORIZATION);
 
+        // Bearer token 이 null 이면 GUEST 처리
+        // Bearer token 이 있다면 Member 처리?
+
         Member member = authProvider.verify(bearerToken);
 
         AuthenticationHolder.clear();
