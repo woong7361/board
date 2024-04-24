@@ -11,10 +11,12 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 
 @TestConfiguration
+@TestPropertySource("classpath:application-test.yml")
 public class RestDocsConfig {
 
     @Bean

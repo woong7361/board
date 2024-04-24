@@ -29,23 +29,19 @@ public interface InquireBoardRepository {
      * 문의 게시판 게시글 검색
      * @param inquireBoardSearchDTO 문의 게시판 게시글 검색 파라미터
      * @param pageRequest 페이징 요청 파라미터
-     * @param memberId 검색자의 식별자
      * @return 검색결과
      */
     List<InquireBoardSearchResponseDTO> search(
             @Param("search") InquireBoardSearchDTO inquireBoardSearchDTO,
-            @Param("page") PageRequest pageRequest,
-            @Param("memberId") Long memberId);
+            @Param("page") PageRequest pageRequest);
 
     /**
      * 문의 게시판 검색 게시글 총 개수
      * @param inquireBoardSearchDTO 문의 게시판 게시글 검색 파라미터
-     * @param memberId 검색자의 실별자
      * @return 검색결과의 총 개수
      */
     Integer getSearchTotalCount(
-            @Param("search") InquireBoardSearchDTO inquireBoardSearchDTO,
-            @Param("memberId") Long memberId);
+            @Param("search") InquireBoardSearchDTO inquireBoardSearchDTO);
 
     //TODO 도저히 모르겠다. mybatis collection -> collection만 있으면 에러
     /**
@@ -77,6 +73,13 @@ public interface InquireBoardRepository {
      * @param inquireBoardId 삭제하려는 게시글 식별자
      */
     void deleteById(@Param("inquireBoardId") Long inquireBoardId);
+
+
+    /**
+     * 게시글의 조회수를 올린다.
+     * @param inquireBoardId 게시글 식별자
+     */
+    void increaseViewsById(@Param("inquireBoardId")Long inquireBoardId);
 }
 
 

@@ -10,6 +10,7 @@ import com.example.notice.mock.database.MemoryDataBase;
 import com.example.notice.mock.repository.MockInquireBoardRepository;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
+import com.example.notice.repository.InquireAnswerRepository;
 import com.example.notice.repository.InquireBoardRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -24,11 +25,13 @@ import static org.mockito.ArgumentMatchers.anyLong;
 
 class InquireBoardServiceTest {
 
+    private InquireAnswerRepository inquireAnswerRepository = Mockito.mock(InquireAnswerRepository.class);
+
     private InquireBoardRepository inquireBoardRepository = new MockInquireBoardRepository();
-    private InquireBoardService inquireBoardService = new InquireBoardServiceImpl(inquireBoardRepository);
+    private InquireBoardService inquireBoardService = new InquireBoardServiceImpl(inquireBoardRepository, inquireAnswerRepository);
 
     private InquireBoardRepository mockitoInquireBoardRepository = Mockito.mock(InquireBoardRepository.class);
-    private InquireBoardService mockitoInquireBoardService = new InquireBoardServiceImpl(mockitoInquireBoardRepository);
+    private InquireBoardService mockitoInquireBoardService = new InquireBoardServiceImpl(mockitoInquireBoardRepository, inquireAnswerRepository);
 
     @AfterEach
     public void clearRepository() {
@@ -69,6 +72,8 @@ class InquireBoardServiceTest {
         @Test
         public void success() throws Exception {
             //given
+            Long memberId = 53145L;
+
             InquireBoard inquireBoard = InquireBoard.builder()
                     .inquireBoardId(153L)
                     .title("title key")
@@ -76,18 +81,18 @@ class InquireBoardServiceTest {
                     .content("key")
                     .createdAt(LocalDateTime.now())
                     .modifiedAt(LocalDateTime.now())
-                    .memberId(45343L)
+                    .memberId(memberId)
                     .build();
 
             InquireBoardSearchDTO searchParam =
-                    new InquireBoardSearchDTO(LocalDateTime.now().minusYears(1L), LocalDateTime.now(), "key", false);
+                    new InquireBoardSearchDTO(LocalDateTime.now().minusYears(1L), LocalDateTime.now(), "key", memberId);
+
             PageRequest pageRequest = new PageRequest(10, 2, null, null);
-            Long memberId = 53145L;
 
             //when
             MemoryDataBase.INQUIRE_BOARD_STORAGE.add(inquireBoard);
             PageResponse<InquireBoardSearchResponseDTO> result =
-                    inquireBoardService.searchInquireBoard(searchParam, pageRequest, memberId);
+                    inquireBoardService.searchInquireBoard(searchParam, pageRequest);
 
             //then
             Assertions.assertThat(result.getTotalCount()).isEqualTo(1);
@@ -97,14 +102,14 @@ class InquireBoardServiceTest {
         @Test
         public void emptyRepository() throws Exception{
             //given
-            InquireBoardSearchDTO searchParam =
-                    new InquireBoardSearchDTO(LocalDateTime.now().minusYears(1L), LocalDateTime.now(), "key", false);
-            PageRequest pageRequest = new PageRequest(10, 2, null, null);
             Long memberId = 53145L;
+            InquireBoardSearchDTO searchParam =
+                    new InquireBoardSearchDTO(LocalDateTime.now().minusYears(1L), LocalDateTime.now(), "key", memberId);
+            PageRequest pageRequest = new PageRequest(10, 2, null, null);
 
             //when
             PageResponse<InquireBoardSearchResponseDTO> result =
-                    inquireBoardService.searchInquireBoard(searchParam, pageRequest, memberId);
+                    inquireBoardService.searchInquireBoard(searchParam, pageRequest);
 
             //then
             Assertions.assertThat(result.getTotalCount()).isEqualTo(0);
@@ -135,7 +140,7 @@ class InquireBoardServiceTest {
             Mockito.when(mockitoInquireBoardRepository.findById(inquireBoardId))
                     .thenReturn(Optional.of(response));
             //when
-            InquireBoardResponseDTO findBoard = mockitoInquireBoardService.getBoardById(inquireBoardId);
+            InquireBoardResponseDTO findBoard = mockitoInquireBoardService.getBoardById(inquireBoardId, 456341L);
 
             //then
             Assertions.assertThat(findBoard.getInquireBoard())
@@ -152,7 +157,7 @@ class InquireBoardServiceTest {
 
             //when
             //then
-            Assertions.assertThatThrownBy(() -> mockitoInquireBoardService.getBoardById(anyLong()))
+            Assertions.assertThatThrownBy(() -> mockitoInquireBoardService.getBoardById(anyLong(), 45341L))
                     .isInstanceOf(EntityNotExistException.class);
         }
     }

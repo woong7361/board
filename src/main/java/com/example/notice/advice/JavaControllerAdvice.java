@@ -1,11 +1,13 @@
 package com.example.notice.advice;
 
 import com.example.notice.exception.AuthenticationException;
+import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.BadRequestParamException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -35,6 +37,26 @@ public class JavaControllerAdvice {
                         .build());
 
     }
+
+
+    /**
+     * 권한 관련 에러 엔드포인트
+     * @param exception parameter 에러
+     * @return 403 forbidden
+     */
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ErrorResponse> authorizationException(AuthorizationException exception) {
+        log.debug("authorizationException exception - message: {}", exception.getMessage());
+        log.info("trace: {}", exception);
+
+        return ResponseEntity
+                .status(HttpStatusCode.valueOf(403))
+                .body(ErrorResponse.builder()
+                        .message(exception.getMessage())
+                        .build());
+
+    }
+
 
     /**
      * 인증 에러 엔드포인트

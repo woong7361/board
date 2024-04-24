@@ -16,5 +16,5 @@ public class InquireBoardSearchDTO {
     private LocalDateTime endDate;
 
     private String keyWord;
-    private Boolean onlyMine;
+    private Long searchMemberId;
 }

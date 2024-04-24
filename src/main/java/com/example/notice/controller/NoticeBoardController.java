@@ -119,12 +119,4 @@ public class NoticeBoardController {
 
         return ResponseEntity.ok().build();
     }
-
-
-    //에러 메시지 프로퍼티화
-    //설정 파일 나누기
-    //인증과 인가 절차 따로?
-    //spring rest docs 도입
-    //패턴을 쓴다면 게시글 삭제시 파일 queue에 담아놓아 백업 구현?
-
 }

@@ -16,4 +16,10 @@
         WHERE inquire_answer_id = #{inquireAnswerId}
     </delete>
 
+
+    <delete id="deleteByBoardId">
+        DELETE FROM inquire_answer
+        WHERE inquire_board_id = #{inquireBoardId}
+    </delete>
+
 </mapper>

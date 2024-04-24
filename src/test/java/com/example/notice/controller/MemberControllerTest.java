@@ -6,6 +6,7 @@ import com.example.notice.exception.BadRequestParamException;
 import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.mock.service.MockMemberService;
 import com.example.notice.restdocs.RestDocsHelper;
+import com.example.notice.service.MemberService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.PayloadDocumentation;
@@ -31,10 +33,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 
 @WebMvcTest(MemberController.class)
 class MemberControllerTest extends RestDocsHelper {
-    public static final String REGISTER_URI = "/auth/member";
-
-    @SpyBean
-    private MockMemberService memberService;
+    @MockBean
+    MemberService memberService;
 
     @BeforeEach
     public void initMapper() {
@@ -44,6 +44,7 @@ class MemberControllerTest extends RestDocsHelper {
     @Nested
     @DisplayName("회원 가입")
     class Register {
+        public static final String REGISTER_URI = "/auth/member";
 
         @DisplayName("정상 처리")
         @Test

@@ -26,7 +26,7 @@ server:
 
   servlet:
     session:
-      timeout: 6000
+      timeout: 600
 
 
 
@@ -41,7 +41,7 @@ setting:
     max-fixed-size: 5
 
   jwt:
-    duration: 999999999999
+    duration: 6000
 
 
 secret: "secret123456789123456789123456789asdfbfcdsafgfdsg"

@@ -20,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.restdocs.cookies.CookieDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -30,8 +31,11 @@ import java.util.stream.Stream;
 
 import static com.example.notice.constant.ResponseConstant.INQUIRE_ANSWER_ID_PARAM;
 import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
+import static com.example.notice.mock.util.LoginTestUtil.getMockAdminSession;
+import static com.example.notice.mock.util.LoginTestUtil.getMockSessionCookie;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -54,7 +58,7 @@ class InquireAnswerControllerTest extends RestDocsHelper {
     @DisplayName("문의게시판 문의 답변 생성 컨트롤러 테스트")
     public class InquireAnswerCreateControllerTest {
 
-        private static final String INQUIRE_ANSWER_CREATE_URI = "/api/boards/inquire/{inquireBoardId}/answers";
+        private static final String INQUIRE_ANSWER_CREATE_URI = "/admin/boards/inquire/{inquireBoardId}/answers";
 
         @DisplayName("정상 처리")
         @Test
@@ -67,17 +71,11 @@ class InquireAnswerControllerTest extends RestDocsHelper {
                     .answer("fdsafdsa")
                     .build();
 
-            MockHttpSession mockHttpSession = new MockHttpSession();
-            mockHttpSession.setAttribute(ADMIN_SESSION_KEY, Member.builder()
-                    .memberId(memberId)
-                    .name("admin")
-                    .build());
-
             //when
             ResultActions action = mockMvc.perform(RestDocumentationRequestBuilders
                     .post(INQUIRE_ANSWER_CREATE_URI, inquireBoardId)
-                    .headers(authenticationTestUtil.getLoginTokenHeaders(memberId))
-                    .session(mockHttpSession)
+                    .session(getMockAdminSession(memberId))
+                    .cookie(getMockSessionCookie())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(answer)));
 
@@ -95,11 +93,10 @@ class InquireAnswerControllerTest extends RestDocsHelper {
                                     fieldWithPath("answer").description("답변 내용")
                             )
                     ))
-                    .andDo(restDocs.document(
-                            requestHeaders(
-                                    headerWithName("Authorization").description("JWT token")
-                            )
-                    ));
+                    .andDo(restDocs.document(requestCookies(
+                            CookieDocumentation.cookieWithName("JSESSIONID")
+                                    .description("세션 쿠키")
+                    )));
         }
 
         @DisplayName("유효하지 않은 입력값이 들어올때")
@@ -115,17 +112,12 @@ class InquireAnswerControllerTest extends RestDocsHelper {
                     .answer(answer)
                     .build();
 
-            MockHttpSession mockHttpSession = new MockHttpSession();
-            mockHttpSession.setAttribute(ADMIN_SESSION_KEY, Member.builder()
-                    .memberId(memberId)
-                    .name("admin")
-                    .build());
             //when
             //then
             mockMvc.perform(MockMvcRequestBuilders.post(INQUIRE_ANSWER_CREATE_URI, inquireBoardId)
-                            .headers(authenticationTestUtil.getLoginTokenHeaders(memberId))
                             .contentType(MediaType.APPLICATION_JSON)
-                            .session(mockHttpSession)
+                            .session(getMockAdminSession(memberId))
+                            .cookie(getMockSessionCookie())
                             .content(mapper.writeValueAsString(body)))
                     .andExpect(MockMvcResultMatchers.status().isBadRequest());
         }
@@ -143,17 +135,20 @@ class InquireAnswerControllerTest extends RestDocsHelper {
     @DisplayName("문의 게시판 문의 답변 삭제 컨트롤러 테스트")
     public class InquireAnswerDeleteControllerTest {
 
-        private static final String INQUIRE_ANSWER_DELETE_URI = "/api/boards/inquire/answers/{inquireAnswerId}";
+        private static final String INQUIRE_ANSWER_DELETE_URI = "/admin/boards/inquire/answers/{inquireAnswerId}";
         @DisplayName("정상 처리")
         @Test
         public void success() throws Exception {
             //given
-            long inquireAnswerId = 415341L;
+            Long inquireAnswerId = 415341L;
+            Long memberId = 415341354L;
 
             //when
             ResultActions action = mockMvc.perform(RestDocumentationRequestBuilders
                     .delete(INQUIRE_ANSWER_DELETE_URI, inquireAnswerId)
-                    .headers(authenticationTestUtil.getLoginTokenHeaders(56352456L)));
+                    .session(getMockAdminSession(memberId))
+                    .cookie(getMockSessionCookie())
+            );
 
             //then
             action
@@ -164,11 +159,10 @@ class InquireAnswerControllerTest extends RestDocsHelper {
                                     parameterWithName("inquireAnswerId").description("답변 식별자")
                             )
                     ))
-                    .andDo(restDocs.document(
-                            requestHeaders(
-                                    headerWithName("Authorization").description("JWT token")
-                            )
-                    ));
+                    .andDo(restDocs.document(requestCookies(
+                            CookieDocumentation.cookieWithName("JSESSIONID")
+                                    .description("세션 쿠키")
+                    )));
         }
     }
 }

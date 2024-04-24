@@ -3,7 +3,9 @@ package com.example.notice.controller;
 import com.example.notice.dto.response.FileResponseDTO;
 import com.example.notice.entity.AttachmentFile;
 import com.example.notice.mock.config.NoFilterMvcTest;
+import com.example.notice.restdocs.RestDocsHelper;
 import com.example.notice.service.FileService;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
@@ -11,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.request.RequestDocumentation;
+import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -30,19 +34,16 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 
 
 @NoFilterMvcTest(FileController.class)
-@AutoConfigureRestDocs
-class FileControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
+class FileControllerTest extends RestDocsHelper {
 
     @MockBean
     private FileService fileService;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    @BeforeEach
+    public void initMapper() {
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
 
-
-    //TODO 파일 다운로드 테스트에서 더미파일 사용?
     @Nested
     @DisplayName("파일 다운로드 컨트롤러 테스트")
     public class FileDownloadTest {
@@ -56,11 +57,11 @@ class FileControllerTest {
             long fileId = 13L;
             String originalName = "originalName";
 
-            File tempfile = File.createTempFile("temp_", ".dat");
+            File file = new File("src/test/resources/test.txt");
 
             //when
             Mockito.when(fileService.getPhysicalFile(fileId))
-                    .thenReturn(tempfile);
+                    .thenReturn(file);
             Mockito.when(fileService.getFileOriginalNameById(fileId))
                     .thenReturn(originalName);
 
@@ -68,24 +69,20 @@ class FileControllerTest {
                     .post(FILE_DOWNLOAD_URI, fileId));
 
             //then
-            try{
-                action
-                        .andExpect(MockMvcResultMatchers.status().isOk())
+            action
+                    .andExpect(MockMvcResultMatchers.status().isOk())
 
-                        .andDo(document("file.download",
-                                RequestDocumentation.pathParameters(
-                                        parameterWithName("fileId")
-                                                .description("파일 식별자")
-                                ),
-                                responseHeaders(
-                                        headerWithName("content-disposition")
-                                                .description("파일 다운로드 & 파일 이름")
-                                )
-                        ));
-
-            }finally {
-                tempfile.deleteOnExit();
-            }
+                    .andDo(document("file.download",
+                            RequestDocumentation.pathParameters(
+                                    parameterWithName("fileId")
+                                            .description("파일 식별자")
+                                            .attributes(new Attributes.Attribute("key", "value"))
+                            ),
+                            responseHeaders(
+                                    headerWithName("content-disposition")
+                                            .description("파일 다운로드 & 파일 이름")
+                            )
+                    ));
         }
     }
 

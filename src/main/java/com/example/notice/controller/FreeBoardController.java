@@ -134,7 +134,8 @@ public class FreeBoardController {
         freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId);
 
         return ResponseEntity
-                .ok(Map.of(FREE_BOARD_ID_PARAM, freeBoardId));
+                .ok()
+                .build();
     }
 
     /**
@@ -204,7 +205,8 @@ public class FreeBoardController {
         freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId);
 
         return ResponseEntity
-                .ok(Map.of(FREE_BOARD_ID_PARAM, freeBoardId));
+                .ok()
+                .build();
     }
 
     private static void checkSearchRange(FreeBoardSearchDTO freeBoardSearchDTO) {

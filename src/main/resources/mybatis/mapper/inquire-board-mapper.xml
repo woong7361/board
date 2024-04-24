@@ -59,9 +59,9 @@
                 OR m.`name` LIKE CONCAT('%', #{search.keyWord}, '%'))
             </if>
 
-            <if test="search.onlyMine == true">
+            <if test="search.searchMemberId != null">
                 AND
-                ib.member_id = #{memberId}
+                ib.member_id = #{search.searchMemberId}
             </if>
         </where>
     </sql>
@@ -145,4 +145,10 @@
         WHERE inquire_board_id = #{inquireBoardId};
 
     </delete>
+
+    <update id="increaseViewsById">
+        UPDATE inquire_board
+        SET views = (views + 1)
+        WHERE inquire_board_id = #{inquireBoardId}
+    </update>
 </mapper>

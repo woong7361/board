@@ -25,4 +25,11 @@ public interface InquireAnswerRepository {
      * @param inquireAnswerId 게시글 답변 식별자
      */
     void deleteById(@Param("inquireAnswerId") Long inquireAnswerId);
+
+    /**
+     * 문의게시판 게시글에 있는 모든 답변 삭제
+     * @param inquireBoardId 게시글 식별자
+     */
+    void deleteByBoardId(@Param("inquireBoardId") Long inquireBoardId);
+
 }

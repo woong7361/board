@@ -34,7 +34,7 @@ public class InquireAnswerController {
      * @param principal      답변하는 관리자의 인증 객체
      * @return 문의의 생성된 답변 식별자
      */
-    @PostMapping("/api/boards/inquire/{inquireBoardId}/answers")
+    @PostMapping("/admin/boards/inquire/{inquireBoardId}/answers")
     public ResponseEntity<Object> createInquireAnswer(
             @Valid @RequestBody InquireAnswer inquireAnswer,
             @PathVariable Long inquireBoardId,
@@ -52,7 +52,7 @@ public class InquireAnswerController {
      * @param inquireAnswerId 문의 답변 식별자
      * @return 200 ok
      */
-    @DeleteMapping("/api/boards/inquire/answers/{inquireAnswerId}")
+    @DeleteMapping("/admin/boards/inquire/answers/{inquireAnswerId}")
     public ResponseEntity<Object> deleteInquireAnswer(
             @PathVariable Long inquireAnswerId) {
         inquireAnswerService.deleteById(inquireAnswerId);

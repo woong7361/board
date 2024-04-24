@@ -23,12 +23,11 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
                 .build();
 
         INQUIRE_BOARD_STORAGE.add(saveBoard);
-
-//        return saveBoard.getInquireBoardId();
     }
 
+
     @Override
-    public List<InquireBoardSearchResponseDTO> search(InquireBoardSearchDTO inquireBoardSearchDTO, PageRequest pageRequest, Long memberId) {
+    public List<InquireBoardSearchResponseDTO> search(InquireBoardSearchDTO inquireBoardSearchDTO, PageRequest pageRequest) {
 
         return INQUIRE_BOARD_STORAGE.stream()
                 .filter((ib) -> {
@@ -41,19 +40,19 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
                         result = result && ib.getCreatedAt().isBefore(inquireBoardSearchDTO.getEndDate());
                         result = result && ib.getCreatedAt().isAfter(inquireBoardSearchDTO.getStartDate());
                     }
-                    if (inquireBoardSearchDTO.getOnlyMine()) {
-                        result = result && ib.getMemberId().equals(memberId);
+                    if (inquireBoardSearchDTO.getSearchMemberId() != null) {
+                        result = result && ib.getMemberId().equals(inquireBoardSearchDTO.getSearchMemberId());
                     }
                     return result;
                 })
-                //TODO JOIN 해결해야함
+
                 .map(ib -> new InquireBoardSearchResponseDTO(ib.getInquireBoardId(), ib.getMemberId(), ib.getMemberName(), ib.getCreatedAt(),
                         ib.getModifiedAt(), ib.getTitle(), ib.getContent(), ib.getIsSecret(), ib.getViews(), ib.getIsSecret()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Integer getSearchTotalCount(InquireBoardSearchDTO inquireBoardSearchDTO, Long memberId) {
+    public Integer getSearchTotalCount(InquireBoardSearchDTO inquireBoardSearchDTO) {
         return (int) INQUIRE_BOARD_STORAGE.stream()
                 .filter((ib) -> {
                     boolean result = true;
@@ -65,8 +64,8 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
                         result = result && ib.getCreatedAt().isBefore(inquireBoardSearchDTO.getEndDate());
                         result = result && ib.getCreatedAt().isAfter(inquireBoardSearchDTO.getStartDate());
                     }
-                    if (inquireBoardSearchDTO.getOnlyMine()) {
-                        result = result && ib.getMemberId().equals(memberId);
+                    if (inquireBoardSearchDTO.getSearchMemberId() != null) {
+                        result = result && ib.getMemberId().equals(inquireBoardSearchDTO.getSearchMemberId());
                     }
                     return result;
                 })
@@ -75,9 +74,6 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
 
     @Override
     public Optional<InquireBoardResponseDTO> findById(Long inquireBoardId) {
-//        return INQUIRE_BOARD_STORAGE.stream()
-//                .filter(inquireBoard -> inquireBoard.getInquireBoardId().equals(inquireBoardId))
-//                .findFirst();
         return Optional.empty();
     }
 
@@ -97,6 +93,18 @@ public class MockInquireBoardRepository implements InquireBoardRepository {
     public void deleteById(Long inquireBoardId) {
         INQUIRE_BOARD_STORAGE
                 .removeIf(inquireBoard -> inquireBoard.getInquireBoardId().equals(inquireBoardId));
+    }
+
+    @Override
+    public void increaseViewsById(Long inquireBoardId) {
+        INQUIRE_BOARD_STORAGE.stream()
+                .filter(ib -> ib.getInquireBoardId().equals(inquireBoardId))
+                .findFirst()
+                .ifPresent(ib -> {
+                    ib = InquireBoardBuilderMapper(ib)
+                            .views(ib.getViews() + 1L)
+                            .build();
+                });
     }
 
     public static InquireBoard.InquireBoardBuilder InquireBoardBuilderMapper(InquireBoard inquireBoard) {

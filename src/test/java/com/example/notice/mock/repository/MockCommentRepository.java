@@ -50,6 +50,12 @@ public class MockCommentRepository implements CommentRepository {
                 .removeIf(c -> c.getCommentId().equals(commentId));
     }
 
+    @Override
+    public void deleteByIdToAdmin(Long commentId) {
+        COMMENT_STORAGE
+                .removeIf(c -> c.getCommentId().equals(commentId));
+    }
+
     public static Comment.CommentBuilder commentBuilderMapper(Comment comment) {
         return Comment.builder()
                 .commentId(comment.getCommentId())

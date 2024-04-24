@@ -18,6 +18,19 @@ public class AuthenticationTestUtil {
 
     public HttpHeaders getLoginTokenHeaders(Long memberId) {
         Member member = Member.builder()
+                .memberId(memberId)
+                .build();
+
+        String authentication = "Bearer " + authProvider.createAuthentication(member);
+
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("Authorization", authentication);
+
+        return new HttpHeaders(headers);
+    }
+
+    public HttpHeaders getLoginTokenHeaders() {
+        Member member = Member.builder()
                 .memberId(1L)
                 .build();
 

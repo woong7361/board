@@ -161,4 +161,10 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
                 });
     }
 
+    @Override
+    public void deleteByAdmin(Long freeBoardId) {
+        FREE_BOARD_STORAGE
+                .removeIf((fd) -> fd.getFreeBoardId().equals(freeBoardId));
+    }
+
 }

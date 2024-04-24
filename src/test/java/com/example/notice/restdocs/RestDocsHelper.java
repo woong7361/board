@@ -29,7 +29,6 @@ import org.springframework.web.context.WebApplicationContext;
 @Import({RestDocsConfig.class})
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-@TestPropertySource("classpath:application-test.yml")
 public class RestDocsHelper {
 
     @Autowired

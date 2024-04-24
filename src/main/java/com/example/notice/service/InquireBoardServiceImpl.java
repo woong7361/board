@@ -8,6 +8,7 @@ import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
+import com.example.notice.repository.InquireAnswerRepository;
 import com.example.notice.repository.InquireBoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import static com.example.notice.constant.ErrorMessageConstant.BOARD_NOT_EXIST_M
 public class InquireBoardServiceImpl implements InquireBoardService {
 
     private final InquireBoardRepository inquireBoardRepository;
+    private final InquireAnswerRepository inquireAnswerRepository;
 
     @Transactional
     @Override
@@ -34,20 +36,26 @@ public class InquireBoardServiceImpl implements InquireBoardService {
     }
 
     @Override
-    public PageResponse<InquireBoardSearchResponseDTO> searchInquireBoard(InquireBoardSearchDTO inquireBoardSearchDTO, PageRequest pageRequest, Long memberId) {
-        Integer searchTotalCount = inquireBoardRepository.getSearchTotalCount(inquireBoardSearchDTO, memberId);
+    public PageResponse<InquireBoardSearchResponseDTO> searchInquireBoard(InquireBoardSearchDTO inquireBoardSearchDTO, PageRequest pageRequest) {
+        Integer searchTotalCount = inquireBoardRepository.getSearchTotalCount(inquireBoardSearchDTO);
 
         List<InquireBoardSearchResponseDTO> inquireBoards =
-                inquireBoardRepository.search(inquireBoardSearchDTO, pageRequest, memberId);
+                inquireBoardRepository.search(inquireBoardSearchDTO, pageRequest);
 
         return new PageResponse<>(inquireBoards, pageRequest, searchTotalCount);
     }
 
     @Override
-    public InquireBoardResponseDTO getBoardById(Long inquireBoardId) {
-        //TODO 비밀글 여부 확인 후 렌더링 확인
-        return inquireBoardRepository.findById(inquireBoardId)
+    public InquireBoardResponseDTO getBoardById(Long inquireBoardId, Long memberId) {
+        InquireBoardResponseDTO result = inquireBoardRepository.findById(inquireBoardId)
                 .orElseThrow(() -> new EntityNotExistException(BOARD_NOT_EXIST_MESSAGE));
+
+        if (result.getInquireBoard().getIsSecret() && !result.getInquireBoard().getMemberId().equals(memberId)) {
+            throw new AuthorizationException(AUTHORIZATION_EXCEPTION_MESSAGE);
+        }
+
+        inquireBoardRepository.increaseViewsById(inquireBoardId);
+        return result;
     }
 
     @Override
@@ -63,7 +71,26 @@ public class InquireBoardServiceImpl implements InquireBoardService {
     public void deleteById(Long inquireBoardId, Long memberId) {
         checkInquireBoardAuthorization(inquireBoardId, memberId);
 
+        inquireAnswerRepository.deleteByBoardId(inquireBoardId);
         inquireBoardRepository.deleteById(inquireBoardId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByAdmin(Long inquireBoardId) {
+        inquireAnswerRepository.deleteByBoardId(inquireBoardId);
+        inquireBoardRepository.deleteById(inquireBoardId);
+    }
+
+    @Override
+    public InquireBoardResponseDTO getBoardByAdmin(Long inquireBoardId) {
+        InquireBoardResponseDTO result = inquireBoardRepository.findById(inquireBoardId)
+                .orElseThrow(() -> new EntityNotExistException(BOARD_NOT_EXIST_MESSAGE));
+
+        inquireBoardRepository.increaseViewsById(inquireBoardId);
+
+        return result;
+
     }
 
     private void checkInquireBoardAuthorization(Long inquireBoardId, Long memberId) {

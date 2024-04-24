@@ -1,10 +1,13 @@
 package com.example.notice.controller;
 
+import com.example.notice.dto.response.AdminLoginResponse;
 import com.example.notice.entity.Member;
 import com.example.notice.service.AuthService;
 import com.example.notice.validate.group.MemberLoginValidationGroup;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -52,14 +55,20 @@ public class AuthController {
      * @return 200 ok
      */
     @PostMapping("/auth/admin/login")
-    public ResponseEntity<Member> adminLogin(
+    public ResponseEntity<AdminLoginResponse> adminLogin(
             @Validated(MemberLoginValidationGroup.class) @RequestBody Member member,
             HttpSession httpSession) {
         Member adminMember = authService.adminAuthentication(member);
 
         httpSession.setAttribute(ADMIN_SESSION_KEY, adminMember);
 
-        return ResponseEntity.ok(adminMember);
+        AdminLoginResponse response = AdminLoginResponse.builder()
+                .memberId(adminMember.getMemberId())
+                .name(adminMember.getName())
+                .sessionTimeOut(httpSession.getMaxInactiveInterval())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -69,9 +78,8 @@ public class AuthController {
      */
     @PostMapping("/auth/member/login-id")
     public ResponseEntity<Object> checkDuplicateLoginId(
-            @RequestBody String loginId
+            @RequestBody @Valid String loginId
     ) {
-
         authService.checkDuplicateLoginId(loginId);
 
         return ResponseEntity

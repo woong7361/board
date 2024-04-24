@@ -23,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.restdocs.cookies.CookieDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
@@ -39,8 +40,11 @@ import java.util.stream.Stream;
 import static com.example.notice.constant.ResponseConstant.FIXED_NOTICE_BOARDS_PARAM;
 import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
 import static com.example.notice.mock.repository.MockNoticeBoardRepository.NO_FK_NOTICE_BOARD;
+import static com.example.notice.mock.util.LoginTestUtil.getMockAdminSession;
+import static com.example.notice.mock.util.LoginTestUtil.getMockSessionCookie;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -65,6 +69,8 @@ class NoticeBoardControllerTest extends RestDocsHelper {
         @Test
         public void success() throws Exception {
             //given
+            Long memberId = 45631L;
+
             NoticeBoard board = NoticeBoard.builder()
                     .category("category")
                     .title("title")
@@ -80,7 +86,8 @@ class NoticeBoardControllerTest extends RestDocsHelper {
                     .headers(authenticationTestUtil.getLoginTokenHeaders(45341L))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(board))
-                    .session(mockHttpSession));
+                    .cookie(getMockSessionCookie())
+                    .session(getMockAdminSession(memberId)));
 
             //then
             action
@@ -95,17 +102,14 @@ class NoticeBoardControllerTest extends RestDocsHelper {
                             )
                     ))
                     .andDo(restDocs.document(
-                            requestHeaders(
-                                    headerWithName("Authorization").description("JWT token")
-                            )
-                    ))
-                    .andDo(restDocs.document(
                             responseFields(
                                     fieldWithPath("noticeBoardId").description("게시글 식별자")
                             )
                     ))
-            ;
-
+                    .andDo(restDocs.document(requestCookies(
+                            CookieDocumentation.cookieWithName("JSESSIONID")
+                                    .description("세션 쿠키")
+                    )));
         }
 
         @DisplayName("요청 인자 테스트")
@@ -113,6 +117,7 @@ class NoticeBoardControllerTest extends RestDocsHelper {
         @MethodSource("invalidInputs")
         public void test(String category, String title, String content, Boolean isFixed) throws Exception{
             //given
+            Long memberId = 464786L;
             NoticeBoard board = NoticeBoard.builder()
                     .category(category)
                     .title(title)
@@ -122,13 +127,17 @@ class NoticeBoardControllerTest extends RestDocsHelper {
 
             MockHttpSession mockHttpSession = new MockHttpSession();
             mockHttpSession.setAttribute(ADMIN_SESSION_KEY, Member.builder().build());
+
             //when
+            ResultActions action = mockMvc.perform(MockMvcRequestBuilders.post(NOTICE_BOARD_CREATE_URI)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(board))
+                    .cookie(getMockSessionCookie())
+                    .session(getMockAdminSession(memberId)));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.post(NOTICE_BOARD_CREATE_URI)
-                            .headers(authenticationTestUtil.getLoginTokenHeaders(45341L))
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(mapper.writeValueAsString(board))
-                            .session(mockHttpSession))
+            action
+
                     .andExpect(MockMvcResultMatchers.status().isBadRequest())
                     .andExpect(result -> assertThat(result.getResolvedException())
                             .isInstanceOf(MethodArgumentNotValidException.class));
@@ -432,10 +441,8 @@ class NoticeBoardControllerTest extends RestDocsHelper {
             //when
 
             ResultActions action = mockMvc.perform(RestDocumentationRequestBuilders.delete(DELETE_NOTICE_BOARD_URI, noticeBoardId)
-                    .headers(authenticationTestUtil.getLoginTokenHeaders(memberId))
-                    .sessionAttr(ADMIN_SESSION_KEY, Member.builder()
-                            .memberId(memberId)
-                            .build()));
+                    .cookie(getMockSessionCookie())
+                    .session(getMockAdminSession(memberId)));
 
             //then
             action
@@ -446,11 +453,10 @@ class NoticeBoardControllerTest extends RestDocsHelper {
                                     parameterWithName("noticeBoardId").description("공지 게시글 식별자")
                             )
                     ))
-                    .andDo(restDocs.document(
-                            requestHeaders(
-                                    headerWithName("Authorization").description("JWT token")
-                            )
-                    ));
+                    .andDo(restDocs.document(requestCookies(
+                            CookieDocumentation.cookieWithName("JSESSIONID")
+                                    .description("세션 쿠키")
+                    )));
         }
     }
 
@@ -477,11 +483,10 @@ class NoticeBoardControllerTest extends RestDocsHelper {
 
             //when
             ResultActions action = mockMvc.perform(RestDocumentationRequestBuilders.put(NOTICE_BOARD_UPDATE_URI, noticeBoardId)
-                    .headers(authenticationTestUtil.getLoginTokenHeaders(7345L))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(noticeBoard))
-                    .sessionAttr(ADMIN_SESSION_KEY, member));
-
+                    .cookie(getMockSessionCookie())
+                    .session(getMockAdminSession(member.getMemberId())));
             //then
             action
                     .andExpect(MockMvcResultMatchers.status().isOk())
@@ -499,11 +504,10 @@ class NoticeBoardControllerTest extends RestDocsHelper {
                                     fieldWithPath("isFixed").description("상단 고정 여부")
                             )
                     ))
-                    .andDo(restDocs.document(
-                            requestHeaders(
-                                    headerWithName("Authorization").description("JWT token")
-                            )
-                    ));
+                    .andDo(restDocs.document(requestCookies(
+                            CookieDocumentation.cookieWithName("JSESSIONID")
+                                    .description("세션 쿠키")
+                    )));
         }
 
         @DisplayName("요청 인자 테스트")
@@ -522,13 +526,16 @@ class NoticeBoardControllerTest extends RestDocsHelper {
             Member member = Member.builder()
                     .memberId(1534L)
                     .build();
+
             //when
+            ResultActions action = mockMvc.perform(MockMvcRequestBuilders.put(NOTICE_BOARD_UPDATE_URI, noticeBoardId)
+                    .content(mapper.writeValueAsString(board))
+                    .cookie(getMockSessionCookie())
+                    .session(getMockAdminSession(member.getMemberId()))
+                    .contentType(MediaType.APPLICATION_JSON));
+
             //then
-            mockMvc.perform(MockMvcRequestBuilders.put(NOTICE_BOARD_UPDATE_URI, noticeBoardId)
-                            .headers(authenticationTestUtil.getLoginTokenHeaders(73464L))
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(mapper.writeValueAsString(board))
-                            .sessionAttr(ADMIN_SESSION_KEY, member))
+            action
 
                     .andExpect(MockMvcResultMatchers.status().isBadRequest())
                     .andExpect(result -> assertThat(result.getResolvedException())
