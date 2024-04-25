@@ -46,6 +46,7 @@ public class InquireBoardServiceImpl implements InquireBoardService {
     }
 
     @Override
+    @Transactional
     public InquireBoardResponseDTO getBoardById(Long inquireBoardId, Long memberId) {
         InquireBoardResponseDTO result = inquireBoardRepository.findById(inquireBoardId)
                 .orElseThrow(() -> new EntityNotExistException(BOARD_NOT_EXIST_MESSAGE));

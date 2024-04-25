@@ -1,5 +1,7 @@
 package com.example.notice.auth;
 
+import com.example.notice.auth.provider.AuthProvider;
+import com.example.notice.auth.provider.JwtAuthProvider;
 import com.example.notice.entity.Member;
 import com.example.notice.mock.service.MockConfigurationService;
 import io.jsonwebtoken.security.SignatureException;

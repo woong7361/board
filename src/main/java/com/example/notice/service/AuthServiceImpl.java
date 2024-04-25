@@ -1,6 +1,6 @@
 package com.example.notice.service;
 
-import com.example.notice.auth.AuthProvider;
+import com.example.notice.auth.provider.AuthProvider;
 import com.example.notice.entity.Member;
 import com.example.notice.exception.BadRequestParamException;
 import com.example.notice.exception.MemberNotExistException;

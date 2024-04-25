@@ -1,5 +1,6 @@
-package com.example.notice.auth;
+package com.example.notice.auth.resolvehandler;
 
+import com.example.notice.auth.AuthenticationHolder;
 import com.example.notice.auth.principal.Principal;
 import com.example.notice.exception.AuthenticationException;
 import org.springframework.core.MethodParameter;

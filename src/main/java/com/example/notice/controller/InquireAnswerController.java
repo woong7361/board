@@ -1,7 +1,6 @@
 package com.example.notice.controller;
 
-import com.example.notice.auth.AdminAuthenticationPrincipal;
-import com.example.notice.auth.AuthenticationPrincipal;
+import com.example.notice.auth.resolvehandler.AdminAuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
 import com.example.notice.entity.InquireAnswer;
 import com.example.notice.entity.Member;
@@ -10,11 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-
-import static com.example.notice.constant.ResponseConstant.INQUIRE_ANSWER_ID_PARAM;
 
 /**
  * 문의 게시판 답변 컨트롤러

@@ -1,11 +1,9 @@
 package com.example.notice.restdocs;
 
-import com.example.notice.auth.AuthProvider;
-import com.example.notice.auth.JwtAuthProvider;
+import com.example.notice.auth.provider.AuthProvider;
+import com.example.notice.auth.provider.JwtAuthProvider;
 import com.example.notice.config.ConfigurationService;
 import com.example.notice.config.ConfigurationServiceImpl;
-import com.example.notice.entity.Member;
-import com.example.notice.mock.service.MockConfigurationService;
 import com.example.notice.mock.util.AuthenticationTestUtil;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

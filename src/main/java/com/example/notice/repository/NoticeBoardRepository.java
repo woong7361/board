@@ -25,7 +25,6 @@ public interface NoticeBoardRepository {
     /**
      * 상단 고정된 공지 게시글들을 반환한다.
      * @return 상단 고정된 공지 게시글들 반환
-     * //TODO modifiedAt 수정일 null이 아닌 db에는 작성일과 같이 저장이 편한듯? -> 검색이 용이 - null 검색 힘듬
      */
     List<NoticeBoard> findFixedNoticeBoardByLimit(@Param("fixedNoticeLimit") Integer maxFixedNoticeCount);
 

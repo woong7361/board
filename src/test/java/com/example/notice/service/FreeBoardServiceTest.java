@@ -94,8 +94,6 @@ class FreeBoardServiceTest {
     @Nested
     @DisplayName("게시글 검색 서비스 테스트")
     public class FreeBoardSearchTest {
-        //TODO 이런 테스트에서 어떤걸 해야할지 모르겠다. -> repo에 매우 의존적인 service(조회/삽입 정도가 끝)
-        // -> repo는 mocking 되어있어 내가 mocking하는 코드를 또 테스트하는 이중테스트 느낌이 난다.
         @DisplayName("정상 처리")
         @Test
         public void success() throws Exception {

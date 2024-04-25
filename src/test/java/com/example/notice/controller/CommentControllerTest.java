@@ -1,6 +1,6 @@
 package com.example.notice.controller;
 
-import com.example.notice.auth.AuthProvider;
+import com.example.notice.auth.provider.AuthProvider;
 import com.example.notice.constant.ResponseConstant;
 import com.example.notice.entity.Comment;
 import com.example.notice.restdocs.RestDocsHelper;

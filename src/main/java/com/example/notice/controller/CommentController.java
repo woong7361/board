@@ -1,7 +1,7 @@
 package com.example.notice.controller;
 
-import com.example.notice.auth.AdminAuthenticationPrincipal;
-import com.example.notice.auth.AuthenticationPrincipal;
+import com.example.notice.auth.resolvehandler.AdminAuthenticationPrincipal;
+import com.example.notice.auth.resolvehandler.AuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
 import com.example.notice.entity.Comment;
 import com.example.notice.entity.Member;

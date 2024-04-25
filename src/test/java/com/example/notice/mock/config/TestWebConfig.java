@@ -1,7 +1,7 @@
 package com.example.notice.mock.config;
 
-import com.example.notice.auth.AdminAuthenticationHolderResolveHandler;
-import com.example.notice.auth.AuthenticationHolderResolveHandler;
+import com.example.notice.auth.resolvehandler.AdminAuthenticationHolderResolveHandler;
+import com.example.notice.auth.resolvehandler.AuthenticationHolderResolveHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

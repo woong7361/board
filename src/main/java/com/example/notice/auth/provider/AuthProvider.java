@@ -1,4 +1,4 @@
-package com.example.notice.auth;
+package com.example.notice.auth.provider;
 
 import com.example.notice.entity.Member;
 

@@ -1,4 +1,4 @@
-package com.example.notice.auth;
+package com.example.notice.auth.resolvehandler;
 
 import com.example.notice.auth.principal.MemberPrincipal;
 import com.example.notice.auth.principal.Principal;

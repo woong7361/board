@@ -50,7 +50,6 @@ class AdminSessionInterceptorTest {
 
         }
 
-        //TODO 만료시키는 방법? -> 일단 api test 를 통해 만료되면 session null 되는거 확인
         @Disabled
         @DisplayName("세션이 만료되었을때")
         @Test

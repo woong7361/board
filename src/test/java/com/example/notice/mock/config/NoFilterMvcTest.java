@@ -19,7 +19,7 @@ import java.lang.annotation.*;
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
                         classes = {WebConfig.class, JwtTokenInterceptor.class})}
 )
-@Import(TestWebConfig.class)
+//@Import(TestWebConfig.class)
 public @interface NoFilterMvcTest{
 
     @AliasFor("controllers")

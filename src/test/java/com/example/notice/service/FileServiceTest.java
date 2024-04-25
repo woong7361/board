@@ -210,8 +210,6 @@ class FileServiceTest {
             //then
         }
 
-        //TODO 파일을 다루는 부분에서 실제 파일을 다루는 부분을 직접적으로 쓴다?
-        // 이상하다. 얘도 mocking? 하기에도 좀 애매하다.
         @Disabled
         @DisplayName("파일의 경로에 물리적 파일이 존재하지 않음")
         @Test

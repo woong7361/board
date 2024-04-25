@@ -2,6 +2,7 @@ package com.example.notice.auth;
 
 
 import com.example.notice.auth.principal.Principal;
+import com.example.notice.auth.path.AuthorizationRole;
 
 /**
  * 인증된 회원 보관소
@@ -18,12 +19,21 @@ public class AuthenticationHolder {
         threadLocal.set(principal);
     }
 
+
     /**
      * 인증된 회원 가져오기
      * @return 인증된 회원
      */
     public static Principal getPrincipal() {
         return threadLocal.get();
+    }
+
+    /**
+     * 회원 권한 가져오기
+     * @return 회원 권한
+     */
+    public static AuthorizationRole getRole() {
+        return getPrincipal().getRole();
     }
 
     /**

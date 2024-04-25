@@ -1,6 +1,6 @@
 package com.example.notice.controller;
 
-import com.example.notice.auth.AdminAuthenticationPrincipal;
+import com.example.notice.auth.resolvehandler.AdminAuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
 import com.example.notice.dto.request.NoticeBoardSearchDTO;
 import com.example.notice.entity.Member;

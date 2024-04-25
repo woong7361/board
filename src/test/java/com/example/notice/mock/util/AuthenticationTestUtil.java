@@ -1,6 +1,6 @@
 package com.example.notice.mock.util;
 
-import com.example.notice.auth.AuthProvider;
+import com.example.notice.auth.provider.AuthProvider;
 import com.example.notice.entity.Member;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;

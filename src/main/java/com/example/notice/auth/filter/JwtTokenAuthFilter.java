@@ -2,9 +2,8 @@ package com.example.notice.auth.filter;
 
 import com.example.notice.auth.AuthenticationHolder;
 import com.example.notice.auth.principal.MemberPrincipal;
-import com.example.notice.auth.principal.Principal;
 import com.example.notice.entity.Member;
-import com.example.notice.auth.AuthProvider;
+import com.example.notice.auth.provider.AuthProvider;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

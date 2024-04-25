@@ -1,15 +1,13 @@
 package com.example.notice.config;
 
-import com.example.notice.auth.AdminAuthenticationHolderResolveHandler;
-import com.example.notice.auth.AuthenticationHolderResolveHandler;
+import com.example.notice.auth.filter.AuthorizationInterceptor;
+import com.example.notice.auth.path.AuthorizationRole;
+import com.example.notice.auth.path.PathMethod;
+import com.example.notice.auth.resolvehandler.AdminAuthenticationHolderResolveHandler;
+import com.example.notice.auth.resolvehandler.AuthenticationHolderResolveHandler;
 import com.example.notice.auth.filter.AdminSessionInterceptor;
-import com.example.notice.auth.filter.JwtTokenAuthFilter;
-import com.example.notice.auth.AuthProvider;
 import com.example.notice.auth.filter.JwtTokenInterceptor;
-import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -26,8 +24,9 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
     private final AuthenticationHolderResolveHandler authenticationHolderResolveHandler;
     private final AdminAuthenticationHolderResolveHandler adminAuthenticationHolderResolveHandler;
-    private final AdminSessionInterceptor adminSessionInterceptor;
 
+    private final AdminSessionInterceptor adminSessionInterceptor;
+    private final AuthorizationInterceptor authorizationInterceptor;
     private final JwtTokenInterceptor jwtTokenInterceptor;
 
 
@@ -45,6 +44,7 @@ public class WebConfig implements WebMvcConfigurer {
      *  인증관련 interceptor 추가
      *  - 관리자 인증
      *  - 사용자 인증
+     *  - 사용자 인가
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -53,6 +53,26 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addInterceptor(jwtTokenInterceptor)
                 .addPathPatterns("/api/**");
+
+        registry.addInterceptor(authorizationInterceptor)
+                .addPathPatterns("/api/**");
+
+        setInterceptorPatterns(authorizationInterceptor);
+    }
+
+    private void setInterceptorPatterns(AuthorizationInterceptor authorizationInterceptor) {
+        authorizationInterceptor.includePathPatterns("/api/**", PathMethod.ANY, AuthorizationRole.MEMBER);
+
+        authorizationInterceptor.includePathPatterns("/api/**", PathMethod.ANY, AuthorizationRole.GUEST);
+
+        authorizationInterceptor.excludePathPatterns("/api/boards/free", PathMethod.POST, AuthorizationRole.GUEST);
+        authorizationInterceptor.excludePathPatterns("/api/boards/free", PathMethod.PUT, AuthorizationRole.GUEST);
+        authorizationInterceptor.excludePathPatterns("/api/boards/free", PathMethod.DELETE, AuthorizationRole.GUEST);
+        authorizationInterceptor.excludePathPatterns("/api/boards/free/*/comments", PathMethod.POST, AuthorizationRole.GUEST);
+        authorizationInterceptor.excludePathPatterns("/api/boards/free/*/comments", PathMethod.DELETE, AuthorizationRole.GUEST);
+        authorizationInterceptor.excludePathPatterns("/api/boards/inquire", PathMethod.POST, AuthorizationRole.GUEST);
+        authorizationInterceptor.excludePathPatterns("/api/boards/inquire", PathMethod.PUT, AuthorizationRole.GUEST);
+        authorizationInterceptor.excludePathPatterns("/api/boards/inquire", PathMethod.DELETE, AuthorizationRole.GUEST);
     }
 
     /**

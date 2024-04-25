@@ -1,8 +1,7 @@
 package com.example.notice.mock.auth;
 
-import com.example.notice.auth.JwtAuthProvider;
 import com.example.notice.entity.Member;
-import com.example.notice.auth.AuthProvider;
+import com.example.notice.auth.provider.AuthProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
