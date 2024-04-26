@@ -30,7 +30,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        if (pathContainer.match(request.getServletPath(), PathMethod.valueOf(request.getMethod()), AuthenticationHolder.getRole())) {
+        if (pathContainer.match(request.getRequestURI(), PathMethod.valueOf(request.getMethod()), AuthenticationHolder.getRole())) {
             return true;
         }
         throw new AuthorizationException(ErrorMessageConstant.AUTHORIZATION_EXCEPTION_MESSAGE);

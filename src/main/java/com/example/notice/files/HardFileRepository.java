@@ -3,7 +3,6 @@ package com.example.notice.files;
 import com.example.notice.config.ConfigurationService;
 import com.example.notice.exception.FileSaveCheckedException;
 import com.example.notice.exception.PhysicalFileNotFoundException;
-import com.example.notice.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,7 +16,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class LocalServerFileRepository implements PhysicalFileRepository{
+public class HardFileRepository implements PhysicalFileRepository{
 
     private final ConfigurationService configurationService;
 
@@ -40,6 +39,13 @@ public class LocalServerFileRepository implements PhysicalFileRepository{
     public void delete(String fullPath) {
         File file = new File(fullPath);
         file.delete();
+
+        //TODO 삭제 실패시도 FileSaveCheckedException 하도록
+        // log를 찍어 사용자가 삭제를 실패해도 모르게 하지만 log를 마지막 부분에서 찍어야 한다.
+        // interceptor? filter? 어디서 찍어야하는가? 혹은 rollback로그를 포함해야 하는가?
+        // 실제 파일을 삭제하면 안되는가? rollback되면? 복구해야하는데?
+        // 그냥 삭제되었다고 로그만 찍고 나중에 로그따라서 지우는게 좋아보이는데?
+        // fullpath 로깅
     }
 
     @Override

@@ -14,7 +14,6 @@ import org.springframework.test.context.TestPropertySource;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 
 @TestConfiguration
-@TestPropertySource("classpath:application-test.yml")
 public class RestDocsConfig {
 
     @Bean

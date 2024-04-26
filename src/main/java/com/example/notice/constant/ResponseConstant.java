@@ -15,4 +15,7 @@ public class ResponseConstant {
     public static final String INQUIRE_BOARD_ID_PARAM = "inquireBoardId";
     public static final String INQUIRE_ANSWER_ID_PARAM = "inquireAnswerId";
 
+    public static final String CATEGORY_PARAM = "categories";
+
+
 }

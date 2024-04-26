@@ -3,6 +3,7 @@ package com.example.notice.advice;
 import com.example.notice.exception.AuthenticationException;
 import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.BadRequestParamException;
+import com.example.notice.exception.EntityNotExistException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
@@ -118,5 +119,24 @@ public class JavaControllerAdvice {
                         .build());
 
     }
+
+    /**
+     * slq select query 관련 에러
+     * @param exception sql에 해당하는 데이터를 찾지못함
+     * @return 400 badRequest
+     */
+    @ExceptionHandler(EntityNotExistException.class)
+    public ResponseEntity<ErrorResponse> jwtException(EntityNotExistException exception) {
+        log.debug("EntityNotExistException exception - message: {}", exception.getMessage());
+        log.info("trace: {}", exception);
+
+        return ResponseEntity
+                .badRequest()
+                .body(ErrorResponse.builder()
+                        .message(exception.getMessage())
+                        .build());
+
+    }
+
 
 }

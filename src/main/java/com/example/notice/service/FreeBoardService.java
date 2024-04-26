@@ -68,4 +68,11 @@ public interface FreeBoardService {
      * @param memberId 관리자 식별자
      */
     void deleteFreeBoardByAdmin(Long freeBoardId, Long memberId);
+
+    /**
+     * 자유게시판 카테고리 가져오기
+     * @return 카테고리 리스트
+     */
+    List<String> getCategory();
+
 }

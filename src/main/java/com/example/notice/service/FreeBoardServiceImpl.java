@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.notice.constant.ErrorMessageConstant.AUTHORIZATION_EXCEPTION_MESSAGE;
 import static com.example.notice.constant.ErrorMessageConstant.BOARD_NOT_EXIST_MESSAGE;
@@ -62,17 +63,15 @@ public class FreeBoardServiceImpl implements FreeBoardService{
         return new PageResponse<>(boards, pageRequest, totalCount);
     }
 
-    /**
-     * @implNote 게시글에 댓글이 달려있다면 삭제하지 않고 게시글의 내용만 지운다.
-     */
     @Transactional
     @Override
     public void deleteFreeBoardById(Long freeBoardId) {
+        deleteFiles(freeBoardId);
+
         if (freeBoardRepository.hasCommentByBoardId(freeBoardId)) {
-            freeBoardRepository.deleteContentAndMemberByBoardId(freeBoardId);
+            freeBoardRepository.deleteContentAndTitleByBoardId(freeBoardId);
         } else {
             attachmentFileRepository.deleteByFreeBoardId(freeBoardId);
-            freeBoardRepository.deleteByBoardId(freeBoardId);
         }
 
     }
@@ -96,14 +95,16 @@ public class FreeBoardServiceImpl implements FreeBoardService{
     @Transactional
     public void deleteFreeBoardByAdmin(Long freeBoardId, Long memberId) {
         freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId)
-                .ifPresentOrElse(
-                        (b) -> {freeBoardRepository.deleteByBoardId(freeBoardId);},
-                        () -> {
+                .ifPresent((fb) -> {
+                            deleteFiles(freeBoardId);
                             freeBoardRepository.deleteByAdmin(freeBoardId);
-                            //TODO 실파일 삭제해야함
-                            attachmentFileRepository.deleteByFreeBoardId(freeBoardId);
                         }
                 );
+    }
+
+    @Override
+    public List<String> getCategory() {
+        return freeBoardRepository.getCategory();
     }
 
 
@@ -151,6 +152,14 @@ public class FreeBoardServiceImpl implements FreeBoardService{
                     attachmentFileRepository.deleteByFileId(fileId);
                     physicalFileRepository.delete(fileUtil.getFileFullPath(file));
                 });
+    }
+
+    private void deleteFiles(Long freeBoardId) {
+        List<Long> fileIds = attachmentFileRepository.findByFreeBoardId(freeBoardId)
+                .stream()
+                .map(af -> af.getFileId())
+                .collect(Collectors.toList());
+        deleteFiles(fileIds);
     }
 }
 

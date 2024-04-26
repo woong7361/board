@@ -132,4 +132,10 @@
         SET views = views + 1
         WHERE notice_board_id = #{noticeBoardId}
     </update>
+
+    <select id="getCategory">
+        SELECT category.value
+        FROM category
+        WHERE category.board_type = 'notice'
+    </select>
 </mapper>

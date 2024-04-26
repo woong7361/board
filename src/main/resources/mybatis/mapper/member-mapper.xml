@@ -28,6 +28,7 @@
         WHERE
             member.login_id = #{member.loginId}
             AND member.password = SHA2(#{member.password}, 256)
+            AND member.role = 'USER'
     </select>
 
     <select id="findAdminMemberByLoginIdAndPassword" resultType="com.example.notice.entity.Member" >

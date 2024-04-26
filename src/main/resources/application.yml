@@ -1,18 +1,4 @@
 spring:
-
-  #  dataSource:
-  #    driver-class-name: com.mysql.cj.jdbc.Driver
-  #    url: jdbc:mysql://localhost:9999/study
-  #    username: woong
-  #    password: woong7361
-
-  dataSource:
-    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:mysql://localhost:9999/new
-    username: woong
-    password: woong7361
-
-
   servlet:
     multipart:
       max-file-size: 5MB
@@ -21,27 +7,9 @@ spring:
 mybatis:
   config-location: classpath:/mybatis/mybatis-config.xml
 
-server:
-  port: 8888
+
 
   servlet:
     session:
       timeout: 600
 
-
-
-setting:
-#  page-size: 3
-  file-path: /home/woong/workspace/project/notice/file
-  allow-extension: "jpg, gif, png, zip"
-  max-search-range-year: 1
-
-
-  notice-board:
-    max-fixed-size: 5
-
-  jwt:
-    duration: 6000
-
-
-secret: "secret123456789123456789123456789asdfbfcdsafgfdsg"

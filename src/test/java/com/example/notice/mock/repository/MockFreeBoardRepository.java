@@ -110,7 +110,7 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
     }
 
     @Override
-    public void deleteContentAndMemberByBoardId(Long freeBoardId) {
+    public void deleteContentAndTitleByBoardId(Long freeBoardId) {
         findBoardById(freeBoardId)
                 .map((fd) -> FreeBoard.builder()
                         .member(Member.builder()

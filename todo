@@ -1,17 +1,20 @@
 해야할일
-- interceptor 인증 인가 부분으로 나눌것인가? -> 아마 하는게 좋을듯함
+- interceptor 인증 인가 부분으로 나눌것인가? -> 완료
 
 - category 얻는 api 작성 해야함
 
 - 기본적으로 수정일시로 정렬 하기
 
 - restdocs 모든 API 작성
+	- API는 작성 완료
+	- type mismatch 되는 애들 수정해주기
 	attribute 해결 해야함... 어떻게 하냐
+	
 - service coverage 높이기
 
-조회수 안올라가는거 해결해야함
-
 memberId 에 unique 박아야함
+
+검색 최대 기간? 그냥 없애버릴까 생각중
 
 
 리팩토링
@@ -21,11 +24,10 @@ memberId 에 unique 박아야함
 - filter 부분 삭제하기
     - test부분 interceptor로 이식하면서
 
-- admin login에서 password response로 나가는거 제어
 
 - 관리자가 다른 회원 게시글 삭제 수정? 이름 바꿔줘야할듯 ToAdmin? ByAdmin?
 
-패턴을 쓴다면 게시글 삭제시 삭제 실패한 파일 log로 남겨 나중에 삭제할 수 있도록 도와주기...
+	패턴을 쓴다면 게시글 삭제시 삭제 실패한 파일 log로 남겨 나중에 삭제할 수 있도록 도와주기...
 
 --- 테스트 ---
 - test용 config 작성

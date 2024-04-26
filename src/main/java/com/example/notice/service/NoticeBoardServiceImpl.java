@@ -72,4 +72,9 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
     public void updateNoticeBoardById(Long noticeBoardId, NoticeBoard noticeBoard) {
         noticeBoardRepository.updateBoardById(noticeBoardId, noticeBoard);
     }
+
+    @Override
+    public List<String> getCategory() {
+        return noticeBoardRepository.getCategory();
+    }
 }

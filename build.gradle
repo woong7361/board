@@ -65,3 +65,4 @@ asciidoctor {
 	configurations 'asciidoctorExt'
 	dependsOn test
 }
+

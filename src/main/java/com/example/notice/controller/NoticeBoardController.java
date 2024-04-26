@@ -26,6 +26,19 @@ import static com.example.notice.constant.ResponseConstant.*;
 public class NoticeBoardController {
     private final NoticeBoardService noticeBoardService;
 
+
+    /**
+     * 공지게시판 카테고리 가져오기
+     * @return 카테고리 리스트
+     */
+    @GetMapping("/api/boards/notice/category")
+    public ResponseEntity<Map<String, List<String>>> getFreeBoardCategory() {
+        List<String> categories = noticeBoardService.getCategory();
+
+        return ResponseEntity
+                .ok(Map.of(CATEGORY_PARAM, categories));
+    }
+
     /**
      * 공지 게시판 생성 엔드포인트
      *

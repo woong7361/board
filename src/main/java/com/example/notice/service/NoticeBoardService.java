@@ -55,4 +55,10 @@ public interface NoticeBoardService {
      * @param noticeBoard 공지 게시글 수정 요청 파라미터
      */
     void updateNoticeBoardById(Long noticeBoardId, NoticeBoard noticeBoard);
+
+    /**
+     * 공지 게시글의 카테고리 리스트를 가져옴
+     * @return 카테고리 리스트
+     */
+    List<String> getCategory();
 }

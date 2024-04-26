@@ -58,7 +58,7 @@ public interface FreeBoardRepository {
      * 내용과 작성자를 게시글에서 삭제한다.
      * @param freeBoardId 게시글 식별자
      */
-    void deleteContentAndMemberByBoardId(@Param("freeBoardId")Long freeBoardId);
+    void deleteContentAndTitleByBoardId(@Param("freeBoardId")Long freeBoardId);
 
     /**
      * 게시글을 삭제한다.
@@ -88,4 +88,11 @@ public interface FreeBoardRepository {
      * @param freeBoardId 게시글 식별자
      */
     void deleteByAdmin(@Param("freeBoardId") Long freeBoardId);
+
+    /**
+     * 자유게시판 카테고리 가져오기
+     *
+     * @return 카테고리 리스트
+     */
+    List<String> getCategory();
 }

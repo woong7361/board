@@ -76,4 +76,10 @@ public interface NoticeBoardRepository {
      * @param noticeBoardId 공지 게시글 식별자
      */
     void increaseViewsById(@Param("noticeBoardId") Long noticeBoardId);
+
+    /**
+     * 공지 게시판의 카테고리 리스트를 반환
+     * @return 카테고리 리스트
+     */
+    List<String> getCategory();
 }

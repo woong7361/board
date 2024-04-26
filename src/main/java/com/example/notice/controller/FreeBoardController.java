@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.notice.constant.ResponseConstant.CATEGORY_PARAM;
 import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
 
 /**
@@ -31,6 +32,18 @@ import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
 public class FreeBoardController {
 
     private final FreeBoardService freeBoardService;
+
+    /**
+     * 자유게시판 카테고리 가져오기
+     * @return 카테고리 리스트
+     */
+    @GetMapping("/api/boards/free/category")
+    public ResponseEntity<Map<String, List<String>>> getFreeBoardCategory() {
+        List<String> categories = freeBoardService.getCategory();
+
+        return ResponseEntity
+                .ok(Map.of(CATEGORY_PARAM, categories));
+    }
 
     /**
      * 자유게시판 게시글 생성
