@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 import static com.example.notice.constant.ErrorMessageConstant.DUPLICATE_LOGIN_ID_MESSAGE;
 import static com.example.notice.constant.ErrorMessageConstant.MEMBER_NOT_EXIST_MESSAGE;
 
@@ -39,10 +37,7 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     public void checkDuplicateLoginId(String loginId) {
-        Optional<Member> findMember = memberRepository.findMemberByLoginId(loginId);
-
-        if (findMember.isPresent()) {
-            throw new BadRequestParamException(DUPLICATE_LOGIN_ID_MESSAGE);
-        }
+        memberRepository.findMemberAndAdminByLoginId(loginId)
+                .ifPresent((x) -> {throw new BadRequestParamException(DUPLICATE_LOGIN_ID_MESSAGE);}) ;
     }
 }

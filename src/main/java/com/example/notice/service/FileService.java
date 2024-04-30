@@ -6,19 +6,20 @@ import java.io.File;
 import java.util.List;
 
 /**
- * file 서비스
+ * 파일 서비스
  */
 public interface FileService {
 
     /**
-     * 물리적 파일을 반환하는 서비스
+     * 물리적 파일을 반환
+     *
      * @param fileId 파일 식별자
      * @return 물리적 파일
      */
     File getPhysicalFile(Long fileId);
 
     /**
-     * 자유게시판 게시글에 해당하는 파일들 가져오기
+     * 자유게시판 게시글에 해당하는 파일들 조회
      *
      * @param freeBoardId 게시글 식별자
      * @return 파일 리스트
@@ -26,9 +27,10 @@ public interface FileService {
     List<FileResponseDTO> getFileByFreeBoardId(Long freeBoardId);
 
     /**
-     * 파일 원본 이름 가져오기
+     * 파일 원본 이름 조회
+     *
      * @param fileId 파일 식별자
-     * @return 원본 이름
+     * @return 파일 원본 이름
      */
     String getFileOriginalNameById(Long fileId);
 }

@@ -1,23 +1,19 @@
 package com.example.notice.service;
 
 import com.example.notice.dto.request.FreeBoardSearchDTO;
+import com.example.notice.entity.AttachmentFile;
 import com.example.notice.entity.FreeBoard;
-import com.example.notice.entity.Member;
 import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.BoardNotExistException;
-import com.example.notice.mock.repository.MockAttachmentFileRepository;
-import com.example.notice.mock.repository.MockFreeBoardRepository;
-import com.example.notice.mock.repository.MockPhysicalFileRepository;
-import com.example.notice.mock.service.MockConfigurationService;
+import com.example.notice.files.PhysicalFileRepository;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
+import com.example.notice.repository.AttachmentFileRepository;
 import com.example.notice.repository.FreeBoardRepository;
 import com.example.notice.utils.FileUtil;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,22 +21,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.notice.mock.repository.MockFreeBoardRepository.SAVED_FREE_BOARD;
+import static com.example.notice.mock.dummy.TestData.getSavedFreeBoard;
+import static org.mockito.ArgumentMatchers.any;
 
 
 class FreeBoardServiceTest {
-
-    FreeBoardRepository freeBoardRepository = new MockFreeBoardRepository();
-
-    MockPhysicalFileRepository physicalFileRepository = new MockPhysicalFileRepository();
-    MockAttachmentFileRepository attachmentFileRepository = new MockAttachmentFileRepository();
-    MockConfigurationService configurationService = new MockConfigurationService();
-    FileUtil fileUtil = new FileUtil(configurationService);
+    FreeBoardRepository mockitoFreeBoardRepository = Mockito.mock(FreeBoardRepository.class);
+    PhysicalFileRepository mockitoPhysicalFileRepository = Mockito.mock(PhysicalFileRepository.class);
+    AttachmentFileRepository mockitoAttachmentFileRepository = Mockito.mock(AttachmentFileRepository.class);
+    FileUtil mockitoFileUtil = Mockito.mock(FileUtil.class);
     FreeBoardService freeBoardService = new FreeBoardServiceImpl(
-            freeBoardRepository,
-            attachmentFileRepository,
-            physicalFileRepository,
-            fileUtil);
+            mockitoFreeBoardRepository,
+            mockitoAttachmentFileRepository,
+            mockitoPhysicalFileRepository,
+            mockitoFileUtil
+    );
 
     @Nested
     @DisplayName("게시글 생성 테스트")
@@ -57,11 +52,12 @@ class FreeBoardServiceTest {
 
             long memberId = 154641L;
             MockMultipartFile file = new MockMultipartFile("file", "fdava".getBytes());
-            List<MultipartFile> multipartFiles = List.of(file);
 
             //when
+            freeBoardService.createFreeBoard(board, List.of(file, file), memberId);
+            freeBoardService.createFreeBoard(board, List.of(file), memberId);
+            freeBoardService.createFreeBoard(board, List.of(), memberId);
             //then
-            freeBoardService.createFreeBoard(board, multipartFiles, memberId);
         }
     }
 
@@ -73,20 +69,32 @@ class FreeBoardServiceTest {
         @Test
         public void success() throws Exception {
             //given
+            FreeBoard savedFreeBoard = getSavedFreeBoard();
+
             //when
-            FreeBoard findFreeBoard = freeBoardService.getBoardById(SAVED_FREE_BOARD.getFreeBoardId());
+            Mockito.when(mockitoFreeBoardRepository.findBoardById(savedFreeBoard.getFreeBoardId()))
+                    .thenReturn(Optional.of(savedFreeBoard));
+
+            FreeBoard findFreeBoard = freeBoardService.getBoardById(savedFreeBoard.getFreeBoardId());
+
             //then
-            Assertions.assertThat(SAVED_FREE_BOARD.getViews()+1).isEqualTo(findFreeBoard.getViews());
+            Assertions.assertThat(findFreeBoard).usingRecursiveAssertion()
+                    .isEqualTo(savedFreeBoard);
         }
 
         @DisplayName("식별자에 해당하는 게시글이 없을때")
         @Test
         public void notExistBoard() throws Exception{
             //given
+            long freeBoardId = 45641L;
+
             //when
+            Mockito.when(mockitoFreeBoardRepository.findBoardById(any()))
+                    .thenReturn(Optional.empty());
+
             //then
             Assertions
-                    .assertThatThrownBy(() -> freeBoardService.getBoardById(0L))
+                    .assertThatThrownBy(() -> freeBoardService.getBoardById(freeBoardId))
                     .isInstanceOf(BoardNotExistException.class);
         }
     }
@@ -103,8 +111,18 @@ class FreeBoardServiceTest {
                     LocalDateTime.now(),
                     "category",
                     "keyWord");
-            PageRequest pageRequest = new PageRequest(5, 0, null, null);
+
+            PageRequest pageRequest = new PageRequest(5, 0, "1", "2");
+
+            int totalCount = 2;
+
             //when
+            Mockito.when(mockitoFreeBoardRepository.getTotalCountBySearchParam(freeBoardSearchDTO))
+                    .thenReturn(totalCount);
+
+            Mockito.when(mockitoFreeBoardRepository.findBoardsBySearchParam(freeBoardSearchDTO, pageRequest))
+                    .thenReturn(List.of(getSavedFreeBoard(1L), getSavedFreeBoard(2L)));
+
             //then
             PageResponse<FreeBoard> result = freeBoardService.getBoardsBySearchParams(freeBoardSearchDTO, pageRequest);
 
@@ -121,29 +139,60 @@ class FreeBoardServiceTest {
         @Test
         public void success() throws Exception {
             //given
-            FreeBoard board = FreeBoard.builder()
-                    .freeBoardId(999L)
-                    .build();
-            freeBoardRepository.save(board, 15631L);
-
+            Long freeBoardId = 15631L;
+            Long memberId = 7864L;
+            Long fileId = 4563L;
 
             //when
-            freeBoardService.deleteFreeBoardById(board.getFreeBoardId());
+            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
+                    .thenReturn(Optional.of(FreeBoard.builder().build()));
+
+            Mockito.when(mockitoFreeBoardRepository.hasCommentByBoardId(freeBoardId))
+                    .thenReturn(false);
+
+            Mockito.when(mockitoAttachmentFileRepository.findByFileId(fileId))
+                    .thenReturn(Optional.of(AttachmentFile.builder().build()));
 
             //then
-            Assertions.assertThat(freeBoardRepository.findBoardById(board.getFreeBoardId()))
-                    .isEqualTo(Optional.empty());
+            freeBoardService.deleteFreeBoardById(freeBoardId, memberId);
         }
 
-        @Disabled
         @DisplayName("게시글에 코멘트가 달려있을때")
         @Test
         public void boardHasComment() throws Exception{
             //given
+            Long freeBoardId = 15631L;
+            Long memberId = 7864L;
+            Long fileId = 4563L;
 
             //when
+            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
+                    .thenReturn(Optional.of(FreeBoard.builder().build()));
+
+            Mockito.when(mockitoFreeBoardRepository.hasCommentByBoardId(freeBoardId))
+                    .thenReturn(true);
+
+            Mockito.when(mockitoAttachmentFileRepository.findByFileId(fileId))
+                    .thenReturn(Optional.of(AttachmentFile.builder().build()));
 
             //then
+            freeBoardService.deleteFreeBoardById(freeBoardId, memberId);
+        }
+
+        @DisplayName("게시글 삭제 권한이 없을때")
+        @Test
+        public void notAuthorizationInDelete() throws Exception{
+            //given
+            Long freeBoardId = 15631L;
+            Long memberId = 7864L;
+
+            //when
+            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
+                    .thenReturn(Optional.empty());
+
+            //then
+            Assertions.assertThatThrownBy(() -> freeBoardService.deleteFreeBoardById(freeBoardId, memberId))
+                    .isInstanceOf(AuthorizationException.class);
         }
     }
 
@@ -154,69 +203,95 @@ class FreeBoardServiceTest {
         @Test
         public void success() throws Exception {
             //given
-            FreeBoard oldBoard = FreeBoard.builder()
-                    .freeBoardId(9999L)
-                    .member(Member.builder()
-                            .memberId(10L)
-                            .build())
-                    .category("category")
-                    .title("title")
-                    .content("content")
-                    .build();
+            Long freeBoardId = 15631L;
+            Long memberId = 7864L;
 
-            FreeBoard newBoard = FreeBoard.builder()
-                    .freeBoardId(9999L)
-                    .category("new category")
-                    .title("new title")
-                    .content("new content")
-                    .build();
+            List<MultipartFile> saveFiles = List.of(
+                    new MockMultipartFile("file1", "content1".getBytes()),
+                    new MockMultipartFile("file2", "content2".getBytes()));
+            List<Long> deleteFileIds = List.of(1L, 2L, 3L);
+            FreeBoard freeBoard = getSavedFreeBoard();
 
             //when
-            freeBoardRepository.save(oldBoard, 10L);
-            freeBoardRepository.update(newBoard, oldBoard.getFreeBoardId());
-            FreeBoard findBoard = freeBoardRepository.findBoardById(oldBoard.getFreeBoardId())
-                    .get();
+            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
+                    .thenReturn(Optional.of(FreeBoard.builder().build()));
+
+            Mockito.when(mockitoAttachmentFileRepository.findByFileId(any()))
+                    .thenReturn(Optional.of(AttachmentFile.builder().build()));
 
             //then
+            freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId, memberId);
+        }
 
-            Assertions.assertThat(findBoard.getCategory()).isEqualTo(newBoard.getCategory());
-            Assertions.assertThat(findBoard.getTitle()).isEqualTo(newBoard.getTitle());
-            Assertions.assertThat(findBoard.getContent()).isEqualTo(newBoard.getContent());
+        @DisplayName("게시글 수정 권한이 없을때")
+        @Test
+        public void notAuthorizationInEdit() throws Exception {
+            //given
+            Long freeBoardId = 15631L;
+            Long memberId = 7864L;
 
-            //finally
-            freeBoardRepository.deleteByBoardId(oldBoard.getFreeBoardId());
+            List<MultipartFile> saveFiles = List.of(
+                    new MockMultipartFile("file1", "content1".getBytes()),
+                    new MockMultipartFile("file2", "content2".getBytes()));
+            List<Long> deleteFileIds = List.of(1L, 2L, 3L);
+            FreeBoard freeBoard = getSavedFreeBoard();
 
+            //when
+            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
+                    .thenReturn(Optional.empty());
+
+            //then
+            Assertions.assertThatThrownBy(() -> freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId, memberId));
+        }
+
+        @DisplayName("추가 파일 & 삭제 파일이 없을때")
+        @Test
+        public void noFiles() throws Exception {
+            //given
+            Long freeBoardId = 15631L;
+            Long memberId = 7864L;
+
+            List<MultipartFile> saveFiles = List.of();
+            List<Long> deleteFileIds = List.of();
+            FreeBoard freeBoard = getSavedFreeBoard();
+
+            //when
+            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
+                    .thenReturn(Optional.of(FreeBoard.builder().build()));
+
+            //then
+            freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId, memberId);
+        }
+    }
+
+
+    @Nested
+    @DisplayName("관리자의 게시글 삭제")
+    public class DeleteFreeBoardByAdmin {
+        @DisplayName("정상처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            long memberId = 8763L;
+            long freeBoardId = 4635L;
+
+            //when
+            //then
+            freeBoardService.deleteFreeBoardByAdmin(freeBoardId, memberId);
         }
     }
 
     @Nested
-    @DisplayName("게시글 권한 인증 테스트")
-    public class FreeBoardAuthorizationTest {
-        @DisplayName("정상 처리")
+    @DisplayName("자유게시판 카테고리 가져오기")
+    public class GetFreeBoardCategory {
+        @DisplayName("정상처리")
         @Test
         public void success() throws Exception {
             //given
             //when
             //then
-            freeBoardService.checkFreeBoardAuthorization(
-                    SAVED_FREE_BOARD.getFreeBoardId(),
-                    SAVED_FREE_BOARD.getMemberId());
-        }
-
-        @DisplayName("게시글의 작성자가 아닌 다른 사용자가 접근할때")
-        @Test
-        public void anotherUser() throws Exception{
-            //given
-            Long anotherMemberId = 1561653L;
-            if (SAVED_FREE_BOARD.getMemberId().equals(anotherMemberId)) {
-                throw new AssertionError("같은 사용자아이디를 사용하는 테스트가 아니다.");
-            }
-            //when
-            //then
-            Assertions.assertThatThrownBy(() -> freeBoardService.checkFreeBoardAuthorization(
-                            SAVED_FREE_BOARD.getFreeBoardId(),
-                            anotherMemberId))
-                    .isInstanceOf(AuthorizationException.class);
+            freeBoardService.getCategories();
         }
     }
+
 }

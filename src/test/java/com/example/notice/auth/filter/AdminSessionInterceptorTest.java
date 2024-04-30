@@ -1,5 +1,8 @@
 package com.example.notice.auth.filter;
 
+import com.example.notice.auth.AuthenticationHolder;
+import com.example.notice.auth.path.AuthorizationRole;
+import com.example.notice.auth.principal.MemberPrincipal;
 import com.example.notice.constant.SessionConstant;
 import com.example.notice.entity.Member;
 import com.example.notice.exception.AuthenticationException;
@@ -50,29 +53,36 @@ class AdminSessionInterceptorTest {
 
         }
 
-        @Disabled
-        @DisplayName("세션이 만료되었을때")
+        @DisplayName("세션에 저장된 객체가 없을때")
         @Test
-        public void invalidSession() throws Exception{
+        public void invalidSession() throws Exception {
             //given
             MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
             MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
+
             MockHttpSession mockHttpSession = new MockHttpSession();
-            Member member = Member.builder().memberId(1L).build();
-
-            mockHttpSession.setAttribute(SessionConstant.ADMIN_SESSION_KEY, member);
             mockHttpServletRequest.setSession(mockHttpSession);
-
-//            mockHttpSession.setMaxInactiveInterval(5);
-            Thread.sleep(5000);
             //when
             //then
-
             Assertions.assertThatThrownBy(() -> interceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, null))
                     .isInstanceOf(AuthenticationException.class);
+
         }
+
+        @DisplayName("Options 메서드 처리")
+        @Test
+        public void optionsMethod() throws Exception{
+            //given
+            MockHttpServletRequest request = new MockHttpServletRequest();
+            MockHttpServletResponse response = new MockHttpServletResponse();
+
+            request.setMethod("OPTIONS");
+            AuthenticationHolder.setPrincipal(new MemberPrincipal(Member.builder().build(), AuthorizationRole.MEMBER));
+
+            //when
+            //then
+            interceptor.preHandle(request, response, null);
+        }
+
     }
-
-
-
 }

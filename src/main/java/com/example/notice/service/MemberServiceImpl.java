@@ -25,7 +25,7 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
-    public void isDuplicateMemberLoginId(String loginId) {
+    private void isDuplicateMemberLoginId(String loginId) {
         if (memberRepository.isDuplicateMemberLoginId(loginId)) {
             throw new BadRequestParamException(DUPLICATE_LOGIN_ID_MESSAGE);
         }

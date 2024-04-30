@@ -6,7 +6,8 @@ public enum PathMethod {
     POST,
     PUT,
     PATCH,
-    DELETE;
+    DELETE,
+    OPTIONS;
 
     public static Boolean match(PathMethod method, PathMethod targetMethod) {
         if (ANY.equals(method)) {

@@ -21,19 +21,19 @@ public class JwtAuthProvider implements AuthProvider {
     public static final String MEMBER_NAME = "name";
     private static final String SUBJECT = "board";
     public static final String BEARER = "Bearer";
+    private static final Long MILLIS = 1000L;
 
     private final ConfigurationService configurationService;
 
     @Override
     public String createAuthentication(Member member) {
-        SecretKey key = getSecretKey();
-        Date date = getExpriationDate(configurationService.getJwtDuration() * 1000);
+        Date date = getExpriationDate(configurationService.getJwtDuration());
 
         return Jwts.builder()
                 .setSubject(SUBJECT)
                 .claim(MEMBER_ID, member.getMemberId())
                 .claim(MEMBER_NAME, member.getName())
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(getSecretKey(), SignatureAlgorithm.HS256)
                 .setExpiration(date)
                 .compact();
     }
@@ -50,6 +50,7 @@ public class JwtAuthProvider implements AuthProvider {
 
         long memberId = (int) claims.get(MEMBER_ID);
         String name = (String) claims.get(MEMBER_NAME);
+
         return Member.builder()
                 .memberId(memberId)
                 .name(name)
@@ -57,7 +58,7 @@ public class JwtAuthProvider implements AuthProvider {
     }
 
     private Date getExpriationDate(long expirationTime) {
-        return new Date(new Date().getTime() + expirationTime);
+        return new Date(new Date().getTime() + (expirationTime * MILLIS));
     }
 
 

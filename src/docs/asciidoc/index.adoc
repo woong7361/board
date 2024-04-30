@@ -91,6 +91,14 @@ include::{snippets}/free-board-delete-test/success/request-headers.adoc[]
 Response
 include::{snippets}/free-board-delete-test/success/http-response.adoc[]
 
+==== 자유 게시판 카테고리 조회
+Request
+include::{snippets}/get-free-board-categories/success/http-request.adoc[]
+Response
+include::{snippets}/get-free-board-categories/success/http-response.adoc[]
+Response Body
+include::{snippets}/get-free-board-categories/success/response-fields.adoc[]
+
 === 자유게시판 댓글
 ==== 댓글 생성
 Request
@@ -231,6 +239,14 @@ Response
 include::{snippets}/get-none-fixed-notice-test/success/http-response.adoc[]
 Response Body
 include::{snippets}/get-none-fixed-notice-test/success/response-fields.adoc[]
+
+==== 공지 게시판 카테고리 조회
+Request
+include::{snippets}/get-notice-board-categories/success/http-request.adoc[]
+Response
+include::{snippets}/get-notice-board-categories/success/http-response.adoc[]
+Response Body
+include::{snippets}/get-notice-board-categories/success/response-fields.adoc[]
 
 
 == 관리자 API

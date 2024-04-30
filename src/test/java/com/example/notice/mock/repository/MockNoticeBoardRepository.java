@@ -136,6 +136,11 @@ public class MockNoticeBoardRepository implements NoticeBoardRepository {
                 });
     }
 
+    @Override
+    public List<String> getCategory() {
+        return List.of();
+    }
+
     public static NoticeBoard.NoticeBoardBuilder noticeBoardBuilderMapper(NoticeBoard noticeBoard) {
         return NoticeBoard.builder()
                 .noticeBoardId(noticeBoard.getNoticeBoardId())

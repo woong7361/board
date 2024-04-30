@@ -34,10 +34,6 @@ public class FreeBoard {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public void setOwner(Member member) {
-        this.member = member;
-    }
-
     public Long getMemberId() {
         return this.member != null ? this.member.getMemberId() : null;
     }

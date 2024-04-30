@@ -1,48 +1,42 @@
 해야할일
-- interceptor 인증 인가 부분으로 나눌것인가? -> 완료
-
-- category 얻는 api 작성 해야함 -> 완료
-
-- 기본적으로 수정일시로 정렬 하기
-
 - allow extension 메시지 프론트에서 어떻게 할지 
 	- 프론트에 허용되는 확장자 표기 필요
 
-- restdocs 모든 API 작성
-	- API는 작성 완료
-	- type mismatch 되는 애들 수정해주기
-	attribute 해결 해야함... 어떻게 하냐
+1. 서버 코드 리팩터링 & 통일화 & java docs - 화
+2. 프론트 코드 재배포 & js docs & 버그 수정 & 정리 - 수
+3. 테스트 코드 정리 & restdocs attribute
+4. read.md 작성 및 git 정리
+5. 게시판 추가?
+6. 배포시 log볼 수 있도록 정리
 
-memberId 에 unique 박아야함
+! file result 반환 수정하기
+! repo의 동작과 메서드 이름 다른거? 어떻게 할지 고민
+! 정규 표현식 부분 수정
+! file util 네이밍 어떻게 할지?
+
+프론트쪽 기본 검색 날짜 늘리기
+    1년?
+
+loginId 에 unique 박아야함
 
 검색 최대 기간? 그냥 없애버릴까 생각중
 
-삭제시 회원 FK까지 삭제하기 - 계속 수정 가능하기 때문에
+정렬 인자 다르게 받기
+    rest docs 수정 필요
+rest docs field 부분 수정 필요한 부분 수정
+rest docs constraint 새 project 만들어서 test 해보기
+attribute 해결 해야함... 어떻게 하냐
+
 
 리팩토링
-
-삭제시 다시 수정이 가능하다는 문제점? 
- => 필드를 하나 추가해야하는 대수술 
-
-
 - 관리자가 다른 회원 게시글 삭제 수정? 이름 바꿔줘야할듯 ToAdmin? ByAdmin?
-
-	패턴을 쓴다면 게시글 삭제시 삭제 실패한 파일 log로 남겨 나중에 삭제할 수 있도록 도와주기...
-
 --- 테스트 ---
-
-- 테스트 커버리지 향상
-	- disk repository (추가적인 수정 후 test 작성)
 	
-- mocking library로 테스트 수정하기 
-
-- constraint -> gradlew clean build 빌드로 만들어지나 테스트해보기
-
-- 검색 정렬조건 document에 추가해주어야함
-	단 검색조건 리팩터링이 우선시 될듯
-	constraint도 필요하고
+- mocking library로 테스트 수정하기
 	
 - 테스트 클래스의 이름 통일화 하기 끝에 ControllerTest같은거 붙이던가 빼던가 
+
+- 네이밍 신경쓰기
 
 
 후순위 

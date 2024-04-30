@@ -31,4 +31,18 @@ public class InquireBoardSearchResponseDTO {
 
     private Long views;
     private Boolean isAnswered;
+
+    public InquireBoardSearchResponseDTO(InquireBoard inquireBoard, Boolean isAnswered) {
+        this.inquireBoardId = inquireBoard.getInquireBoardId();
+        this.memberId = inquireBoard.getMemberId();
+        this.memberName = inquireBoard.getMemberName();
+        this.createdAt = inquireBoard.getCreatedAt();
+        this.modifiedAt = inquireBoard.getModifiedAt();
+        this.title = inquireBoard.getTitle();
+        this.content = inquireBoard.getContent();
+        this.isSecret = inquireBoard.getIsSecret();
+        this.views = inquireBoard.getViews();
+
+        this.isAnswered = isAnswered;
+    }
 }

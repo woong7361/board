@@ -39,7 +39,7 @@
         WHERE comment_id = #{commentId}
     </delete>
 
-    <update id="deleteByIdToAdmin">
+    <update id="deleteContentById">
         UPDATE comment
         SET content = '[관리자에 의해 삭제되었습니다.]'
         WHERE comment_id = #{commentId}

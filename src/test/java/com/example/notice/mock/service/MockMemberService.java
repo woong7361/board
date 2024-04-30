@@ -14,12 +14,4 @@ public class MockMemberService implements MemberService {
     @Override
     public void createUserRoleMember(Member member) {
     }
-
-
-    /**
-     * @implSpec 아무런 행동을 하지 않음
-     */
-    @Override
-    public void isDuplicateMemberLoginId(String memberName) {
-    }
 }

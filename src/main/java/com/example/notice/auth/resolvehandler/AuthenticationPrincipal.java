@@ -5,7 +5,7 @@ package com.example.notice.auth.resolvehandler;
 import java.lang.annotation.*;
 
 /**
- * parameter에 인증 객체를 주입시켜준다.
+ * 회원 인증객체 주입 annotation
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

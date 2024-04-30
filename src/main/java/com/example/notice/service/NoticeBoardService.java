@@ -14,50 +14,56 @@ import java.util.List;
 public interface NoticeBoardService {
 
     /**
-     * 공지 게시판 생성 서비스
-     * @param noticeBoard 공지 게시판
-     * @param memberId 관리자 식별자
+     * 공지 게시글 생성
+     *
+     * @param noticeBoard 공지 게시글 생성 파라미터
+     * @param memberId 작성자 식별자
      * @return 생성된 공지 게시판 식별자
      */
     Long createNoticeBoard(NoticeBoard noticeBoard, Long memberId);
 
     /**
-     * 상단 고정된 공지 게시글들을 가져온다.
+     * 상단 고정 공지 게시글 조회
+     *
      * @return 상단 고정된 공지 게시글들
      */
     List<NoticeBoard> getFixedNoticeBoardWithoutContent();
 
     /**
-     * 고정 공지글이 아닌 공지글들을 반환
+     * 공지 게시글 검색
      *
-     * @param noticeBoardSearchDTO 공지글 검색 파라미터
-     * @param pageRequest            페이지 요청 파라미터
-     * @return 고정 공지글이 아닌 공지글들
+     * @param noticeBoardSearchDTO 공지글 검색 요청 파라미터
+     * @param pageRequest 페이지네이션 요청 파라미터
+     * @return 검색 결과
      */
-    PageResponse<NoticeBoard> getNoneFixedNoticeBoards(NoticeBoardSearchDTO noticeBoardSearchDTO, PageRequest pageRequest);
+    PageResponse<NoticeBoard> getNoneFixedNoticeBoardSearch(NoticeBoardSearchDTO noticeBoardSearchDTO, PageRequest pageRequest);
 
     /**
-     * 게시글 식별자를 통해 공지글을 가져온다.
+     * 공지 게시글 조회
+     *
      * @param noticeBoardId 공지 게시글 식별자
      * @return 공지 게시글
      */
     NoticeBoard getNoticeBoardById(Long noticeBoardId);
 
     /**
-     * 게시글 식별자를 통해 게시글 삭제
+     * 공지 게시글 삭제
+     *
      * @param noticeBoardId 공지 게시글 식별자
      */
     void deleteNoticeBoardById(Long noticeBoardId);
 
     /**
-     * 게시글 식별자를 통해 게시글 수정
+     * 공지 게시글 수정
+     *
      * @param noticeBoardId 공지 게시글 식별자
      * @param noticeBoard 공지 게시글 수정 요청 파라미터
      */
     void updateNoticeBoardById(Long noticeBoardId, NoticeBoard noticeBoard);
 
     /**
-     * 공지 게시글의 카테고리 리스트를 가져옴
+     * 공지 게시판 카테고리 조회
+     *
      * @return 카테고리 리스트
      */
     List<String> getCategory();

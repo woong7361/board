@@ -11,22 +11,25 @@ public interface PhysicalFileRepository {
 
     /**
      * 파일 저장
+     *
      * @param bytes 파일 bytes
      * @param originalFileName 파일 원본 이름
      * @return 저장된 파일 경로
      */
-    public String save(byte[] bytes, String originalFileName) throws FileSaveCheckedException;
+    String save(byte[] bytes, String originalFileName) throws FileSaveCheckedException;
 
     /**
      * 파일 삭제
-     * @param fullPath 파일 경로
+     *
+     * @param fileId 파일 식별자
      */
-    public void delete(String fullPath);
+    void delete(Long fileId);
 
     /**
-     * 물리적 파일을 반환한다.
+     * 물리적 파일을 조회
+     *
      * @param path 파일의 이름을 포함한 경로
-     * @return 물리적 파일 반환
+     * @return 물리적 파일
      */
     File getFile(String path);
 }

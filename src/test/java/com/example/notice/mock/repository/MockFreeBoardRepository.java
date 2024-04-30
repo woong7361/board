@@ -5,6 +5,7 @@ import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.page.PageRequest;
 import com.example.notice.repository.FreeBoardRepository;
+import jakarta.validation.constraints.Min;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,7 +21,7 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
             .title("title")
             .views(11L)
             .content("content111")
-            .category("CATEGORY")
+            .category("CATEGORY3")
             .createdAt(LocalDateTime.now())
             .modifiedAt(LocalDateTime.now())
             .member(MockMemberRepository.SAVED_MEMBER)
@@ -33,8 +34,6 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
 
     @Override
     public Optional<FreeBoard> findBoardById(Long freeBoardId) {
-        List<FreeBoard> repository1 = FREE_BOARD_STORAGE;
-        System.out.println("repository1 = " + repository1);
         return FREE_BOARD_STORAGE.stream()
                 .filter((fd) -> fd.getFreeBoardId().equals(freeBoardId))
                 .findFirst();
@@ -165,6 +164,11 @@ public class MockFreeBoardRepository implements FreeBoardRepository {
     public void deleteByAdmin(Long freeBoardId) {
         FREE_BOARD_STORAGE
                 .removeIf((fd) -> fd.getFreeBoardId().equals(freeBoardId));
+    }
+
+    @Override
+    public List<String> getCategory() {
+        return List.of();
     }
 
 }

@@ -39,16 +39,6 @@ public class MockAttachmentFileRepository implements AttachmentFileRepository {
     }
 
     @Override
-    public Optional<AttachmentFile> findByFileIdAndMemberId(Long fileId, Long memberId) {
-        return ATTACHMENT_FILE_STORAGE.stream()
-                .filter((af) -> af.getFileId().equals(fileId))
-                .filter((af) -> FREE_BOARD_STORAGE.stream()
-                            .filter((fb) -> af.getFreeBoardId().equals(fb.getFreeBoardId()))
-                            .anyMatch((fb) -> fb.getMemberId().equals(memberId)))
-                .findFirst();
-    }
-
-    @Override
     public List<FileResponseDTO> findByFreeBoardId(Long freeBoardId) {
         return ATTACHMENT_FILE_STORAGE.stream()
                 .filter((af) -> af.getFreeBoardId().equals(freeBoardId))
@@ -63,11 +53,6 @@ public class MockAttachmentFileRepository implements AttachmentFileRepository {
     @Override
     public String findOriginalNameById(Long fileId) {
         return null;
-    }
-
-    @Override
-    public void deleteByFreeBoardId(Long freeBoardId) {
-
     }
 
     public static AttachmentFile.AttachmentFileBuilder attachmentFileBuilderMapper(AttachmentFile file) {

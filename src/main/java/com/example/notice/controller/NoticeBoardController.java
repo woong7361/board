@@ -26,9 +26,9 @@ import static com.example.notice.constant.ResponseConstant.*;
 public class NoticeBoardController {
     private final NoticeBoardService noticeBoardService;
 
-
     /**
-     * 공지게시판 카테고리 가져오기
+     * 공지게시판 카테고리 조회
+     *
      * @return 카테고리 리스트
      */
     @GetMapping("/api/boards/notice/category")
@@ -40,18 +40,18 @@ public class NoticeBoardController {
     }
 
     /**
-     * 공지 게시판 생성 엔드포인트
+     * 공지 게시글 생성
      *
-     * @param noticeBoard 공지 게시판 생성 인자
-     * @param principal   관리자 인증 객체
-     * @return 생성된 공지 게시판 식별자
+     * @param noticeBoard 공지 게시글 생성 파라미터
+     * @param principal 관리자 인증 객체
+     * @return 생성된 공지 게시글 식별자
      */
     @PostMapping("/admin/boards/notice")
     public ResponseEntity<Map<String, Long>> createNoticeBoard(
             @Valid @RequestBody NoticeBoard noticeBoard,
-            @AdminAuthenticationPrincipal Principal<Member> principal) {
+            @AdminAuthenticationPrincipal Principal<Member> principal
+    ) {
         Member member = principal.getAuthentication();
-
         Long noticeBoardId = noticeBoardService.createNoticeBoard(noticeBoard, member.getMemberId());
 
         return ResponseEntity
@@ -59,9 +59,9 @@ public class NoticeBoardController {
     }
 
     /**
-     * 상단 고정된 공지 게시글을 가져온다.
+     * 상단 고정 공지 게시글 조회
      *
-     * @return 상단 고정된 공지 게시글들
+     * @return 상단 고정 게시글들
      */
     @GetMapping("/api/boards/notice/fixed")
     public ResponseEntity<Map<String, List<NoticeBoard>>> getFixedNoticeBoard(
@@ -73,25 +73,26 @@ public class NoticeBoardController {
     }
 
     /**
-     * 고정으로 반환된 공지글 말고 남은 공지글을 반환
+     * 공지 게시글 검색
+     * (* 상단 고정 게시글 제외)
      *
-     * @param noticeBoardSearchDTO 공지글 검색 파라미터
-     * @param pageRequest            페이지 요청 파라미터
-     * @return 고정 공지글이 아닌 공지글들 반환
+     * @param noticeBoardSearchDTO 공지 게시글 검색 파라미터
+     * @param pageRequest 페이지네이션 요청 파라미터
+     * @return 검색된 게시글 결과
      */
     @GetMapping("/api/boards/notice")
     public ResponseEntity<PageResponse<NoticeBoard>> getNoticeBoardsWithoutFixed(
             @ModelAttribute NoticeBoardSearchDTO noticeBoardSearchDTO,
-            @Valid @ModelAttribute PageRequest pageRequest) {
-
+            @Valid @ModelAttribute PageRequest pageRequest
+    ) {
         PageResponse<NoticeBoard> noneFixedNoticeBoards =
-                noticeBoardService.getNoneFixedNoticeBoards(noticeBoardSearchDTO, pageRequest);
+                noticeBoardService.getNoneFixedNoticeBoardSearch(noticeBoardSearchDTO, pageRequest);
         return ResponseEntity
                 .ok(noneFixedNoticeBoards);
     }
 
     /**
-     * 게시글 식별자를 통해 공지글을 가져온다.
+     * 공지 게시글 조회
      *
      * @param noticeBoardId 공지 게시글 식별자
      * @return 공지 게시글
@@ -106,10 +107,11 @@ public class NoticeBoardController {
     }
 
     /**
-     * 게시글 식별자를 통해 게시글 수정
+     * 공지 게시글 수정
+     *
      * @param noticeBoardId 공지 게시글 식별자
      * @param noticeBoard 공지 게시글 수정 요청 파라미터
-     * @return 200 ok
+     * @return 200 OK
      */
     @PutMapping("/admin/boards/notice/{noticeBoardId}")
     public ResponseEntity<Object> updateNoticeBoard(
@@ -120,8 +122,9 @@ public class NoticeBoardController {
 
         return ResponseEntity.ok().build();
     }
+
     /**
-     * 게시글 식별자를 통해 게시글 삭제
+     * 공지 게시글 삭제
      * @param noticeBoardId 공지 게시글 식별자
      */
     @DeleteMapping("/admin/boards/notice/{noticeBoardId}")

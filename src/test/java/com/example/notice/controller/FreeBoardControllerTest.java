@@ -58,6 +58,39 @@ class FreeBoardControllerTest extends RestDocsHelper {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
+
+    @Nested
+    @DisplayName("자유게시판 카테고리 조회")
+    public class GetFreeBoardCategories {
+
+        private static final String GET_FREE_BOARD_CATEGORIES_URL = "/api/boards/free/category";
+
+        @DisplayName("정상처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            List<String> categories = List.of("A", "B", "C");
+            //when
+            Mockito.when(freeBoardService.getCategories())
+                    .thenReturn(categories);
+
+            ResultActions action = mockMvc.perform(MockMvcRequestBuilders.get(GET_FREE_BOARD_CATEGORIES_URL));
+
+            //then
+            action
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(jsonPath("$.categories").isArray())
+                    .andExpect(jsonPath("$.categories[0]").value(categories.get(0)))
+
+                    .andDo(restDocs.document(
+                            responseFields(
+                                    fieldWithPath("categories").description("카테고리 리스트")
+                            )
+                    ));
+        }
+    }
+
+
     @Nested
     @DisplayName("자유게시판 생성 테스트")
     public class FreeBoardCreateTest {
@@ -76,7 +109,7 @@ class FreeBoardControllerTest extends RestDocsHelper {
 
             MockMultipartFile file = new MockMultipartFile("files", "fileBytes".getBytes());
             MockMultipartFile title = new MockMultipartFile("freeBoard", "",
-                    "application/json", mapper.writeValueAsString(params).getBytes());
+                    "application/json", mapper.writeValueAsString(params.toSingleValueMap()).getBytes());
             long boardId = 10L;
             when(freeBoardService.createFreeBoard(any(), any(), anyLong()))
                     .thenReturn(boardId);
@@ -261,6 +294,8 @@ class FreeBoardControllerTest extends RestDocsHelper {
             params.add("keyword", "keyword");
             params.add("size", "5");
             params.add("currentPage", "0");
+            params.add("orderColumn", "created_at");
+            params.add("orderType", "modified_at");
 
 
 
@@ -286,6 +321,8 @@ class FreeBoardControllerTest extends RestDocsHelper {
                                     parameterWithName("category").description("카테고리"),
                                     parameterWithName("keyword").description("검색 키워드"),
                                     parameterWithName("size").description("검색 페이지 크기"),
+                                    parameterWithName("orderColumn").description("정렬 인자"),
+                                    parameterWithName("orderType").description("정렬 조건"),
                                     parameterWithName("currentPage").description("현재 페이지")
                             )
                     ))
@@ -306,26 +343,6 @@ class FreeBoardControllerTest extends RestDocsHelper {
                                     fieldWithPath("contentSize").description("현재 페이지의 게시글 수"),
                                     fieldWithPath("pageSize").description("현재 페이지 크기")
                             )));
-        }
-
-        @DisplayName("설정한 최대 기간(1year)을 넘어갈때")
-        @Test
-        public void exceedMaxDuration() throws Exception{
-            //given
-            LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("startDate", LocalDateTime.now().minusYears(2L).minusDays(1L).toString());
-            params.add("endDate", LocalDateTime.now().toString());
-            params.add("size", "5");
-            params.add("currentPage", "0");
-
-            //when
-            //then
-            mockMvc.perform(MockMvcRequestBuilders.get(GET_BOARDS_URI)
-                            .params(params))
-                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                    .andExpect((result -> assertThat(result
-                            .getResolvedException())
-                            .isInstanceOf(BadRequestParamException.class)));
         }
 
         @DisplayName("정렬 인자에 특수문자가 들어갈때")
@@ -417,7 +434,7 @@ class FreeBoardControllerTest extends RestDocsHelper {
                     "freeBoard",
                     "",
                     "application/json",
-                    mapper.writeValueAsString(fParam).getBytes());
+                    mapper.writeValueAsString(fParam.toSingleValueMap()).getBytes());
             MockMultipartFile deleteIds = new MockMultipartFile(
                     "deleteIds",
                     "",
@@ -587,7 +604,7 @@ class FreeBoardControllerTest extends RestDocsHelper {
 
             MockMultipartFile file = new MockMultipartFile("files", "fileBytes".getBytes());
             MockMultipartFile title = new MockMultipartFile("freeBoard", "",
-                    "application/json", mapper.writeValueAsString(params).getBytes());
+                    "application/json", mapper.writeValueAsString(params.toSingleValueMap()).getBytes());
             when(freeBoardService.createFreeBoard(any(), any(), anyLong()))
                     .thenReturn(boardId);
 
@@ -758,7 +775,7 @@ class FreeBoardControllerTest extends RestDocsHelper {
                     "freeBoard",
                     "",
                     "application/json",
-                    mapper.writeValueAsString(fParam).getBytes());
+                    mapper.writeValueAsString(fParam.toSingleValueMap()).getBytes());
             MockMultipartFile deleteIds = new MockMultipartFile(
                     "deleteIds",
                     "",

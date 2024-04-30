@@ -17,9 +17,6 @@ public class MockPhysicalFileRepository implements PhysicalFileRepository {
 
     MockConfigurationService configurationService = new MockConfigurationService();
 
-    /**
-     * @implNote originalFileName이 error 일때 checkedException 발생
-     */
     @Override
     public String save(byte[] bytes, String originalFileName) throws FileSaveCheckedException {
         if (IO_ERROR_FILE_NAME.equals(originalFileName)) {
@@ -33,8 +30,8 @@ public class MockPhysicalFileRepository implements PhysicalFileRepository {
     }
 
     @Override
-    public void delete(String fullPath) {
-        PHYSICAL_FILE_STORAGE.remove(fullPath);
+    public void delete(Long fileId) {
+
     }
 
     @Override

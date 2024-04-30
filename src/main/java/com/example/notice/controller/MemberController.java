@@ -24,13 +24,15 @@ public class MemberController {
 
     /**
      * 회원가입
-     * @param member 새로운 멤버 요청 파라미터
-     * @return 200 ok
+     *
+     * @param member 회원 가입 요청 파라미터
+     * @return 200 OK
      */
     @PostMapping("/auth/member")
     public ResponseEntity<Object> register(
             @Validated(MemberRegisterValidationGroup.class) @RequestBody Member member) {
         checkLoginIdSameAsPassword(member);
+
         memberService.createUserRoleMember(member);
 
         return ResponseEntity

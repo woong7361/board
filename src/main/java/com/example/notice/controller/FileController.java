@@ -30,6 +30,7 @@ public class FileController {
 
     /**
      * 파일 다운로드
+     *
      * @param fileId 파일 식별자
      * @return 파일 byte stream
      */
@@ -41,7 +42,6 @@ public class FileController {
 
         return ResponseEntity
                 .ok()
-                .contentType(MediaType.IMAGE_PNG)
                 .contentLength(file.length())
                 .header(HttpHeaders.CONTENT_DISPOSITION, getContentDispositionValue(originalName))
                 .body(getInputStreamResource(file));
@@ -49,7 +49,8 @@ public class FileController {
 
 
     /**
-     * 자유게시판 게시글 식별자로 파일 가져오기
+     * 파일 조회
+     *
      * @param freeBoardId 자유게시판 식별자
      * @return 파일 리스트
      */

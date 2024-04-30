@@ -66,6 +66,33 @@
         </where>
     </sql>
 
+    <sql id="searchOrder">
+        ORDER BY
+        <choose>
+            <when test="page.orderColumn == 'created_at' and page.orderType == 'DESC'">
+                 ib.created_at DESC
+            </when>
+            <when test="page.orderColumn == 'created_at' and page.orderType == 'ASC'">
+                 ib.created_at ASC
+            </when>
+            <when test="page.orderColumn == 'modified_at' and page.orderType == 'DESC'">
+                 ib.modified_at DESC
+            </when>
+            <when test="page.orderColumn == 'modified_at' and page.orderType == 'ASC'">
+                 ib.modified_at ASC
+            </when>
+            <when test="page.orderColumn == 'views' and page.orderType == 'DESC'">
+                 ib.views DESC
+            </when>
+            <when test="page.orderColumn == 'views' and page.orderType == 'ASC'">
+                 ib.views ASC
+            </when>
+            <otherwise>
+                 ib.created_at DESC
+            </otherwise>
+        </choose>
+    </sql>
+
     <insert id="save" useGeneratedKeys="true" keyProperty="inquireBoard.inquireBoardId">
         INSERT INTO inquire_board
             (member_id, title, content,
@@ -98,14 +125,7 @@
             inquire_board AS ib
             LEFT JOIN member m on m.member_id = ib.member_id
         <include refid="searchCondition"/>
-        <choose>
-            <when test="page.orderColumn != null and page.orderType != null">
-                ORDER BY ${page.orderColumn} ${page.orderType}
-            </when>
-            <otherwise>
-                ORDER BY ib.modified_at DESC
-            </otherwise>
-        </choose>
+        <include refid="searchOrder"/>
         LIMIT #{page.offset}, #{page.size}
     </select>
 

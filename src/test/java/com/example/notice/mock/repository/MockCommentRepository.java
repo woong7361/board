@@ -51,7 +51,7 @@ public class MockCommentRepository implements CommentRepository {
     }
 
     @Override
-    public void deleteByIdToAdmin(Long commentId) {
+    public void deleteContentById(Long commentId) {
         COMMENT_STORAGE
                 .removeIf(c -> c.getCommentId().equals(commentId));
     }

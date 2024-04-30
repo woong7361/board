@@ -54,7 +54,4 @@ public class Member {
     public void setUserRole() {
         this.role = MemberRole.USER;
     }
-    public void setAdminRole() {
-        this.role = MemberRole.ADMIN;
-    }
 }

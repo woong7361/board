@@ -3,13 +3,11 @@ package com.example.notice.controller;
 import com.example.notice.dto.request.NoticeBoardSearchDTO;
 import com.example.notice.entity.Member;
 import com.example.notice.entity.NoticeBoard;
-import com.example.notice.mock.config.NoFilterMvcTest;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
 import com.example.notice.restdocs.RestDocsHelper;
 import com.example.notice.service.NoticeBoardService;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,15 +16,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.restdocs.cookies.CookieDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.payload.PayloadDocumentation;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -45,10 +40,10 @@ import static com.example.notice.mock.util.LoginTestUtil.getMockSessionCookie;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(NoticeBoardController.class)
 class NoticeBoardControllerTest extends RestDocsHelper {
@@ -59,6 +54,38 @@ class NoticeBoardControllerTest extends RestDocsHelper {
     @BeforeEach
     public void initMapper() {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
+
+
+    @Nested
+    @DisplayName("공지게시판 카테고리 조회")
+    public class GetNoticeBoardCategories {
+
+        private static final String GET_FREE_BOARD_CATEGORIES_URL = "/api/boards/notice/category";
+
+        @DisplayName("정상처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            List<String> categories = List.of("A", "B", "C");
+            //when
+            Mockito.when(noticeBoardService.getCategory())
+                    .thenReturn(categories);
+
+            ResultActions action = mockMvc.perform(MockMvcRequestBuilders.get(GET_FREE_BOARD_CATEGORIES_URL));
+
+            //then
+            action
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(jsonPath("$.categories").isArray())
+                    .andExpect(jsonPath("$.categories[0]").value(categories.get(0)))
+
+                    .andDo(restDocs.document(
+                            responseFields(
+                                    fieldWithPath("categories").description("카테고리 리스트")
+                            )
+                    ));
+        }
     }
 
     @Nested
@@ -259,12 +286,14 @@ class NoticeBoardControllerTest extends RestDocsHelper {
             params.add("keyWord", "keyWord");
             params.add("size", "5");
             params.add("currentPage", "0");
+            params.add("orderColumn", "created_at");
+            params.add("orderType", "modified_at");
 
             //when
             int totalCount = 123;
             PageRequest pageRequest = new PageRequest(5, 0, null, null);
             List<NoticeBoard> noticeBoards = List.of(NO_FK_NOTICE_BOARD);
-            Mockito.when(noticeBoardService.getNoneFixedNoticeBoards(any(NoticeBoardSearchDTO.class), any(PageRequest.class)))
+            Mockito.when(noticeBoardService.getNoneFixedNoticeBoardSearch(any(NoticeBoardSearchDTO.class), any(PageRequest.class)))
                     .thenReturn(
                             new PageResponse<>(
                                     noticeBoards,
@@ -297,7 +326,9 @@ class NoticeBoardControllerTest extends RestDocsHelper {
                                     parameterWithName("category").description("카테고리"),
                                     parameterWithName("keyWord").description("검색 키워드"),
                                     parameterWithName("size").description("페이지 크기"),
-                                    parameterWithName("currentPage").description("현재 페이지")
+                                    parameterWithName("currentPage").description("현재 페이지"),
+                                    parameterWithName("orderColumn").description("정렬 인자"),
+                                    parameterWithName("orderType").description("정렬 조건")
                             )
                     ))
                     .andDo(restDocs.document(
@@ -336,7 +367,7 @@ class NoticeBoardControllerTest extends RestDocsHelper {
             int totalCount = 123;
             PageRequest pageRequest = new PageRequest(5, 0, null, null);
             List<NoticeBoard> noticeBoards = List.of(NO_FK_NOTICE_BOARD);
-            Mockito.when(noticeBoardService.getNoneFixedNoticeBoards(any(NoticeBoardSearchDTO.class), any(PageRequest.class)))
+            Mockito.when(noticeBoardService.getNoneFixedNoticeBoardSearch(any(NoticeBoardSearchDTO.class), any(PageRequest.class)))
                     .thenReturn(
                             new PageResponse<>(
                                     noticeBoards,

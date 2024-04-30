@@ -3,11 +3,10 @@ package com.example.notice.service;
 import com.example.notice.dto.request.InquireBoardSearchDTO;
 import com.example.notice.dto.response.InquireBoardResponseDTO;
 import com.example.notice.dto.response.InquireBoardSearchResponseDTO;
+import com.example.notice.entity.InquireAnswer;
 import com.example.notice.entity.InquireBoard;
 import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.EntityNotExistException;
-import com.example.notice.mock.database.MemoryDataBase;
-import com.example.notice.mock.repository.MockInquireBoardRepository;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
 import com.example.notice.repository.InquireAnswerRepository;
@@ -17,51 +16,36 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
-import static com.example.notice.mock.database.MemoryDataBase.initRepository;
+import static com.example.notice.mock.dummy.TestData.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 class InquireBoardServiceTest {
 
     private InquireAnswerRepository inquireAnswerRepository = Mockito.mock(InquireAnswerRepository.class);
-
-    private InquireBoardRepository inquireBoardRepository = new MockInquireBoardRepository();
-    private InquireBoardService inquireBoardService = new InquireBoardServiceImpl(inquireBoardRepository, inquireAnswerRepository);
-
-    private InquireBoardRepository mockitoInquireBoardRepository = Mockito.mock(InquireBoardRepository.class);
-    private InquireBoardService mockitoInquireBoardService = new InquireBoardServiceImpl(mockitoInquireBoardRepository, inquireAnswerRepository);
-
-    @AfterEach
-    public void clearRepository() {
-        initRepository();
-    }
+    private InquireBoardRepository inquireBoardRepository = Mockito.mock(InquireBoardRepository.class);
+    private InquireBoardService inquireBoardService = new InquireBoardServiceImpl(
+            inquireBoardRepository,
+            inquireAnswerRepository);
 
     @Nested
     @DisplayName("문의게시판 생성 테스트")
     public class InquireBoardCreateTest {
-
-
         @DisplayName("정상 처리")
         @Test
         public void success() throws Exception {
             //given
-            InquireBoard inquireBoard = InquireBoard.builder()
-                    .inquireBoardId(5654L)
-                    .build();
-
-            Long memberId = 3545631L;
+            InquireBoard secretRequest = getInquireBoardCreateRequest(true);
+            InquireBoard noneSecretRequest = getInquireBoardCreateRequest(false);
+            Long memberId = 68464L;
 
             //when
-            inquireBoardService.createBoard(inquireBoard, memberId);
-
             //then
-            Optional<InquireBoard> findBoard = MemoryDataBase.INQUIRE_BOARD_STORAGE.stream()
-                    .filter((b) -> b.getInquireBoardId().equals(inquireBoard.getInquireBoardId()))
-                    .findFirst();
-
-            Assertions.assertThat(findBoard.isPresent()).isTrue();
+            inquireBoardService.createBoard(secretRequest, memberId);
+            inquireBoardService.createBoard(noneSecretRequest, memberId);
         }
     }
 
@@ -73,91 +57,147 @@ class InquireBoardServiceTest {
         public void success() throws Exception {
             //given
             Long memberId = 53145L;
+            int totalCount = 4648641;
 
-            InquireBoard inquireBoard = InquireBoard.builder()
-                    .inquireBoardId(153L)
-                    .title("title key")
-                    .isSecret(true)
-                    .content("key")
-                    .createdAt(LocalDateTime.now())
-                    .modifiedAt(LocalDateTime.now())
-                    .memberId(memberId)
-                    .build();
+            InquireBoard inquireBoard1 = getSavedInquireBoard(11L);
+            InquireBoard inquireBoard2 = getSavedInquireBoard(12L);
+            List<InquireBoardSearchResponseDTO> searchResult = List.of(
+                    new InquireBoardSearchResponseDTO(inquireBoard1, false),
+                    new InquireBoardSearchResponseDTO(inquireBoard2, true));
 
             InquireBoardSearchDTO searchParam =
                     new InquireBoardSearchDTO(LocalDateTime.now().minusYears(1L), LocalDateTime.now(), "key", memberId);
-
-            PageRequest pageRequest = new PageRequest(10, 2, null, null);
+            PageRequest pageRequest = new PageRequest(10, 2, "1", "2");
 
             //when
-            MemoryDataBase.INQUIRE_BOARD_STORAGE.add(inquireBoard);
+            Mockito.when(inquireBoardRepository.getSearchTotalCount(searchParam))
+                    .thenReturn(totalCount);
+            Mockito.when(inquireBoardRepository.search(searchParam, pageRequest))
+                    .thenReturn(searchResult);
+
             PageResponse<InquireBoardSearchResponseDTO> result =
                     inquireBoardService.searchInquireBoard(searchParam, pageRequest);
 
             //then
-            Assertions.assertThat(result.getTotalCount()).isEqualTo(1);
+            Assertions.assertThat(result.getTotalCount()).isEqualTo(totalCount);
+            Assertions.assertThat(result.getContentSize()).isEqualTo(searchResult.size());
+            Assertions.assertThat(result.getContents().get(0))
+                    .usingRecursiveAssertion()
+                    .isEqualTo(searchResult.get(0));
         }
 
-        @DisplayName("저장소가 비어있을때")
+        @DisplayName("검색 결과가 없을때")
         @Test
         public void emptyRepository() throws Exception{
             //given
             Long memberId = 53145L;
+            int totalCount = 0;
+
+            List<InquireBoardSearchResponseDTO> searchResult = List.of();
+
             InquireBoardSearchDTO searchParam =
                     new InquireBoardSearchDTO(LocalDateTime.now().minusYears(1L), LocalDateTime.now(), "key", memberId);
-            PageRequest pageRequest = new PageRequest(10, 2, null, null);
+            PageRequest pageRequest = new PageRequest(10, 2, "1", "2");
 
             //when
+            Mockito.when(inquireBoardRepository.getSearchTotalCount(searchParam))
+                    .thenReturn(totalCount);
+            Mockito.when(inquireBoardRepository.search(searchParam, pageRequest))
+                    .thenReturn(searchResult);
+
             PageResponse<InquireBoardSearchResponseDTO> result =
                     inquireBoardService.searchInquireBoard(searchParam, pageRequest);
 
             //then
-            Assertions.assertThat(result.getTotalCount()).isEqualTo(0);
-            Assertions.assertThat(result.getContents().size()).isEqualTo(0);
+            Assertions.assertThat(result.getTotalCount()).isEqualTo(totalCount);
+            Assertions.assertThat(result.getContentSize()).isEqualTo(0);
         }
     }
 
     @Nested
     @DisplayName("문의 게시판 게시글 조회 테스트")
     public class InquireBoardGetTest {
-        @DisplayName("정상 처리")
+        @DisplayName("공개 문의글 조회")
         @Test
-        public void success() throws Exception {
+        public void getOpenBoard() throws Exception {
             //given
-            Long inquireBoardId = 4534184L;
+            long inquireBoardId = 854641L;
 
-            InquireBoard inquireBoard = InquireBoard.builder()
-                    .inquireBoardId(inquireBoardId)
-                    .title("title")
-                    .content("contest")
-                    .isSecret(false)
-                    .build();
+            InquireBoard inquireBoard = getSavedInquireBoard(inquireBoardId, false);
+            List<InquireAnswer> answers = List.of(getSavedInquireAnswer(inquireBoard.getInquireBoardId()));
 
             InquireBoardResponseDTO response = InquireBoardResponseDTO.builder()
                     .inquireBoard(inquireBoard)
+                    .inquireAnswers(answers)
                     .build();
 
-            Mockito.when(mockitoInquireBoardRepository.findById(inquireBoardId))
-                    .thenReturn(Optional.of(response));
             //when
-            InquireBoardResponseDTO findBoard = mockitoInquireBoardService.getBoardById(inquireBoardId, 456341L);
+            Mockito.when(inquireBoardRepository.findById(inquireBoard.getInquireBoardId()))
+                    .thenReturn(Optional.of(response));
 
             //then
-            Assertions.assertThat(findBoard.getInquireBoard())
-                    .usingRecursiveComparison()
-                    .isEqualTo(inquireBoard);
+            inquireBoardService.getBoardById(inquireBoardId, inquireBoard.getMemberId());
+        }
+
+        @DisplayName("비공개 문의글 조회")
+        @Test
+        public void getSecretBoard() throws Exception {
+            //given
+            long inquireBoardId = 854641L;
+
+            InquireBoard inquireBoard = getSavedInquireBoard(inquireBoardId, true);
+            List<InquireAnswer> answers = List.of(getSavedInquireAnswer(inquireBoard.getInquireBoardId()));
+
+            InquireBoardResponseDTO response = InquireBoardResponseDTO.builder()
+                    .inquireBoard(inquireBoard)
+                    .inquireAnswers(answers)
+                    .build();
+
+            //when
+            Mockito.when(inquireBoardRepository.findById(inquireBoard.getInquireBoardId()))
+                    .thenReturn(Optional.of(response));
+
+            //then
+            inquireBoardService.getBoardById(inquireBoardId, inquireBoard.getMemberId());
+        }
+
+        @DisplayName("비공개 문의글 조회 권한 없음")
+        @Test
+        public void getSecretBoardNotAuthorized() throws Exception {
+            //given
+            long inquireBoardId = 854641L;
+            long invalidMemberId = -1L;
+
+            InquireBoard inquireBoard = getSavedInquireBoard(inquireBoardId, true);
+            List<InquireAnswer> answers = List.of(getSavedInquireAnswer(inquireBoard.getInquireBoardId()));
+
+            InquireBoardResponseDTO response = InquireBoardResponseDTO.builder()
+                    .inquireBoard(inquireBoard)
+                    .inquireAnswers(answers)
+                    .build();
+
+            //when
+            Mockito.when(inquireBoardRepository.findById(inquireBoard.getInquireBoardId()))
+                    .thenReturn(Optional.of(response));
+
+            //then
+            Assertions.assertThatThrownBy(() -> inquireBoardService.getBoardById(inquireBoardId, invalidMemberId))
+                    .isInstanceOf(AuthorizationException.class);
         }
 
         @DisplayName("식별자에 해당하는 게시글이 존재하지 않을때")
         @Test
         public void notExistBoard() throws Exception{
             //given
-            Mockito.when(mockitoInquireBoardRepository.findById(anyLong()))
-                    .thenReturn(Optional.empty());
+            Long inquireBoardId = 4531L;
+            Long memberId = 54321L;
 
             //when
+            Mockito.when(inquireBoardRepository.findById(anyLong()))
+                    .thenReturn(Optional.empty());
+
             //then
-            Assertions.assertThatThrownBy(() -> mockitoInquireBoardService.getBoardById(anyLong(), 45341L))
+            Assertions.assertThatThrownBy(() -> inquireBoardService.getBoardById(inquireBoardId, memberId))
                     .isInstanceOf(EntityNotExistException.class);
         }
     }
@@ -169,90 +209,111 @@ class InquireBoardServiceTest {
         @Test
         public void success() throws Exception {
             //given
-            Long memberId = 153435L;
-            Long inquireBoardId = 4165431352L;
-            InquireBoard inquireBoard = InquireBoard.builder()
-                    .inquireBoardId(inquireBoardId)
-                    .memberId(memberId)
-                    .title("new Title")
-                    .content("new content")
-                    .isSecret(false)
-                    .build();
+            InquireBoard inquireBoard = getSavedInquireBoard();
 
-            Mockito.when(mockitoInquireBoardRepository.findByInquireBoardIdAndMemberId(inquireBoardId, memberId))
+            //when
+            Mockito.when(inquireBoardRepository
+                            .findByInquireBoardIdAndMemberId(inquireBoard.getInquireBoardId(), inquireBoard.getMemberId()))
                     .thenReturn(Optional.of(inquireBoard));
 
-            //when
-            mockitoInquireBoardService.updateById(inquireBoard, inquireBoardId, memberId);
             //then
-        }
-
-        @DisplayName("게시글의 주인이 아닌 다른 회원이 접근할때")
-        @Test
-        public void notOwner() throws Exception{
-            //given
-            Long notOwnerMemberId = 153435L;
-            Long ownerMemberId = 452463541L;
-            Long inquireBoardId = 4165431352L;
-
-            InquireBoard inquireBoard = InquireBoard.builder()
-                    .inquireBoardId(inquireBoardId)
-                    .memberId(ownerMemberId)
-                    .title("new Title")
-                    .content("new content")
-                    .isSecret(false)
-                    .build();
-
-            Mockito.when(mockitoInquireBoardRepository.findByInquireBoardIdAndMemberId(anyLong(), anyLong()))
-                    .thenReturn(Optional.empty());
-
-            //when
-            //then
-            Assertions.assertThatThrownBy(() -> mockitoInquireBoardService.updateById(inquireBoard, inquireBoardId, notOwnerMemberId))
-                    .isInstanceOf(AuthorizationException.class);
+            inquireBoardService.updateById(inquireBoard, inquireBoard.getInquireBoardId(), inquireBoard.getMemberId());
         }
     }
 
     @Nested
-    @DisplayName("알림 게시판 게시글 삭제 테스트")
+    @DisplayName("문의 게시판 게시글 삭제 테스트")
     public class InquireBoardDeleteTest {
         @DisplayName("정상 처리")
         @Test
         public void success() throws Exception {
             //given
-            long memberId = 3453413L;
-            long inquireBoardId = 453154L;
-
-            InquireBoard inquireBoard = InquireBoard.builder()
-                    .inquireBoardId(inquireBoardId)
-                    .memberId(memberId)
-                    .title("new Title")
-                    .content("new content")
-                    .isSecret(false)
-                    .build();
-
-            Mockito.when(mockitoInquireBoardRepository.findByInquireBoardIdAndMemberId(inquireBoardId, memberId))
-                    .thenReturn(Optional.of(inquireBoard));
+            Long memberId = 3453413L;
+            Long inquireBoardId = 453154L;
 
             //when
-            mockitoInquireBoardService.deleteById(inquireBoardId, memberId);
+            Mockito.when(inquireBoardRepository.findByInquireBoardIdAndMemberId(inquireBoardId, memberId))
+                    .thenReturn(Optional.of(InquireBoard.builder().build()));
+
             //then
+            inquireBoardService.deleteById(inquireBoardId, memberId);
         }
 
-        @DisplayName("게시글의 주인이 아닌 다른 회원이 접근할때")
+        @DisplayName("게시글 삭제 권한이 부족할때")
         @Test
         public void notOwner() throws Exception{
             //given
-            long memberId = 3453413L;
-            long inquireBoardId = 453154L;
+            Long memberId = 3453413L;
+            Long inquireBoardId = 453154L;
 
-            Mockito.when(mockitoInquireBoardRepository.findByInquireBoardIdAndMemberId(anyLong(), anyLong()))
+            //when
+            Mockito.when(inquireBoardRepository.findByInquireBoardIdAndMemberId(inquireBoardId, memberId))
                     .thenReturn(Optional.empty());
+
+            //then
+            Assertions.assertThatThrownBy(() -> inquireBoardService.deleteById(inquireBoardId, memberId))
+                    .isInstanceOf(AuthorizationException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("관리자의 문의 게시글 삭제")
+    public class DeleteInquireBoardByAdmin {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            Long inquireBoardId = 6452314L;
 
             //when
             //then
-            Assertions.assertThatThrownBy(() -> mockitoInquireBoardService.deleteById(inquireBoardId, memberId))
-                    .isInstanceOf(AuthorizationException.class);
+            inquireBoardService.deleteByAdmin(inquireBoardId);
+        }
+    }
+
+    @Nested
+    @DisplayName("관리자의 문의 게시글 조회")
+    public class getInquireBoardByAdmin {
+        @DisplayName("비밀글이 아닐때")
+        @Test
+        public void noneSecretInquireBoard() throws Exception {
+            //given
+            Long inquireBoardId = 984514L;
+            InquireBoard inquireBoard = getSavedInquireBoard(inquireBoardId, false);
+            InquireAnswer answer = getSavedInquireAnswer(inquireBoardId);
+
+            //when
+            Mockito.when(inquireBoardRepository.findById(inquireBoardId))
+                    .thenReturn(Optional.of(new InquireBoardResponseDTO(null, inquireBoard, List.of(answer))));
+
+            InquireBoardResponseDTO result = inquireBoardService.getBoardByAdmin(inquireBoardId);
+
+            //then
+            Assertions.assertThat(result.getInquireBoard()).usingRecursiveComparison()
+                    .isEqualTo(inquireBoard);
+            Assertions.assertThat(result.getInquireAnswers().get(0)).usingRecursiveComparison()
+                    .isEqualTo(answer);
+        }
+
+        @DisplayName("비밀글일때")
+        @Test
+        public void SecretInquireBoard() throws Exception {
+            //given
+            Long inquireBoardId = 984514L;
+            InquireBoard inquireBoard = getSavedInquireBoard(inquireBoardId, true);
+            InquireAnswer answer = getSavedInquireAnswer(inquireBoardId);
+
+            //when
+            Mockito.when(inquireBoardRepository.findById(inquireBoardId))
+                    .thenReturn(Optional.of(new InquireBoardResponseDTO(null, inquireBoard, List.of(answer))));
+
+            InquireBoardResponseDTO result = inquireBoardService.getBoardByAdmin(inquireBoardId);
+
+            //then
+            Assertions.assertThat(result.getInquireBoard()).usingRecursiveComparison()
+                    .isEqualTo(inquireBoard);
+            Assertions.assertThat(result.getInquireAnswers().get(0)).usingRecursiveComparison()
+                    .isEqualTo(answer);
         }
     }
 }

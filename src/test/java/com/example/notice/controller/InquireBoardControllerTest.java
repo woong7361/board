@@ -151,6 +151,8 @@ class InquireBoardControllerTest extends RestDocsHelper {
             params.add("currentPage", "0");
             params.add("keyWord", "4153");
             params.add("onlyMine", "false");
+            params.add("orderColumn", "created_at");
+            params.add("orderType", "modified_at");
 
             PageRequest pageRequest = new PageRequest(5, 0, null, null);
 
@@ -198,14 +200,12 @@ class InquireBoardControllerTest extends RestDocsHelper {
                     //rest docs
                     .andDo(restDocs.document(
                             queryParameters(
-                                    parameterWithName("size")
-                                            .description("가져올 개수"),
-                                    parameterWithName("currentPage")
-                                            .description("현재 페이지"),
-                                    parameterWithName("keyWord")
-                                            .description("검색 키워드"),
-                                    parameterWithName("onlyMine")
-                                            .description("자신의 것만 검색할지")
+                                    parameterWithName("size").description("가져올 개수"),
+                                    parameterWithName("currentPage").description("현재 페이지"),
+                                    parameterWithName("keyWord").description("검색 키워드"),
+                                    parameterWithName("onlyMine").description("자신의 것만 검색할지"),
+                                    parameterWithName("orderColumn").description("정렬 인자"),
+                                    parameterWithName("orderType").description("정렬 조건")
                             )))
                     .andDo(restDocs.document(
                             responseFields(

@@ -10,17 +10,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.notice.mock.database.MemoryDataBase.COMMENT_STORAGE;
 import static com.example.notice.mock.repository.MockCommentRepository.NO_FK_COMMENT;
+import static org.mockito.ArgumentMatchers.any;
 
 
 class CommentServiceTest {
 
     private CommentRepository commentRepository = new MockCommentRepository();
     private CommentService commentService = new CommentServiceImpl(commentRepository);
+
+    private CommentRepository mockitoCommentRepository = Mockito.mock(CommentRepository.class);
+    private CommentService mockitoCommentService = new CommentServiceImpl(mockitoCommentRepository);
 
     @BeforeEach
     public void clearRepository() {
@@ -87,59 +93,69 @@ class CommentServiceTest {
     }
 
     @Nested
-    @DisplayName("댓글 접근 권한 확인")
-    public class CheckCommentAuthorization {
-        @DisplayName("정상 처리")
-        @Test
-        public void success() throws Exception {
-            //given
-            Long freeBoardId = 12L;
-            Long memberId = 13L;
-            //when
-            commentRepository.save(NO_FK_COMMENT, freeBoardId, memberId);
-            //then
-            commentService.checkAuthorization(NO_FK_COMMENT.getCommentId(), memberId);
-        }
-
-        @DisplayName("작성 권한이 없는 회원이 접근시")
-        @Test
-        public void invalidMemberAccess() throws Exception{
-            //given
-            Long freeBoardId = 12L;
-            Long memberId = 13L;
-            Long notOwnerMemberId = 14L;
-            //when
-            commentRepository.save(NO_FK_COMMENT, freeBoardId, memberId);
-            //then
-            Assertions.assertThatThrownBy(() -> commentService.checkAuthorization(NO_FK_COMMENT.getCommentId(), notOwnerMemberId))
-                    .isInstanceOf(AuthorizationException.class);
-        }
-    }
-
-    @Nested
     @DisplayName("댓글 삭제")
     public class DeleteComment {
         @DisplayName("정상 처리")
         @Test
         public void success() throws Exception {
             //given
+            Long memberId = 453145L;
+            Long commentId = 564523L;
+
             //when
-            commentRepository.save(NO_FK_COMMENT, null, null);
-            commentService.delete(NO_FK_COMMENT.getCommentId());
+            Mockito.when(mockitoCommentRepository.getCommentByCommentIdAndMemberId(commentId, memberId))
+                    .thenReturn(Optional.of(Comment.builder().build()));
             //then
-            Assertions.assertThat(COMMENT_STORAGE.size()).isEqualTo(0);
+            mockitoCommentService.delete(commentId, memberId);
         }
 
-        @DisplayName("다른 id로 삭제 시도")
+        @DisplayName("댓글 삭제에 대한 권한이 부족할때")
         @Test
         public void anotherId() throws Exception{
             //given
-            long anotherId = 48156313L;
+            Long memberId = 453145L;
+            Long commentId = 564523L;
+
             //when
-            commentRepository.save(NO_FK_COMMENT, null, null);
-            commentService.delete(anotherId);
+            Mockito.when(mockitoCommentRepository.getCommentByCommentIdAndMemberId(commentId, memberId))
+                    .thenReturn(Optional.empty());
             //then
-            Assertions.assertThat(COMMENT_STORAGE.size()).isEqualTo(1);
+            Assertions.assertThatThrownBy(() -> mockitoCommentService.delete(commentId, memberId))
+                    .isInstanceOf(AuthorizationException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("관리자의 댓글 삭제")
+    public class DeleteCommentByAdmin {
+        @DisplayName("자신의 댓글을 지울때")
+        @Test
+        public void deleteMine() throws Exception {
+            //given
+            Long memberId = 456L;
+            Long commentId = 123L;
+
+            Mockito.when(mockitoCommentRepository.getCommentByCommentIdAndMemberId(commentId, memberId))
+                    .thenReturn(Optional.of(Comment.builder().build()));
+
+            //when
+            //then
+            mockitoCommentService.deleteByAdmin(commentId, memberId);
+        }
+
+        @DisplayName("자신의 댓글이 아닌 댓글을 지울때")
+        @Test
+        public void deleteOther() throws Exception {
+            //given
+            Long memberId = 456L;
+            Long commentId = 123L;
+
+            Mockito.when(mockitoCommentRepository.getCommentByCommentIdAndMemberId(commentId, memberId))
+                    .thenReturn(Optional.empty());
+
+            //when
+            //then
+            mockitoCommentService.deleteByAdmin(commentId, memberId);
         }
     }
 

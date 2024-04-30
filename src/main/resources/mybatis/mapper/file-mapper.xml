@@ -15,10 +15,11 @@
         WHERE file_id = #{fileId}
     </select>
 
-    <delete id="deleteByFileId">
-        DELETE FROM file
+    <update id="deleteByFileId">
+        UPDATE file
+        SET file.free_board_id = NULL
         WHERE file_id = #{fileId}
-    </delete>
+    </update>
 
     <select id="findByFileIdAndMemberId" resultType="com.example.notice.entity.AttachmentFile">
         SELECT *

@@ -39,6 +39,33 @@
         </if>
     </sql>
 
+    <sql id="searchOrder">
+        ORDER BY
+        <choose>
+            <when test="page.orderColumn == 'created_at' and page.orderType == 'DESC'">
+                nb.created_at DESC
+            </when>
+            <when test="page.orderColumn == 'created_at' and page.orderType == 'ASC'">
+                nb.created_at ASC
+            </when>
+            <when test="page.orderColumn == 'modified_at' and page.orderType == 'DESC'">
+                nb.modified_at DESC
+            </when>
+            <when test="page.orderColumn == 'modified_at' and page.orderType == 'ASC'">
+                nb.modified_at ASC
+            </when>
+            <when test="page.orderColumn == 'views' and page.orderType == 'DESC'">
+                nb.views DESC
+            </when>
+            <when test="page.orderColumn == 'views' and page.orderType == 'ASC'">
+                nb.views ASC
+            </when>
+            <otherwise>
+                nb.created_at DESC
+            </otherwise>
+        </choose>
+    </sql>
+
     <insert id="save" useGeneratedKeys="true" keyProperty="noticeBoard.noticeBoardId">
         INSERT INTO notice_board
             (member_id, category_id,
@@ -79,14 +106,7 @@
                  LEFT JOIN member m on m.member_id = nb.member_id
                  LEFT JOIN category c on c.category_id = nb.category_id
         <include refid="noticeBoardSearchCondition"/>
-        <choose>
-            <when test="page.orderColumn != null and page.orderType != null">
-                ORDER BY nb.${page.orderColumn} ${page.orderType}
-            </when>
-            <otherwise>
-                ORDER BY nb.created_at DESC
-            </otherwise>
-        </choose>
+        <include refid="searchOrder"/>
         LIMIT #{page.offset}, #{page.size}
     </select>
 

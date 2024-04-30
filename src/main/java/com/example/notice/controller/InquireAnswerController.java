@@ -16,25 +16,23 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class InquireAnswerController {
-
-
     private final InquireAnswerService inquireAnswerService;
 
     /**
-     * 문의게시판 문의에 대한 답변 생성
+     * 문의 답변 생성
      *
-     * @param inquireAnswer  문의 게시판 답변 생성 파라미터
-     * @param inquireBoardId 문의 게시판 게시글 식별자
-     * @param principal      답변하는 관리자의 인증 객체
-     * @return 문의의 생성된 답변 식별자
+     * @param inquireAnswer 문의 게시판 답변 생성 파라미터
+     * @param inquireBoardId 문의 게시글 식별자
+     * @param principal 답변자 인증 객체
+     * @return 생성된 답변 식별자
      */
     @PostMapping("/admin/boards/inquire/{inquireBoardId}/answers")
     public ResponseEntity<Object> createInquireAnswer(
             @Valid @RequestBody InquireAnswer inquireAnswer,
             @PathVariable Long inquireBoardId,
-            @AdminAuthenticationPrincipal Principal<Member> principal) {
+            @AdminAuthenticationPrincipal Principal<Member> principal
+    ) {
         Member admin = principal.getAuthentication();
-
         inquireAnswerService.createAnswer(inquireAnswer, inquireBoardId, admin.getMemberId());
 
         return ResponseEntity.ok()
@@ -42,9 +40,10 @@ public class InquireAnswerController {
     }
 
     /**
-     * 문의 게시판 게시글 문의 답변 삭제
+     * 문의 답변 삭제
+     *
      * @param inquireAnswerId 문의 답변 식별자
-     * @return 200 ok
+     * @return 200 OK
      */
     @DeleteMapping("/admin/boards/inquire/answers/{inquireAnswerId}")
     public ResponseEntity<Object> deleteInquireAnswer(

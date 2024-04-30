@@ -45,6 +45,9 @@ public class InquireBoardServiceImpl implements InquireBoardService {
         return new PageResponse<>(inquireBoards, pageRequest, searchTotalCount);
     }
 
+    /**
+     * @implNote 비밀글이라면 작정자만 조회가능
+     */
     @Override
     @Transactional
     public InquireBoardResponseDTO getBoardById(Long inquireBoardId, Long memberId) {

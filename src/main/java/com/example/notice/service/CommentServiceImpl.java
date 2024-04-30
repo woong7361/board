@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.example.notice.constant.ErrorMessageConstant.AUTHORIZATION_EXCEPTION_MESSAGE;
 
@@ -31,23 +30,27 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public void checkAuthorization(Long commentId, Long memberId) {
-        commentRepository.getCommentByCommentIdAndMemberId(commentId, memberId)
-                .orElseThrow(() -> new AuthorizationException(AUTHORIZATION_EXCEPTION_MESSAGE));
-    }
-
-    @Override
     @Transactional
-    public void delete(Long commentId) {
+    public void delete(Long commentId, Long memberId) {
+        checkAuthorization(commentId, memberId);
+
         commentRepository.deleteById(commentId);
     }
 
+    /**
+     * @implNote  댓글이 관리자의 댓글이면 삭제, 다른 사용자의 댓글이라면 내용만 지운다.
+     */
     @Override
     @Transactional
     public void deleteByAdmin(Long commentId, Long memberId) {
         commentRepository.getCommentByCommentIdAndMemberId(commentId, memberId)
                 .ifPresentOrElse(
                         (c) -> {commentRepository.deleteById(commentId);},
-                        () -> {commentRepository.deleteByIdToAdmin(commentId);});
+                        () -> {commentRepository.deleteContentById(commentId);});
+    }
+
+    private void checkAuthorization(Long commentId, Long memberId) {
+        commentRepository.getCommentByCommentIdAndMemberId(commentId, memberId)
+                .orElseThrow(() -> new AuthorizationException(AUTHORIZATION_EXCEPTION_MESSAGE));
     }
 }

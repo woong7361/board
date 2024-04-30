@@ -2,6 +2,9 @@ package com.example.notice.dto.response;
 
 import lombok.*;
 
+/**
+ * 파일 조회 응답 DTO
+ */
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor

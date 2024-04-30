@@ -23,7 +23,6 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
     private final NoticeBoardRepository noticeBoardRepository;
     private final ConfigurationService configurationService;
 
-
     @Override
     @Transactional
     public Long createNoticeBoard(NoticeBoard noticeBoard, Long memberId) {
@@ -38,7 +37,7 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
     }
 
     @Override
-    public PageResponse<NoticeBoard> getNoneFixedNoticeBoards(NoticeBoardSearchDTO noticeBoardSearchDTO, PageRequest pageRequest) {
+    public PageResponse<NoticeBoard> getNoneFixedNoticeBoardSearch(NoticeBoardSearchDTO noticeBoardSearchDTO, PageRequest pageRequest) {
         Integer totalCount = noticeBoardRepository.findNoneFixedNoticeBoardCountBySearchParam(
                 noticeBoardSearchDTO,
                 configurationService.getMaxNoticeFixedCount());

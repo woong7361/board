@@ -34,12 +34,13 @@ public class FreeBoardController {
     private final FreeBoardService freeBoardService;
 
     /**
-     * 자유게시판 카테고리 가져오기
+     * 자유게시판 카테고리 조회
+     *
      * @return 카테고리 리스트
      */
     @GetMapping("/api/boards/free/category")
-    public ResponseEntity<Map<String, List<String>>> getFreeBoardCategory() {
-        List<String> categories = freeBoardService.getCategory();
+    public ResponseEntity<Map<String, List<String>>> getFreeBoardCategories() {
+        List<String> categories = freeBoardService.getCategories();
 
         return ResponseEntity
                 .ok(Map.of(CATEGORY_PARAM, categories));
@@ -48,9 +49,9 @@ public class FreeBoardController {
     /**
      * 자유게시판 게시글 생성
      *
-     * @param freeBoard 게시글 요청 인자
-     * @param principal 인증된 사용자
-     * @return 게시글 식별자
+     * @param freeBoard 게시글 생성 파라미터
+     * @param principal 인증된 사용자 객체
+     * @return 생성된 게시글 식별자
      */
     @PostMapping("/api/boards/free")
     public ResponseEntity<Map<String, Long>> createFreeBoard(
@@ -59,12 +60,10 @@ public class FreeBoardController {
             @AuthenticationPrincipal Principal<Member> principal
     ) {
         if (files == null) {
-            files = new ArrayList<>();
+            files = List.of();
         }
 
         Member member = principal.getAuthentication();
-        freeBoard.setOwner(member);
-
         Long freeBoardId = freeBoardService.createFreeBoard(freeBoard, files, member.getMemberId());
 
         return ResponseEntity
@@ -75,7 +74,7 @@ public class FreeBoardController {
      * 자유게시판 게시글 조회
      *
      * @param freeBoardId 게시글 식별자
-     * @return 게시글 내용
+     * @return 게시글
      */
     @GetMapping("/api/boards/free/{freeBoardId}")
     public ResponseEntity<FreeBoard> getFreeBoard(
@@ -91,16 +90,14 @@ public class FreeBoardController {
      * 자유게시판 게시글 리스트 조회/검색
      *
      * @param freeBoardSearchDTO 게시글 검색 파라미터
-     * @param pageRequest          페이지네이션 요청 파라미터
-     * @return 게시글 페이지
+     * @param pageRequest 페이지네이션 요청 파라미터
+     * @return 게시글 페이지 정보
      */
     @GetMapping("/api/boards/free")
     public ResponseEntity<PageResponse<FreeBoard>> getFreeBoards(
             @ModelAttribute FreeBoardSearchDTO freeBoardSearchDTO,
             @Valid @ModelAttribute PageRequest pageRequest
     ) {
-        checkSearchRange(freeBoardSearchDTO);
-
         PageResponse<FreeBoard> boards = freeBoardService.getBoardsBySearchParams(freeBoardSearchDTO, pageRequest);
 
         return ResponseEntity.ok(boards);
@@ -109,25 +106,29 @@ public class FreeBoardController {
     /**
      * 자유게시판 게시글 삭제
      *
-     * @return 200 ok
+     * @param freeBoardId 게시글 식별자
+     * @param principal 회원 인증 객체
+     * @return 200 OK
      */
     @DeleteMapping("/api/boards/free/{freeBoardId}")
     public ResponseEntity<Object> deleteFreeBoard(
             @PathVariable Long freeBoardId,
             @AuthenticationPrincipal Principal<Member> principal) {
         Member member = principal.getAuthentication();
-        freeBoardService.checkFreeBoardAuthorization(freeBoardId, member.getMemberId());
 
-        freeBoardService.deleteFreeBoardById(freeBoardId);
+        freeBoardService.deleteFreeBoardById(freeBoardId, member.getMemberId());
         return ResponseEntity.ok().build();
     }
 
     /**
      * 자유게시판 게시글 수정
-     * @param freeBoard 게시글 수정 인자
+     *
+     * @param freeBoard 게시글 수정 파라미터
      * @param freeBoardId 게시글 식별자
+     * @param saveFiles 추가할 파일들
+     * @param deleteFileIds 삭제할 파일 식별자들
      * @param principal 인증된 사용자 정보
-     * @return 200 ok
+     * @return 200 OK
      */
     @PutMapping("/api/boards/free/{freeBoardId}")
     public ResponseEntity<Object> updateBoard(
@@ -135,15 +136,17 @@ public class FreeBoardController {
             @RequestParam(required = false) List<MultipartFile> saveFiles,
             @RequestParam(required = false) List<Long> deleteFileIds,
             @PathVariable Long freeBoardId,
-            @AuthenticationPrincipal Principal<Member> principal) {
-
-        if (saveFiles == null) saveFiles = new ArrayList<>();
-        if (deleteFileIds == null) deleteFileIds = new ArrayList<>();
+            @AuthenticationPrincipal Principal<Member> principal
+    ) {
+        if (saveFiles == null) {
+            saveFiles = List.of();
+        }
+        if (deleteFileIds == null) {
+            deleteFileIds = List.of();
+        }
 
         Member member = principal.getAuthentication();
-        freeBoardService.checkFreeBoardAuthorization(freeBoardId, member.getMemberId());
-
-        freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId);
+        freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId, member.getMemberId());
 
         return ResponseEntity
                 .ok()
@@ -152,6 +155,7 @@ public class FreeBoardController {
 
     /**
      * 관리자 자유게시판 게시글 생성
+     *
      * @param freeBoard 게시글 생성 파라미터
      * @param files 게시글 첨부파일들
      * @param principal 관리자 인증 객체
@@ -168,7 +172,6 @@ public class FreeBoardController {
         }
 
         Member admin = principal.getAuthentication();
-
         Long freeBoardId = freeBoardService.createFreeBoard(freeBoard, files, admin.getMemberId());
 
         return ResponseEntity
@@ -177,8 +180,9 @@ public class FreeBoardController {
 
     /**
      * 관리자 자유게시판 게시글 삭제
-     * @param freeBoardId 자유게시판 게시글 식별자
-     * @return 200 ok
+     *
+     * @param freeBoardId 삭제할 게시글 식별자
+     * @return 200 OK
      */
     @DeleteMapping("/admin/boards/free/{freeBoardId}")
     public ResponseEntity<Object> deleteFreeBoardByAdmin(
@@ -195,44 +199,34 @@ public class FreeBoardController {
 
     /**
      * 관리자 자유게시판 게시글 수정
+     *
      * @param freeBoard 게시글 수정 파라미터
      * @param saveFiles 추가로 저장할 첨부파일들
      * @param deleteFileIds 삭제할 첨부파일 식별자들
      * @param freeBoardId 수정할 자유게시판 게시글 식별자
-     * @return 200 ok
+     * @param principal 관리자 인증 객체
+     * @return 200 OK
      */
     @PutMapping("/admin/boards/free/{freeBoardId}")
     public ResponseEntity<Object> updateFreeBoardByAdmin(
             @Valid @ModelAttribute FreeBoard freeBoard,
             @RequestParam(required = false) List<MultipartFile> saveFiles,
             @RequestParam(required = false) List<Long> deleteFileIds,
-            @PathVariable Long freeBoardId) {
+            @PathVariable Long freeBoardId,
+            @AdminAuthenticationPrincipal Principal<Member> principal) {
         if (saveFiles == null) {
             saveFiles = List.of();
         }
         if (deleteFileIds == null) {
             deleteFileIds = List.of();
         }
+        Member member = principal.getAuthentication();
 
-        freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId);
+        freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId, member.getMemberId());
 
         return ResponseEntity
                 .ok()
                 .build();
-    }
-
-    private static void checkSearchRange(FreeBoardSearchDTO freeBoardSearchDTO) {
-        if (freeBoardSearchDTO.getEndDate() == null || freeBoardSearchDTO.getStartDate() == null) {
-            return;
-        }
-
-        if (isSearchRangeMoreThan1Year(freeBoardSearchDTO)) {
-            throw new BadRequestParamException("최대 날짜 범위는 1년 이하 입니다.");
-        }
-    }
-
-    private static boolean isSearchRangeMoreThan1Year(FreeBoardSearchDTO freeBoardSearchDTO) {
-        return ChronoUnit.YEARS.between(freeBoardSearchDTO.getStartDate(), freeBoardSearchDTO.getEndDate()) > 0;
     }
 }
 

@@ -43,9 +43,6 @@ public class FreeBoardServiceImpl implements FreeBoardService{
         return freeBoard.getFreeBoardId();
     }
 
-    /**
-     * @implNote 게시글의 조회수 +1
-     */
     @Transactional
     @Override
     public FreeBoard getBoardById(Long freeBoardId) {
@@ -58,52 +55,48 @@ public class FreeBoardServiceImpl implements FreeBoardService{
     @Override
     public PageResponse<FreeBoard> getBoardsBySearchParams(FreeBoardSearchDTO freeBoardSearchDTO, PageRequest pageRequest) {
         Integer totalCount = freeBoardRepository.getTotalCountBySearchParam(freeBoardSearchDTO);
-        List<FreeBoard> boards =  freeBoardRepository.findBoardsBySearchParam(freeBoardSearchDTO, pageRequest);
+        List<FreeBoard> boards = freeBoardRepository.findBoardsBySearchParam(freeBoardSearchDTO, pageRequest);
 
         return new PageResponse<>(boards, pageRequest, totalCount);
     }
 
+    /**
+     * @implNote comment를 포함하고 있다면 내용과 제목만 지우고 comment는 남겨둔다.
+     */
     @Transactional
     @Override
-    public void deleteFreeBoardById(Long freeBoardId) {
+    public void deleteFreeBoardById(Long freeBoardId, Long memberId) {
+        checkFreeBoardAuthorization(freeBoardId, memberId);
+
         deleteFiles(freeBoardId);
 
         if (freeBoardRepository.hasCommentByBoardId(freeBoardId)) {
             freeBoardRepository.deleteContentAndTitleByBoardId(freeBoardId);
         } else {
-            attachmentFileRepository.deleteByFreeBoardId(freeBoardId);
+            freeBoardRepository.deleteByBoardId(freeBoardId);
         }
 
     }
 
     @Transactional
     @Override
-    public void updateFreeBoardById(FreeBoard freeBoard, List<MultipartFile> saveFiles, List<Long> deleteFileIds, Long freeBoardId) {
+    public void updateFreeBoardById(FreeBoard freeBoard, List<MultipartFile> saveFiles, List<Long> deleteFileIds, Long freeBoardId, Long memberId) {
+        checkFreeBoardAuthorization(freeBoardId, memberId);
+
         freeBoardRepository.update(freeBoard, freeBoardId);
         saveFiles(saveFiles, freeBoardId);
         deleteFiles(deleteFileIds);
-
-    }
-
-    @Override
-    public void checkFreeBoardAuthorization(Long freeBoardId, Long memberId) {
-        freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId)
-                .orElseThrow(() -> new AuthorizationException(AUTHORIZATION_EXCEPTION_MESSAGE));
     }
 
     @Override
     @Transactional
     public void deleteFreeBoardByAdmin(Long freeBoardId, Long memberId) {
-        freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId)
-                .ifPresent((fb) -> {
-                            deleteFiles(freeBoardId);
-                            freeBoardRepository.deleteByAdmin(freeBoardId);
-                        }
-                );
+        deleteFiles(freeBoardId);
+        freeBoardRepository.deleteByAdmin(freeBoardId);
     }
 
     @Override
-    public List<String> getCategory() {
+    public List<String> getCategories() {
         return freeBoardRepository.getCategory();
     }
 
@@ -132,7 +125,7 @@ public class FreeBoardServiceImpl implements FreeBoardService{
 
         AttachmentFile attachmentFile = AttachmentFile.builder()
                 .originalName(multipartFile.getOriginalFilename())
-                .physicalName(fileUtil.getFileName(savedPath))
+                .physicalName(fileUtil.getFileNameFromPath(savedPath))
                 .path(fileUtil.getFileSubPath(savedPath))
                 .extension(fileUtil.getExtension(savedPath))
                 .build();
@@ -150,7 +143,7 @@ public class FreeBoardServiceImpl implements FreeBoardService{
         attachmentFileRepository.findByFileId(fileId)
                 .ifPresent((file) -> {
                     attachmentFileRepository.deleteByFileId(fileId);
-                    physicalFileRepository.delete(fileUtil.getFileFullPath(file));
+                    physicalFileRepository.delete(fileId);
                 });
     }
 
@@ -160,6 +153,11 @@ public class FreeBoardServiceImpl implements FreeBoardService{
                 .map(af -> af.getFileId())
                 .collect(Collectors.toList());
         deleteFiles(fileIds);
+    }
+
+    private void checkFreeBoardAuthorization(Long freeBoardId, Long memberId) {
+        freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId)
+                .orElseThrow(() -> new AuthorizationException(AUTHORIZATION_EXCEPTION_MESSAGE));
     }
 }
 

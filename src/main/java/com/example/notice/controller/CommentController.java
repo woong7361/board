@@ -17,7 +17,7 @@ import java.util.Map;
 import static com.example.notice.constant.ResponseConstant.COMMENTS_PARAM;
 
 /**
- * 댓글 컨트롤러 클래스
+ * 댓글 컨트롤러
  */
 @RestController
 @RequiredArgsConstructor
@@ -27,11 +27,12 @@ public class CommentController {
 
 
     /**
-     * 댓글 생성 엔드포인트
+     * 댓글 생성
+     *
      * @param freeBoardId 댓글 부모 게시글 식별자
      * @param principal 인증된 회원 객체
-     * @param comment 댓글 생성 인자
-     * @return 200 ok
+     * @param comment 댓글 생성 파라미터
+     * @return 200 OK
      */
     @PostMapping("/api/boards/free/{freeBoardId}/comments")
     public ResponseEntity<Object> createComment(
@@ -40,6 +41,7 @@ public class CommentController {
             @Valid @RequestBody Comment comment
     ) {
         Member member = principal.getAuthentication();
+
         commentService.createComment(comment, freeBoardId, member.getMemberId());
 
         return ResponseEntity.ok()
@@ -47,7 +49,8 @@ public class CommentController {
     }
 
     /**
-     * 댓글 조회 엔드포인트
+     * 게시글의 댓글들 조회
+     *
      * @param freeBoardId 댓글 부모 게시글 식별자
      * @return 게시글에 속한 댓글들
      */
@@ -62,10 +65,11 @@ public class CommentController {
     }
 
     /**
-     * 댓글 삭제 엔드포인트
+     * 댓글 삭제
+     *
      * @param commentId 댓글 부모 게시글 식별자
-     * @param principal 댓글 삭제를 요청한 사용자 식별자
-     * @return 200 ok
+     * @param principal 댓글 삭제를 요청한 사용자 인증 객체
+     * @return 200 OK
      */
     @DeleteMapping("/api/boards/free/comments/{commentId}")
     public ResponseEntity<Object> deleteComment(
@@ -73,19 +77,19 @@ public class CommentController {
             @AuthenticationPrincipal Principal<Member> principal
     ) {
         Member member = principal.getAuthentication();
-        commentService.checkAuthorization(commentId, member.getMemberId());
 
-        commentService.delete(commentId);
+        commentService.delete(commentId, member.getMemberId());
 
         return ResponseEntity.ok().build();
     }
 
     /**
-     * 관리자 댓글 생성 엔드포인트
+     * 관리자 댓글 생성
+     *
      * @param freeBoardId 댓글 부모 게시글 식별자
      * @param principal 관리자 인증 객체
-     * @param comment 댓글 생성 인자
-     * @return 200 ok
+     * @param comment 댓글 생성 파라미터
+     * @return 200 OK
      */
     @PostMapping("/admin/boards/free/{freeBoardId}/comments")
     public ResponseEntity<Object> createCommentByAdmin(
@@ -101,9 +105,10 @@ public class CommentController {
     }
 
     /**
-     * 관리자 댓글 삭제 엔드포인트
-     * @param commentId 댓글 부모 게시글 식별자
-     * @return 200 ok
+     * 관리자 댓글 삭제
+     *
+     * @param commentId 댓글 식별자
+     * @return 200 OK
      */
     @DeleteMapping("/admin/boards/free/comments/{commentId}")
     public ResponseEntity<Object> deleteCommentByAdmin(

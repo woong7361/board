@@ -25,21 +25,20 @@ import static com.example.notice.constant.ResponseConstant.INQUIRE_BOARD_ID_PARA
 @RestController
 @RequiredArgsConstructor
 public class InquireBoardController {
-
-
     private final InquireBoardService inquireBoardService;
 
     /**
-     * 문의 게시판 게시글 생성
+     * 문의 게시글 생성
      *
-     * @param inquireBoard 문의 게시판 게시글 파라미터
-     * @param principal    게시글 생성자 인증 객체
-     * @return 문의 게시판 게시글 식별자
+     * @param inquireBoard 문의 게시글 생성 파라미터
+     * @param principal 회원 인증 객체
+     * @return 생성된 문의 게시글 식별자
      */
     @PostMapping("/api/boards/inquire")
     public ResponseEntity<Map<String, Long>> createInquireBoard(
             @Valid @RequestBody InquireBoard inquireBoard,
-            @AuthenticationPrincipal Principal<Member> principal) {
+            @AuthenticationPrincipal Principal<Member> principal
+    ) {
         Member member = principal.getAuthentication();
         Long inquireBoardId = inquireBoardService.createBoard(inquireBoard, member.getMemberId());
 
@@ -58,27 +57,27 @@ public class InquireBoardController {
     @GetMapping("/api/boards/inquire")
     public ResponseEntity<PageResponse<InquireBoardSearchResponseDTO>> searchInquireBoard(
             @ModelAttribute InquireBoardSearchDTO inquireBoardSearchDTO,
-            @ModelAttribute PageRequest pageRequest) {
-
-        PageResponse<InquireBoardSearchResponseDTO> inquireBoards =
+            @ModelAttribute PageRequest pageRequest
+    ) {
+        PageResponse<InquireBoardSearchResponseDTO> searchResults =
                 inquireBoardService.searchInquireBoard(inquireBoardSearchDTO, pageRequest);
 
         return ResponseEntity
-                .ok(inquireBoards);
+                .ok(searchResults);
     }
 
     /**
-     * 문의 게시판 게시글 조회
+     * 문의 게시글 조회
      *
-     * @param inquireBoardId 문의 게시판 게시글 식별자
-     * @return 해당하는 게시글의 내용
+     * @param inquireBoardId 문의 게시글 식별자
+     * @return 문의 게시글
      */
     @GetMapping("/api/boards/inquire/{inquireBoardId}")
     public ResponseEntity<InquireBoardResponseDTO> getInquireBoard(
             @PathVariable Long inquireBoardId,
-            @AuthenticationPrincipal Principal<Member> principal) {
+            @AuthenticationPrincipal Principal<Member> principal
+    ) {
         Member member = principal.getAuthentication();
-
         InquireBoardResponseDTO inquireBoard = inquireBoardService.getBoardById(inquireBoardId, member.getMemberId());
 
         return ResponseEntity
@@ -86,17 +85,19 @@ public class InquireBoardController {
     }
 
     /**
-     * 문의 게시판 게시글 수정
-     * @param inquireBoard 문의 게시판 게시글 수정 요청 파라미터
-     * @param inquireBoardId 문의 게시판 게시글 식별자
-     * @param principal 요청하는 회원 인증 객체
-     * @return 200 ok
+     * 문의 게시글 수정
+     *
+     * @param inquireBoard 문의 게시글 수정 요청 파라미터
+     * @param inquireBoardId 문의 게시글 식별자
+     * @param principal 수정 요청하는 회원 인증 객체
+     * @return 200 OK
      */
     @PutMapping("/api/boards/inquire/{inquireBoardId}")
     public ResponseEntity<Object> updateInquireBoard(
             @Valid @RequestBody InquireBoard inquireBoard,
             @PathVariable Long inquireBoardId,
-            @AuthenticationPrincipal Principal<Member> principal) {
+            @AuthenticationPrincipal Principal<Member> principal
+    ) {
         Member member = principal.getAuthentication();
         inquireBoardService.updateById(inquireBoard, inquireBoardId, member.getMemberId());
 
@@ -106,15 +107,17 @@ public class InquireBoardController {
     }
 
     /**
-     * 문의 게시판 게시글 삭제
-     * @param inquireBoardId 삭제할 문의 게시판 게시글 식별자
-     * @param principal 요청하는 회원 인증 객체
-     * @return 200 ok
+     * 문의 게시글 삭제
+     *
+     * @param inquireBoardId 문의 게시글 식별자
+     * @param principal 삭제 요청하는 회원 인증 객체
+     * @return 200 OK
      */
     @DeleteMapping("/api/boards/inquire/{inquireBoardId}")
     public ResponseEntity<Object> deleteInquireBoard(
             @PathVariable Long inquireBoardId,
-            @AuthenticationPrincipal Principal<Member> principal) {
+            @AuthenticationPrincipal Principal<Member> principal
+    ) {
         Member member = principal.getAuthentication();
         inquireBoardService.deleteById(inquireBoardId, member.getMemberId());
 
@@ -124,13 +127,15 @@ public class InquireBoardController {
     }
 
     /**
-     * 관리자의 문의 게시판 게시글 삭제
-     * @param inquireBoardId 삭제할 문의 게시판 게시글 식별자
-     * @return 200 ok
+     * 관리자의 문의 게시글 삭제
+     *
+     * @param inquireBoardId 문의 게시글 식별자
+     * @return 200 OK
      */
     @DeleteMapping("/admin/boards/inquire/{inquireBoardId}")
     public ResponseEntity<Object> deleteInquireBoard(
-            @PathVariable Long inquireBoardId) {
+            @PathVariable Long inquireBoardId
+    ) {
         inquireBoardService.deleteByAdmin(inquireBoardId);
 
         return ResponseEntity
@@ -139,14 +144,15 @@ public class InquireBoardController {
     }
 
     /**
-     * 관리자의 문의 게시판 게시글 조회
+     * 관리자의 문의 게시글 조회
      *
-     * @param inquireBoardId 문의 게시판 게시글 식별자
-     * @return 해당하는 게시글의 내용
+     * @param inquireBoardId 문의 게시글 식별자
+     * @return 문의 게시글
      */
     @GetMapping("/admin/boards/inquire/{inquireBoardId}")
     public ResponseEntity<InquireBoardResponseDTO> getInquireBoardByAdmin(
-            @PathVariable Long inquireBoardId) {
+            @PathVariable Long inquireBoardId
+    ) {
         InquireBoardResponseDTO inquireBoard = inquireBoardService.getBoardByAdmin(inquireBoardId);
 
         return ResponseEntity

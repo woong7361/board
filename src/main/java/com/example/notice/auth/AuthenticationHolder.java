@@ -13,6 +13,7 @@ public class AuthenticationHolder {
 
     /**
      * 인증된 회원 주입
+     *
      * @param principal 인증된 회원
      */
     public static void setPrincipal(Principal principal) {
@@ -22,6 +23,7 @@ public class AuthenticationHolder {
 
     /**
      * 인증된 회원 가져오기
+     *
      * @return 인증된 회원
      */
     public static Principal getPrincipal() {
@@ -30,6 +32,7 @@ public class AuthenticationHolder {
 
     /**
      * 회원 권한 가져오기
+     *
      * @return 회원 권한
      */
     public static AuthorizationRole getRole() {

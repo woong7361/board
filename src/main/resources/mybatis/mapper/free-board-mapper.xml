@@ -32,6 +32,33 @@
         </where>
     </sql>
 
+    <sql id="searchOrder">
+        <choose>
+            <when test="page.orderColumn == 'created_at' and page.orderType == 'DESC'">
+                ORDER BY fb.created_at DESC
+            </when>
+            <when test="page.orderColumn == 'created_at' and page.orderType == 'ASC'">
+                ORDER BY fb.created_at ASC
+            </when>
+            <when test="page.orderColumn == 'modified_at' and page.orderType == 'DESC'">
+                ORDER BY fb.modified_at DESC
+            </when>
+            <when test="page.orderColumn == 'modified_at' and page.orderType == 'ASC'">
+                ORDER BY fb.modified_at ASC
+            </when>
+            <when test="page.orderColumn == 'views' and page.orderType == 'DESC'">
+                ORDER BY fb.views DESC
+            </when>
+            <when test="page.orderColumn == 'views' and page.orderType == 'ASC'">
+                ORDER BY fb.views ASC
+            </when>
+            <otherwise>
+                ORDER BY fb.created_at DESC
+            </otherwise>
+        </choose>
+    </sql>
+
+
     <insert id="save" useGeneratedKeys="true" keyProperty="freeBoard.freeBoardId">
         INSERT INTO free_board
         (
@@ -81,14 +108,8 @@
             LEFT JOIN category ct on fb.category_id = ct.category_id
             LEFT JOIN member m on m.member_id = fb.member_id
         <include refid="searchCondition"/>
-        <choose>
-            <when test="page.orderColumn != null and page.orderType != null">
-                ORDER BY ${page.orderColumn} ${page.orderType}
-            </when>
-            <otherwise>
-                ORDER BY fb.created_at DESC
-            </otherwise>
-        </choose>
+        <include refid="searchOrder"/>
+
         LIMIT #{page.offset}, #{page.size}
     </select>
 
@@ -146,7 +167,8 @@
         SET
             title = '[관리자에 의해 삭제된 게시글입니다.]',
             content = ' ',
-            modified_at = NOW()
+            modified_at = NOW(),
+            member_id = NULL
         WHERE free_board_id = #{freeBoardId}
     </update>
 

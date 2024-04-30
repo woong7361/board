@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * 공용 exception response
+ * 공용 exception response 클래스
  */
 @Builder
 @Getter
