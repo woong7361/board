@@ -45,7 +45,8 @@ public class HardFileRepository implements PhysicalFileRepository{
         // interceptor? filter? 어디서 찍어야하는가? 혹은 rollback로그를 포함해야 하는가?
         // 실제 파일을 삭제하면 안되는가? rollback되면? 복구해야하는데?
         // 그냥 삭제되었다고 로그만 찍고 나중에 로그따라서 지우는게 좋아보이는데?
-        // fullpath 로깅
+        // fullpath 로깅 or 간단하게 fk 지우고 file_id logging
+        // throw 던지고 filter에서 logging? 그 이후 제어 불가능...
     }
 
     @Override

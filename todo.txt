@@ -1,28 +1,28 @@
 해야할일
 - interceptor 인증 인가 부분으로 나눌것인가? -> 완료
 
-- category 얻는 api 작성 해야함
+- category 얻는 api 작성 해야함 -> 완료
 
 - 기본적으로 수정일시로 정렬 하기
+
+- allow extension 메시지 프론트에서 어떻게 할지 
+	- 프론트에 허용되는 확장자 표기 필요
 
 - restdocs 모든 API 작성
 	- API는 작성 완료
 	- type mismatch 되는 애들 수정해주기
 	attribute 해결 해야함... 어떻게 하냐
-	
-- service coverage 높이기
 
 memberId 에 unique 박아야함
 
 검색 최대 기간? 그냥 없애버릴까 생각중
 
+삭제시 회원 FK까지 삭제하기 - 계속 수정 가능하기 때문에
 
 리팩토링
-- 먼저 authorization check하는 부분 없애기 (통일감)
-    - freeBoard에 존재
 
-- filter 부분 삭제하기
-    - test부분 interceptor로 이식하면서
+삭제시 다시 수정이 가능하다는 문제점? 
+ => 필드를 하나 추가해야하는 대수술 
 
 
 - 관리자가 다른 회원 게시글 삭제 수정? 이름 바꿔줘야할듯 ToAdmin? ByAdmin?
@@ -30,23 +30,19 @@ memberId 에 unique 박아야함
 	패턴을 쓴다면 게시글 삭제시 삭제 실패한 파일 log로 남겨 나중에 삭제할 수 있도록 도와주기...
 
 --- 테스트 ---
-- test용 config 작성
-
-- constraint -> gradlew clean build 빌드로 만들어지나 테스트해보기
 
 - 테스트 커버리지 향상
+	- disk repository (추가적인 수정 후 test 작성)
+	
+- mocking library로 테스트 수정하기 
+
+- constraint -> gradlew clean build 빌드로 만들어지나 테스트해보기
 
 - 검색 정렬조건 document에 추가해주어야함
 	단 검색조건 리팩터링이 우선시 될듯
 	constraint도 필요하고
 	
 - 테스트 클래스의 이름 통일화 하기 끝에 ControllerTest같은거 붙이던가 빼던가 
-
-   
-- 설정 파일 나누기
-	로컬 & 배포
-
-
 
 
 후순위 
@@ -61,6 +57,9 @@ memberId 에 unique 박아야함
 	
 - 관리자 인증 객체와 회원 인증객체를 따로 가져가고있는데 같이 가져가는것도 나쁘지 않을수도?
 
+java -jar notice-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
 
+entity가 없을때를 항상 생각해야하는가? ex. 삭제 
+ 
 
 
