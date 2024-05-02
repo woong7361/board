@@ -6,11 +6,13 @@ import com.example.notice.exception.AuthorizationException;
 import com.example.notice.exception.BadRequestParamException;
 import com.example.notice.exception.EntityNotExistException;
 import com.example.notice.restdocs.RestDocsHelper;
+import com.example.notice.service.FileService;
 import com.example.notice.service.FreeBoardService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,6 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class JavaControllerAdviceTest extends RestDocsHelper {
     @MockBean
     FreeBoardService freeBoardService;
+    @MockBean
+    FileService fileService;
 
 
     private final String GET_FREE_BOARD_URI = "/api/boards/free/{freeBoardId}";

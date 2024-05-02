@@ -34,13 +34,12 @@ import java.util.stream.Stream;
 
 import static com.example.notice.constant.ResponseConstant.FIXED_NOTICE_BOARDS_PARAM;
 import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
-import static com.example.notice.mock.repository.MockNoticeBoardRepository.NO_FK_NOTICE_BOARD;
+import static com.example.notice.mock.dummy.TestData.getSavedNoticeBoard;
 import static com.example.notice.mock.util.LoginTestUtil.getMockAdminSession;
 import static com.example.notice.mock.util.LoginTestUtil.getMockSessionCookie;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -289,10 +288,12 @@ class NoticeBoardControllerTest extends RestDocsHelper {
             params.add("orderColumn", "created_at");
             params.add("orderType", "modified_at");
 
+            NoticeBoard noticeBoard = getSavedNoticeBoard(453152354L);
+
             //when
             int totalCount = 123;
             PageRequest pageRequest = new PageRequest(5, 0, null, null);
-            List<NoticeBoard> noticeBoards = List.of(NO_FK_NOTICE_BOARD);
+            List<NoticeBoard> noticeBoards = List.of(noticeBoard);
             Mockito.when(noticeBoardService.getNoneFixedNoticeBoardSearch(any(NoticeBoardSearchDTO.class), any(PageRequest.class)))
                     .thenReturn(
                             new PageResponse<>(
@@ -303,20 +304,20 @@ class NoticeBoardControllerTest extends RestDocsHelper {
             ResultActions action = mockMvc.perform(MockMvcRequestBuilders.get(GET_NONE_FIXED_NOTICE_BOARDS_URI)
                     .params(params));
 
-            //then
+            //thenW
             action
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].noticeBoardId".formatted("contents"))
-                            .value(NO_FK_NOTICE_BOARD.getNoticeBoardId()))
+                            .value(noticeBoard.getNoticeBoardId()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].category".formatted("contents"))
-                            .value(NO_FK_NOTICE_BOARD.getCategory()))
+                            .value(noticeBoard.getCategory()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].title".formatted("contents"))
-                            .value(NO_FK_NOTICE_BOARD.getTitle()))
+                            .value(noticeBoard.getTitle()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].views".formatted("contents"))
-                            .value(NO_FK_NOTICE_BOARD.getViews()))
+                            .value(noticeBoard.getViews()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].memberName".formatted("contents"))
-                            .value(NO_FK_NOTICE_BOARD.getMemberName()))
+                            .value(noticeBoard.getMemberName()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.%s[0].memberId".formatted("contents"))
-                            .value(NO_FK_NOTICE_BOARD.getMemberId()))
+                            .value(noticeBoard.getMemberId()))
                     .andExpect(MockMvcResultMatchers.status().isOk())
 
                     .andDo(restDocs.document(
@@ -363,10 +364,12 @@ class NoticeBoardControllerTest extends RestDocsHelper {
             params.add("size", "5");
             params.add("currentPage", "0");
 
+            NoticeBoard noticeBoard = getSavedNoticeBoard(453152354L);
+
             //when
             int totalCount = 123;
             PageRequest pageRequest = new PageRequest(5, 0, null, null);
-            List<NoticeBoard> noticeBoards = List.of(NO_FK_NOTICE_BOARD);
+            List<NoticeBoard> noticeBoards = List.of(noticeBoard);
             Mockito.when(noticeBoardService.getNoneFixedNoticeBoardSearch(any(NoticeBoardSearchDTO.class), any(PageRequest.class)))
                     .thenReturn(
                             new PageResponse<>(

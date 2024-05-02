@@ -3,12 +3,14 @@ package com.example.notice.controller;
 import com.example.notice.auth.resolvehandler.AdminAuthenticationPrincipal;
 import com.example.notice.auth.resolvehandler.AuthenticationPrincipal;
 import com.example.notice.auth.principal.Principal;
+import com.example.notice.dto.common.SuccessesAndFails;
 import com.example.notice.dto.request.FreeBoardSearchDTO;
-import com.example.notice.exception.BadRequestParamException;
+import com.example.notice.dto.response.FreeBoardResponseDTO;
 import com.example.notice.page.PageRequest;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.entity.Member;
 import com.example.notice.page.PageResponse;
+import com.example.notice.service.FileService;
 import com.example.notice.service.FreeBoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +32,7 @@ import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
 public class FreeBoardController {
 
     private final FreeBoardService freeBoardService;
+    private final FileService fileService;
 
     /**
      * 자유게시판 카테고리 조회
@@ -54,7 +55,7 @@ public class FreeBoardController {
      * @return 생성된 게시글 식별자
      */
     @PostMapping("/api/boards/free")
-    public ResponseEntity<Map<String, Long>> createFreeBoard(
+    public ResponseEntity<FreeBoardResponseDTO> createFreeBoard(
             @Valid @ModelAttribute FreeBoard freeBoard,
             @RequestParam(required = false) List<MultipartFile> files,
             @AuthenticationPrincipal Principal<Member> principal
@@ -64,10 +65,16 @@ public class FreeBoardController {
         }
 
         Member member = principal.getAuthentication();
-        Long freeBoardId = freeBoardService.createFreeBoard(freeBoard, files, member.getMemberId());
+        Long freeBoardId = freeBoardService.createFreeBoard(freeBoard, member.getMemberId());
+        SuccessesAndFails<String> fileSaveResults = fileService.saveFiles(files, freeBoardId);
+
+        FreeBoardResponseDTO result = FreeBoardResponseDTO.builder()
+                .freeBoardId(freeBoardId)
+                .fileResult(fileSaveResults)
+                .build();
 
         return ResponseEntity
-                .ok(Map.of(FREE_BOARD_ID_PARAM, freeBoardId));
+                .ok(result);
     }
 
     /**
@@ -116,7 +123,10 @@ public class FreeBoardController {
             @AuthenticationPrincipal Principal<Member> principal) {
         Member member = principal.getAuthentication();
 
+        fileService.deleteFileByFreeBoardId(freeBoardId);
         freeBoardService.deleteFreeBoardById(freeBoardId, member.getMemberId());
+
+
         return ResponseEntity.ok().build();
     }
 
@@ -144,25 +154,31 @@ public class FreeBoardController {
         if (deleteFileIds == null) {
             deleteFileIds = List.of();
         }
-
         Member member = principal.getAuthentication();
-        freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId, member.getMemberId());
+
+        fileService.deleteFileByFileIds(deleteFileIds);
+        SuccessesAndFails<String> fileSaveResults = fileService.saveFiles(saveFiles, freeBoardId);
+        freeBoardService.updateFreeBoardById(freeBoard, freeBoardId, member.getMemberId());
+
+        FreeBoardResponseDTO result = FreeBoardResponseDTO.builder()
+                .freeBoardId(freeBoardId)
+                .fileResult(fileSaveResults)
+                .build();
 
         return ResponseEntity
-                .ok()
-                .build();
+                .ok(result);
     }
 
     /**
      * 관리자 자유게시판 게시글 생성
      *
      * @param freeBoard 게시글 생성 파라미터
-     * @param files 게시글 첨부파일들
+     * @param files     게시글 첨부파일들
      * @param principal 관리자 인증 객체
      * @return 생성된 자유게시판 식별자
      */
     @PostMapping("/admin/boards/free")
-    public ResponseEntity<Map<String, Long>> createFreeBoardByAdmin(
+    public ResponseEntity<FreeBoardResponseDTO> createFreeBoardByAdmin(
             @Valid @ModelAttribute FreeBoard freeBoard,
             @RequestParam(required = false) List<MultipartFile> files,
             @AdminAuthenticationPrincipal Principal<Member> principal
@@ -172,10 +188,16 @@ public class FreeBoardController {
         }
 
         Member admin = principal.getAuthentication();
-        Long freeBoardId = freeBoardService.createFreeBoard(freeBoard, files, admin.getMemberId());
+        Long freeBoardId = freeBoardService.createFreeBoard(freeBoard, admin.getMemberId());
+        SuccessesAndFails<String> fileSaveResults = fileService.saveFiles(files, freeBoardId);
+
+        FreeBoardResponseDTO result = FreeBoardResponseDTO.builder()
+                .freeBoardId(freeBoardId)
+                .fileResult(fileSaveResults)
+                .build();
 
         return ResponseEntity
-                .ok(Map.of(FREE_BOARD_ID_PARAM, freeBoardId));
+                .ok(result);
     }
 
     /**
@@ -190,6 +212,7 @@ public class FreeBoardController {
             @AdminAuthenticationPrincipal Principal<Member> principal) {
         Member admin = principal.getAuthentication();
 
+        fileService.deleteFileByFreeBoardId(freeBoardId);
         freeBoardService.deleteFreeBoardByAdmin(freeBoardId, admin.getMemberId());
 
         return ResponseEntity
@@ -208,7 +231,7 @@ public class FreeBoardController {
      * @return 200 OK
      */
     @PutMapping("/admin/boards/free/{freeBoardId}")
-    public ResponseEntity<Object> updateFreeBoardByAdmin(
+    public ResponseEntity<FreeBoardResponseDTO> updateFreeBoardByAdmin(
             @Valid @ModelAttribute FreeBoard freeBoard,
             @RequestParam(required = false) List<MultipartFile> saveFiles,
             @RequestParam(required = false) List<Long> deleteFileIds,
@@ -222,11 +245,17 @@ public class FreeBoardController {
         }
         Member member = principal.getAuthentication();
 
-        freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId, member.getMemberId());
+        fileService.deleteFileByFileIds(deleteFileIds);
+        SuccessesAndFails<String> fileSaveResults = fileService.saveFiles(saveFiles, freeBoardId);
+        freeBoardService.updateFreeBoardById(freeBoard, freeBoardId, member.getMemberId());
+
+        FreeBoardResponseDTO result = FreeBoardResponseDTO.builder()
+                .freeBoardId(freeBoardId)
+                .fileResult(fileSaveResults)
+                .build();
 
         return ResponseEntity
-                .ok()
-                .build();
+                .ok(result);
     }
 }
 

@@ -1,22 +1,29 @@
 package com.example.notice.service;
 
 
+import com.example.notice.auth.provider.AuthProvider;
 import com.example.notice.entity.Member;
 import com.example.notice.exception.BadRequestParamException;
 import com.example.notice.exception.MemberNotExistException;
-import com.example.notice.mock.auth.MockAuthProvider;
-import com.example.notice.mock.database.MemoryDataBase;
-import com.example.notice.mock.repository.MockMemberRepository;
+import com.example.notice.repository.MemberRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AuthServiceTest {
-    private AuthService authService = new AuthServiceImpl(new MockMemberRepository(), new MockAuthProvider());
+
+    MemberRepository memberRepository = Mockito.mock(MemberRepository.class);
+    AuthProvider authProvider = Mockito.mock(AuthProvider.class);
+    private AuthService authService = new AuthServiceImpl(
+            memberRepository,
+            authProvider);
 
     @Nested
     @DisplayName("로그인 서비스 테스트")
@@ -25,37 +32,42 @@ class AuthServiceTest {
         @Test
         public void success() throws Exception {
             //given
-            Member member = MockMemberRepository.SAVED_MEMBER;
+            Member member = Member.builder()
+                    .loginId("loginId")
+                    .password("password")
+                    .build();
+
+            String resultString = "result String";
+
             //when
+            Mockito.when(memberRepository.findMemberByLoginIdAndPassword(member))
+                    .thenReturn(Optional.of(member));
+
+            Mockito.when(authProvider.createAuthentication(member))
+                    .thenReturn(resultString);
+
             String authentication = authService.userAuthentication(member);
+
             //then
-            assertThat(authentication).isNotNull();
+            Assertions.assertThat(authentication).isEqualTo(resultString);
         }
 
-        @DisplayName("회원가입된 회원이 아닐때 - (저장된 아이디가 없을때)")
+        @DisplayName("해당하는 회원이 없을때")
         @Test
-        public void notExistLoginId() throws Exception{
+        public void notExistMember() throws Exception{
             //given
             Member member = Member.builder()
                     .loginId("id123")
                     .password("pw123")
                     .build();
-            //when
-            //then
-            assertThatThrownBy(() -> authService.userAuthentication(member)).isInstanceOf(MemberNotExistException.class);
-        }
 
-        @DisplayName("회원의 비밀번호가 불일치 할때")
-        @Test
-        public void doesNotMatchPassword() throws Exception{
-            //given
-            Member member = Member.builder()
-                    .loginId(MockMemberRepository.SAVED_MEMBER.getLoginId())
-                    .password("pw123")
-                    .build();
             //when
+            Mockito.when(memberRepository.findMemberByLoginIdAndPassword(member))
+                    .thenReturn(Optional.empty());
+
             //then
-            assertThatThrownBy(() -> authService.userAuthentication(member)).isInstanceOf(MemberNotExistException.class);
+            assertThatThrownBy(() -> authService.userAuthentication(member))
+                    .isInstanceOf(MemberNotExistException.class);
         }
     }
 
@@ -69,25 +81,26 @@ class AuthServiceTest {
             String loginId = "loginId";
 
             //when
+            Mockito.when(memberRepository.findMemberAndAdminByLoginId(loginId))
+                    .thenReturn(Optional.empty());
+
             //then
             authService.checkDuplicateLoginId(loginId);
         }
 
         @DisplayName("중복되는 아이디가 존재할때")
         @Test
-        public void test() throws Exception{
+        public void duplicateLoginId() throws Exception{
             //given
-            Member member = Member.builder()
-                    .loginId("duplicateLoginId")
-                    .build();
+            String duplicateLoginId = "loginId";
 
-            MemoryDataBase.MEMBER_STORAGE
-                    .add(member);
             //when
-            //then
-            Assertions.assertThatThrownBy(() -> authService.checkDuplicateLoginId(member.getLoginId()))
-                    .isInstanceOf(BadRequestParamException.class);
+            Mockito.when(memberRepository.findMemberAndAdminByLoginId(duplicateLoginId))
+                    .thenReturn(Optional.of(Member.builder().build()));
 
+            //then
+            Assertions.assertThatThrownBy(() -> authService.checkDuplicateLoginId(duplicateLoginId))
+                    .isInstanceOf(BadRequestParamException.class);
         }
     }
 
@@ -98,9 +111,35 @@ class AuthServiceTest {
         @Test
         public void success() throws Exception {
             //given
+            Member adminMember = Member.builder()
+                    .loginId("loginId")
+                    .password("password")
+                    .build();
+
             //when
-            authService.adminAuthentication(MockMemberRepository.SAVED_ADMIN_MEMBER);
+            Mockito.when(memberRepository.findAdminMemberByLoginIdAndPassword(adminMember))
+                    .thenReturn(Optional.of(adminMember));
+
             //then
+            authService.adminAuthentication(adminMember);
+        }
+
+        @DisplayName("해당하는 관리자가 없을때")
+        @Test
+        public void notExistAdminMember() throws Exception {
+            //given
+            Member adminMember = Member.builder()
+                    .loginId("loginId")
+                    .password("password")
+                    .build();
+
+            //when
+            Mockito.when(memberRepository.findAdminMemberByLoginIdAndPassword(adminMember))
+                    .thenReturn(Optional.empty());
+
+            //then
+            Assertions.assertThatThrownBy(() -> authService.adminAuthentication(adminMember))
+                    .isInstanceOf(MemberNotExistException.class);
         }
     }
 }

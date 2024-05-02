@@ -3,24 +3,22 @@ package com.example.notice.service;
 import com.example.notice.entity.Member;
 import com.example.notice.entity.MemberRole;
 import com.example.notice.exception.BadRequestParamException;
-import com.example.notice.mock.database.MemoryDataBase;
-import com.example.notice.mock.repository.MockMemberRepository;
+import com.example.notice.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.*;
 
 
 class MemberServiceTest {
-    MemberService memberService = new MemberServiceImpl(new MockMemberRepository());
+
+    MemberRepository memberRepository = Mockito.mock(MemberRepository.class);
+    MemberService memberService = new MemberServiceImpl(memberRepository);
 
 
-    @BeforeEach
-    public void clearRepository() {
-        MemoryDataBase.initRepository();
-    }
     @Nested
     @DisplayName("일반(USER) 회원 생성 서비스 테스트")
     public class CreateMemberTest {
@@ -33,8 +31,13 @@ class MemberServiceTest {
                     .password("bdf123")
                     .name("name")
                     .build();
+
             //when
+            Mockito.when(memberRepository.isDuplicateMemberLoginId(member.getLoginId()))
+                    .thenReturn(false);
+
             memberService.createUserRoleMember(member);
+
             //then
             assertThat(member.getRole()).isEqualTo(MemberRole.USER);
         }
@@ -46,11 +49,14 @@ class MemberServiceTest {
             Member member = Member.builder()
                     .loginId("abc123")
                     .password("bdf123")
-                    .name(MockMemberRepository.SAVED_MEMBER.getName())
+                    .name("name")
                     .build();
+
             //when
-            memberService.createUserRoleMember(member);
-            // then
+            Mockito.when(memberRepository.isDuplicateMemberLoginId(member.getLoginId()))
+                    .thenReturn(true);
+
+            //then
             assertThatThrownBy(() -> memberService.createUserRoleMember(member))
                     .isInstanceOf(BadRequestParamException.class);
         }

@@ -2,6 +2,7 @@ package com.example.notice.entity;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class InquireAnswer {
     @Getter(AccessLevel.PRIVATE)
     private Member member;
 
+    @Size(min = 1, max = 1000)
     @NotBlank
     private String answer;
 

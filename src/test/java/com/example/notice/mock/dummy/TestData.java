@@ -86,4 +86,26 @@ public class TestData {
     }
 
 
+    public static Comment getSavedComment(Long commentId, Long freeBoardId, Long memberId) {
+        return Comment.builder()
+                .commentId(commentId)
+                .freeBoardId(freeBoardId)
+                .content("content")
+                .createdAt(LocalDateTime.now().minusMonths(7L))
+                .modifiedAt(LocalDateTime.now())
+                .memberId(memberId)
+                .memberName("ino")
+                .build();
+    }
+
+
+    public static Comment getSavedComment(Long commentId) {
+        return getSavedComment(commentId, 874564154L, 5641234354L);
+    }
+
+    public static Comment getSavedComment() {
+        return getSavedComment(8543456345L, 874564154L, 5641234354L);
+    }
+
+
 }

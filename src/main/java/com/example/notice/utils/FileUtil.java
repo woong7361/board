@@ -30,7 +30,7 @@ public class FileUtil {
      */
     public void checkAllowFileExtension(MultipartFile file) throws FileSaveCheckedException {
         if (isNotAllowedExtensionFile(file)) {
-            throw new FileSaveCheckedException(NOT_ALLOWED_FILE_EXTENSION_MESSAGE, file.getOriginalFilename());
+            throw new FileSaveCheckedException(NOT_ALLOWED_FILE_EXTENSION_MESSAGE);
         }
     }
 

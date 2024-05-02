@@ -29,7 +29,7 @@ public class DiskFileRepository implements PhysicalFileRepository{
             outputStream.write(bytes);
         } catch (IOException e) {
             log.info("file save failed  fileName: {},  stackTrace{}", originalFileName, e);
-            throw new FileSaveCheckedException(e.getMessage(), originalFileName);
+            throw new FileSaveCheckedException(e.getMessage());
         }
 
         return fullPath;

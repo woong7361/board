@@ -26,15 +26,9 @@ import static org.mockito.ArgumentMatchers.any;
 
 
 class FreeBoardServiceTest {
-    FreeBoardRepository mockitoFreeBoardRepository = Mockito.mock(FreeBoardRepository.class);
-    PhysicalFileRepository mockitoPhysicalFileRepository = Mockito.mock(PhysicalFileRepository.class);
-    AttachmentFileRepository mockitoAttachmentFileRepository = Mockito.mock(AttachmentFileRepository.class);
-    FileUtil mockitoFileUtil = Mockito.mock(FileUtil.class);
+    FreeBoardRepository freeBoardRepository = Mockito.mock(FreeBoardRepository.class);
     FreeBoardService freeBoardService = new FreeBoardServiceImpl(
-            mockitoFreeBoardRepository,
-            mockitoAttachmentFileRepository,
-            mockitoPhysicalFileRepository,
-            mockitoFileUtil
+            freeBoardRepository
     );
 
     @Nested
@@ -51,12 +45,11 @@ class FreeBoardServiceTest {
                     .build();
 
             long memberId = 154641L;
-            MockMultipartFile file = new MockMultipartFile("file", "fdava".getBytes());
 
             //when
-            freeBoardService.createFreeBoard(board, List.of(file, file), memberId);
-            freeBoardService.createFreeBoard(board, List.of(file), memberId);
-            freeBoardService.createFreeBoard(board, List.of(), memberId);
+            freeBoardService.createFreeBoard(board, memberId);
+            freeBoardService.createFreeBoard(board, memberId);
+            freeBoardService.createFreeBoard(board, memberId);
             //then
         }
     }
@@ -72,7 +65,7 @@ class FreeBoardServiceTest {
             FreeBoard savedFreeBoard = getSavedFreeBoard();
 
             //when
-            Mockito.when(mockitoFreeBoardRepository.findBoardById(savedFreeBoard.getFreeBoardId()))
+            Mockito.when(freeBoardRepository.findBoardById(savedFreeBoard.getFreeBoardId()))
                     .thenReturn(Optional.of(savedFreeBoard));
 
             FreeBoard findFreeBoard = freeBoardService.getBoardById(savedFreeBoard.getFreeBoardId());
@@ -89,7 +82,7 @@ class FreeBoardServiceTest {
             long freeBoardId = 45641L;
 
             //when
-            Mockito.when(mockitoFreeBoardRepository.findBoardById(any()))
+            Mockito.when(freeBoardRepository.findBoardById(any()))
                     .thenReturn(Optional.empty());
 
             //then
@@ -117,10 +110,10 @@ class FreeBoardServiceTest {
             int totalCount = 2;
 
             //when
-            Mockito.when(mockitoFreeBoardRepository.getTotalCountBySearchParam(freeBoardSearchDTO))
+            Mockito.when(freeBoardRepository.getTotalCountBySearchParam(freeBoardSearchDTO))
                     .thenReturn(totalCount);
 
-            Mockito.when(mockitoFreeBoardRepository.findBoardsBySearchParam(freeBoardSearchDTO, pageRequest))
+            Mockito.when(freeBoardRepository.findBoardsBySearchParam(freeBoardSearchDTO, pageRequest))
                     .thenReturn(List.of(getSavedFreeBoard(1L), getSavedFreeBoard(2L)));
 
             //then
@@ -141,17 +134,13 @@ class FreeBoardServiceTest {
             //given
             Long freeBoardId = 15631L;
             Long memberId = 7864L;
-            Long fileId = 4563L;
 
             //when
-            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
+            Mockito.when(freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
                     .thenReturn(Optional.of(FreeBoard.builder().build()));
 
-            Mockito.when(mockitoFreeBoardRepository.hasCommentByBoardId(freeBoardId))
+            Mockito.when(freeBoardRepository.hasCommentByBoardId(freeBoardId))
                     .thenReturn(false);
-
-            Mockito.when(mockitoAttachmentFileRepository.findByFileId(fileId))
-                    .thenReturn(Optional.of(AttachmentFile.builder().build()));
 
             //then
             freeBoardService.deleteFreeBoardById(freeBoardId, memberId);
@@ -163,17 +152,13 @@ class FreeBoardServiceTest {
             //given
             Long freeBoardId = 15631L;
             Long memberId = 7864L;
-            Long fileId = 4563L;
 
             //when
-            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
+            Mockito.when(freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
                     .thenReturn(Optional.of(FreeBoard.builder().build()));
 
-            Mockito.when(mockitoFreeBoardRepository.hasCommentByBoardId(freeBoardId))
+            Mockito.when(freeBoardRepository.hasCommentByBoardId(freeBoardId))
                     .thenReturn(true);
-
-            Mockito.when(mockitoAttachmentFileRepository.findByFileId(fileId))
-                    .thenReturn(Optional.of(AttachmentFile.builder().build()));
 
             //then
             freeBoardService.deleteFreeBoardById(freeBoardId, memberId);
@@ -187,7 +172,7 @@ class FreeBoardServiceTest {
             Long memberId = 7864L;
 
             //when
-            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
+            Mockito.when(freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
                     .thenReturn(Optional.empty());
 
             //then
@@ -206,21 +191,14 @@ class FreeBoardServiceTest {
             Long freeBoardId = 15631L;
             Long memberId = 7864L;
 
-            List<MultipartFile> saveFiles = List.of(
-                    new MockMultipartFile("file1", "content1".getBytes()),
-                    new MockMultipartFile("file2", "content2".getBytes()));
-            List<Long> deleteFileIds = List.of(1L, 2L, 3L);
             FreeBoard freeBoard = getSavedFreeBoard();
 
             //when
-            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
+            Mockito.when(freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
                     .thenReturn(Optional.of(FreeBoard.builder().build()));
 
-            Mockito.when(mockitoAttachmentFileRepository.findByFileId(any()))
-                    .thenReturn(Optional.of(AttachmentFile.builder().build()));
-
             //then
-            freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId, memberId);
+            freeBoardService.updateFreeBoardById(freeBoard, freeBoardId, memberId);
         }
 
         @DisplayName("게시글 수정 권한이 없을때")
@@ -230,37 +208,14 @@ class FreeBoardServiceTest {
             Long freeBoardId = 15631L;
             Long memberId = 7864L;
 
-            List<MultipartFile> saveFiles = List.of(
-                    new MockMultipartFile("file1", "content1".getBytes()),
-                    new MockMultipartFile("file2", "content2".getBytes()));
-            List<Long> deleteFileIds = List.of(1L, 2L, 3L);
             FreeBoard freeBoard = getSavedFreeBoard();
 
             //when
-            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
+            Mockito.when(freeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
                     .thenReturn(Optional.empty());
 
             //then
-            Assertions.assertThatThrownBy(() -> freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId, memberId));
-        }
-
-        @DisplayName("추가 파일 & 삭제 파일이 없을때")
-        @Test
-        public void noFiles() throws Exception {
-            //given
-            Long freeBoardId = 15631L;
-            Long memberId = 7864L;
-
-            List<MultipartFile> saveFiles = List.of();
-            List<Long> deleteFileIds = List.of();
-            FreeBoard freeBoard = getSavedFreeBoard();
-
-            //when
-            Mockito.when(mockitoFreeBoardRepository.findBoardByIdAndMemberId(freeBoardId, memberId))
-                    .thenReturn(Optional.of(FreeBoard.builder().build()));
-
-            //then
-            freeBoardService.updateFreeBoardById(freeBoard, saveFiles, deleteFileIds, freeBoardId, memberId);
+            Assertions.assertThatThrownBy(() -> freeBoardService.updateFreeBoardById(freeBoard, freeBoardId, memberId));
         }
     }
 

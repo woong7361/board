@@ -8,6 +8,7 @@ import com.example.notice.auth.resolvehandler.AuthenticationHolderResolveHandler
 import com.example.notice.auth.filter.AdminSessionInterceptor;
 import com.example.notice.auth.filter.JwtTokenInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -22,6 +23,9 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
+    @Value("${setting.front}")
+    private String frontUrl;
+
     private final AuthenticationHolderResolveHandler authenticationHolderResolveHandler;
     private final AdminAuthenticationHolderResolveHandler adminAuthenticationHolderResolveHandler;
 
@@ -81,7 +85,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173", "http://localhost:3000", "http://13.125.243.251")
+                .allowedOrigins(frontUrl)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("Authorization", "Content-Type")
                 .exposedHeaders("content-disposition")

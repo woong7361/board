@@ -81,6 +81,8 @@ Request Part - deleteIds 하위 field
 include::{snippets}/free-board-update-test/success/request-part-deleteIds-fields.adoc[]
 Response
 include::{snippets}/free-board-update-test/success/http-response.adoc[]
+Response Body
+include::{snippets}/free-board-update-test/success/response-fields.adoc[]
 
 ==== 자유 게시판 게시글 삭제
 Request
@@ -302,6 +304,8 @@ Request Part - delete Ids 하위 field
 include::{snippets}/edit-free-board-by-admin-controller-test/success/request-part-deleteIds-fields.adoc[]
 Response
 include::{snippets}/edit-free-board-by-admin-controller-test/success/http-response.adoc[]
+Response Body
+include::{snippets}/edit-free-board-by-admin-controller-test/success/response-fields.adoc[]
 
 
 === 댓글

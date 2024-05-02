@@ -1,41 +1,33 @@
 package com.example.notice.service;
 
 
+import com.example.notice.dto.common.SuccessesAndFails;
 import com.example.notice.dto.response.FileResponseDTO;
 import com.example.notice.entity.AttachmentFile;
 import com.example.notice.exception.EntityNotExistException;
+import com.example.notice.exception.FileSaveCheckedException;
 import com.example.notice.files.PhysicalFileRepository;
-import com.example.notice.mock.database.MemoryDataBase;
-import com.example.notice.mock.repository.MockAttachmentFileRepository;
-import com.example.notice.mock.repository.MockPhysicalFileRepository;
 import com.example.notice.repository.AttachmentFileRepository;
+import com.example.notice.utils.FileUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+
 
 class FileServiceTest {
-
-    MockPhysicalFileRepository physicalFileRepository = new MockPhysicalFileRepository();
-    MockAttachmentFileRepository fileRepository = new MockAttachmentFileRepository();
-
+    PhysicalFileRepository physicalFileRepository = Mockito.mock(PhysicalFileRepository.class);
+    AttachmentFileRepository fIleRepository = Mockito.mock(AttachmentFileRepository.class);
+    FileUtil fileUtil = Mockito.mock(FileUtil.class);
     FileService fileService = new FileServiceImpl(
             physicalFileRepository,
-            fileRepository);
-
-    PhysicalFileRepository mockitoPhysicalFileRepository = Mockito.mock(PhysicalFileRepository.class);
-    AttachmentFileRepository mockitoFIleRepository = Mockito.mock(AttachmentFileRepository.class);
-    FileService mockitoFileService = new FileServiceImpl(
-            mockitoPhysicalFileRepository,
-            mockitoFIleRepository);
-
-    @BeforeEach
-    public void resetRepository123() {
-        MemoryDataBase.initRepository();
-    }
+            fIleRepository,
+            fileUtil);
 
     @Nested
     @DisplayName("물리적 파일 가져오기 테스트")
@@ -47,11 +39,11 @@ class FileServiceTest {
             long fileId = 123L;
 
             //when
-            Mockito.when(mockitoFIleRepository.findByFileId(fileId))
+            Mockito.when(fIleRepository.findByFileId(fileId))
                     .thenReturn(Optional.of(AttachmentFile.builder().build()));
 
             //then
-            mockitoFileService.getPhysicalFile(fileId);
+            fileService.getPhysicalFile(fileId);
         }
 
         @DisplayName("파일이 DB에 존재하지 않음")
@@ -61,11 +53,11 @@ class FileServiceTest {
             long fileId = 123L;
 
             //when
-            Mockito.when(mockitoFIleRepository.findByFileId(fileId))
+            Mockito.when(fIleRepository.findByFileId(fileId))
                     .thenReturn(Optional.empty());
 
             //then
-            Assertions.assertThatThrownBy(() -> mockitoFileService.getPhysicalFile(fileId))
+            Assertions.assertThatThrownBy(() -> fileService.getPhysicalFile(fileId))
                     .isInstanceOf(EntityNotExistException.class);
         }
     }
@@ -89,15 +81,20 @@ class FileServiceTest {
                     .freeBoardId(freeBoardId)
                     .build();
 
-            fileRepository.saveWithFreeBoardId(file1, freeBoardId);
-            fileRepository.saveWithFreeBoardId(file2, freeBoardId);
+            List<FileResponseDTO> findFiles = List.of(
+                    new FileResponseDTO(file1.getFileId(), file1.getFreeBoardId(), file1.getOriginalName()),
+                    new FileResponseDTO(file2.getFileId(), file2.getFreeBoardId(), file2.getOriginalName())
+            );
 
             //when
-            List<FileResponseDTO> results = fileService.getFileByFreeBoardId(freeBoardId);
-            //then
+            Mockito.when(fIleRepository.findByFreeBoardId(freeBoardId))
+                    .thenReturn(findFiles);
 
-            Assertions.assertThat(results.size()).isEqualTo(2);
-            Assertions.assertThat(results.get(0)).usingRecursiveComparison().isEqualTo(file1);
+            List<FileResponseDTO> results = fileService.getFileByFreeBoardId(freeBoardId);
+
+            //then
+            Assertions.assertThat(results.size()).isEqualTo(findFiles.size());
+            Assertions.assertThat(results).usingRecursiveComparison().isEqualTo(findFiles);
         }
     }
 
@@ -109,16 +106,88 @@ class FileServiceTest {
 
         //when
         //then
-        mockitoFileService.getFileOriginalNameById(fileId);
+        fileService.getFileOriginalNameById(fileId);
     }
 
-    @DisplayName("")
-    @Test
-    public void test() throws Exception{
-        //given
 
-        //when
+    @Nested
+    @DisplayName("파일 저장")
+    public class FileSave {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            byte[] bytes = "fdava".getBytes();
+            MockMultipartFile file1 = new MockMultipartFile("file","fileName1", "jpg", bytes);
+            MockMultipartFile file2 = new MockMultipartFile("file","fileName2", "jpg", bytes);
+            Long freeBoardId = 6857456341L;
 
-        //then
+            //when
+            Mockito.when(fileUtil.getBytes(any()))
+                    .thenReturn(bytes);
+            Mockito.when(physicalFileRepository.save(any(), any()))
+                    .thenReturn("path");
+
+            SuccessesAndFails<String> result = fileService.saveFiles(List.of(file1, file2), freeBoardId);
+
+            //then
+            Assertions.assertThat(result.getSuccesses())
+                    .usingRecursiveComparison()
+                    .isEqualTo(List.of(file1.getOriginalFilename(), file2.getOriginalFilename()));
+        }
+
+        @DisplayName("실패할때")
+        @Test
+        public void fail() throws Exception{
+            //given
+            byte[] bytes = "fdava".getBytes();
+            MockMultipartFile file1 = new MockMultipartFile("file","fileName1", "jpg", bytes);
+            MockMultipartFile file2 = new MockMultipartFile("file","fileName2", "jpg", bytes);
+            Long freeBoardId = 6857456341L;
+
+            //when
+            Mockito.when(fileUtil.getBytes(any()))
+                    .thenReturn(bytes);
+            Mockito.when(physicalFileRepository.save(any(), any()))
+                    .thenReturn("path");
+            Mockito.doThrow(new FileSaveCheckedException("message")).when(fileUtil)
+                    .checkAllowFileExtension(file1);
+
+            SuccessesAndFails<String> result = fileService.saveFiles(List.of(file1, file2), freeBoardId);
+
+            //then
+            Assertions.assertThat(result.getSuccesses())
+                    .usingRecursiveComparison()
+                    .isEqualTo(List.of(file2.getOriginalFilename()));
+            Assertions.assertThat(result.getFails())
+                    .usingRecursiveComparison()
+                    .isEqualTo(List.of(file1.getOriginalFilename()));
+        }
+    }
+
+
+    @Nested
+    @DisplayName("게시글 식별자로 파일 삭제")
+    public class DeleteFileByFileIds {
+        @DisplayName("정상 처리")
+        @Test
+        public void success() throws Exception {
+            //given
+            long freeBoardId = 564534L;
+            List<FileResponseDTO> fileIds = List.of(
+                    FileResponseDTO.builder().fileId(1L).build(),
+                    FileResponseDTO.builder().fileId(2L).build(),
+                    FileResponseDTO.builder().fileId(3L).build());
+
+            //when
+            Mockito.when(fIleRepository.findByFreeBoardId(freeBoardId))
+                    .thenReturn(fileIds);
+
+            Mockito.when(fIleRepository.findByFileId(any()))
+                    .thenReturn(Optional.of(AttachmentFile.builder().build()));
+
+            fileService.deleteFileByFreeBoardId(freeBoardId);
+            //then
+        }
     }
 }

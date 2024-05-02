@@ -1,11 +1,13 @@
 package com.example.notice.controller;
 
+import com.example.notice.dto.common.SuccessesAndFails;
 import com.example.notice.entity.FreeBoard;
 import com.example.notice.exception.BadRequestParamException;
 import com.example.notice.mock.util.LoginTestUtil;
 import com.example.notice.page.PageRequest;
 import com.example.notice.page.PageResponse;
 import com.example.notice.restdocs.RestDocsHelper;
+import com.example.notice.service.FileService;
 import com.example.notice.service.FreeBoardService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +37,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.example.notice.constant.ResponseConstant.FREE_BOARD_ID_PARAM;
-import static com.example.notice.mock.repository.MockFreeBoardRepository.SAVED_FREE_BOARD;
+import static com.example.notice.mock.dummy.TestData.getSavedFreeBoard;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -52,6 +54,8 @@ class FreeBoardControllerTest extends RestDocsHelper {
 
     @MockBean
     FreeBoardService freeBoardService;
+    @MockBean
+    FileService fileService;
 
     @BeforeEach
     public void initMapper() {
@@ -107,16 +111,27 @@ class FreeBoardControllerTest extends RestDocsHelper {
             params.add("content", "content");
             params.add("category", "category");
 
-            MockMultipartFile file = new MockMultipartFile("files", "fileBytes".getBytes());
+            MockMultipartFile file1 =
+                    new MockMultipartFile("files", "name1", "", "fileBytes".getBytes());
+            MockMultipartFile file2 =
+                    new MockMultipartFile("files", "name2", "", "fileBytes".getBytes());
             MockMultipartFile title = new MockMultipartFile("freeBoard", "",
                     "application/json", mapper.writeValueAsString(params.toSingleValueMap()).getBytes());
+
             long boardId = 10L;
-            when(freeBoardService.createFreeBoard(any(), any(), anyLong()))
-                    .thenReturn(boardId);
+            SuccessesAndFails<String> fileSaveResult = SuccessesAndFails.emptyList();
+            fileSaveResult.addSuccess(file1.getOriginalFilename());
+            fileSaveResult.addFail(file2.getOriginalFilename());
 
             //when
+            when(freeBoardService.createFreeBoard(any(), anyLong()))
+                    .thenReturn(boardId);
+            when(fileService.saveFiles(any(), any()))
+                    .thenReturn(fileSaveResult);
+
             ResultActions action = mockMvc.perform(MockMvcRequestBuilders.multipart(FREE_BOARD_CREATE_URI)
-                    .file(file)
+                    .file(file1)
+                    .file(file2)
                     .file(title)
                     .accept(MediaType.APPLICATION_JSON)
                     .headers(authenticationTestUtil.getLoginTokenHeaders(45354L))
@@ -148,7 +163,9 @@ class FreeBoardControllerTest extends RestDocsHelper {
                     ))
                     .andDo(restDocs.document(
                             responseFields(
-                                    fieldWithPath("freeBoardId").description("생성한 게시글 식별자")
+                                    fieldWithPath("freeBoardId").description("생성한 게시글 식별자"),
+                                    fieldWithPath("fileResult.successes").description("저장 성공한 파일들"),
+                                    fieldWithPath("fileResult.fails").description("저장 실패한 파일들")
                             )
                     ));
         }
@@ -165,7 +182,7 @@ class FreeBoardControllerTest extends RestDocsHelper {
             MockMultipartFile title = new MockMultipartFile("freeBoard", "",
                     "application/json", mapper.writeValueAsString(params).getBytes());
             long boardId = 10L;
-            when(freeBoardService.createFreeBoard(any(), any(), anyLong()))
+            when(freeBoardService.createFreeBoard(any(), anyLong()))
                     .thenReturn(boardId);
 
             //when
@@ -237,10 +254,10 @@ class FreeBoardControllerTest extends RestDocsHelper {
         public void success() throws Exception {
             //given
             String freeBoardId = String.valueOf(1L);
-
+            FreeBoard freeBoard = getSavedFreeBoard();
             //when
             Mockito.when(freeBoardService.getBoardById(Long.valueOf(freeBoardId)))
-                    .thenReturn(SAVED_FREE_BOARD);
+                    .thenReturn(freeBoard);
 
             ResultActions action = mockMvc.perform(RestDocumentationRequestBuilders
                     .get(GET_FREE_BOARD_URI, freeBoardId));
@@ -248,13 +265,13 @@ class FreeBoardControllerTest extends RestDocsHelper {
             //then
             action
                     .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(jsonPath("$.freeBoardId").value(SAVED_FREE_BOARD.getFreeBoardId()))
-                    .andExpect(jsonPath("$.title").value(SAVED_FREE_BOARD.getTitle()))
-                    .andExpect(jsonPath("$.content").value(SAVED_FREE_BOARD.getContent()))
-                    .andExpect(jsonPath("$.category").value(SAVED_FREE_BOARD.getCategory()))
-                    .andExpect(jsonPath("$.views").value(SAVED_FREE_BOARD.getViews()))
-                    .andExpect(jsonPath("$.memberId").value(SAVED_FREE_BOARD.getMemberId()))
-                    .andExpect(jsonPath("$.memberName").value(SAVED_FREE_BOARD.getMemberName()))
+                    .andExpect(jsonPath("$.freeBoardId").value(freeBoard.getFreeBoardId()))
+                    .andExpect(jsonPath("$.title").value(freeBoard.getTitle()))
+                    .andExpect(jsonPath("$.content").value(freeBoard.getContent()))
+                    .andExpect(jsonPath("$.category").value(freeBoard.getCategory()))
+                    .andExpect(jsonPath("$.views").value(freeBoard.getViews()))
+                    .andExpect(jsonPath("$.memberId").value(freeBoard.getMemberId()))
+                    .andExpect(jsonPath("$.memberName").value(freeBoard.getMemberName()))
 
                     //rest docs
                     .andDo(restDocs.document(
@@ -302,7 +319,7 @@ class FreeBoardControllerTest extends RestDocsHelper {
             //when
             Mockito.when(freeBoardService.getBoardsBySearchParams(any(), any()))
                     .thenReturn(new PageResponse<>(
-                            List.of(SAVED_FREE_BOARD, SAVED_FREE_BOARD),
+                            List.of(getSavedFreeBoard(894156341L), getSavedFreeBoard(54341L)),
                             new PageRequest(5, 0, "1", "2"),
                             2));
 
@@ -429,7 +446,11 @@ class FreeBoardControllerTest extends RestDocsHelper {
             dParam.add("deleteFileIds", "2");
             dParam.add("deleteFileIds", "3");
 
-            MockMultipartFile file = new MockMultipartFile("saveFiles", "fdsafds".getBytes());
+            MockMultipartFile file1 =
+                    new MockMultipartFile("saveFiles", "name1", "", "fileBytes".getBytes());
+            MockMultipartFile file2 =
+                    new MockMultipartFile("saveFiles", "name2", "", "fileBytes".getBytes());
+
             MockMultipartFile freeBoard = new MockMultipartFile(
                     "freeBoard",
                     "",
@@ -440,10 +461,18 @@ class FreeBoardControllerTest extends RestDocsHelper {
                     "",
                     "application/json",
                     mapper.writeValueAsString(dParam).getBytes());
+
+            SuccessesAndFails<String> fileSaveResult = SuccessesAndFails.emptyList();
+            fileSaveResult.addSuccess(file1.getOriginalFilename());
+            fileSaveResult.addFail(file2.getOriginalFilename());
+
             //when
+            when(fileService.saveFiles(any(), any()))
+                    .thenReturn(fileSaveResult);
 
             ResultActions action = mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT, FREE_BOARD_UPDATE_URI, freeBoardId)
-                    .file(file)
+                    .file(file1)
+                    .file(file2)
                     .file(freeBoard)
                     .file(deleteIds)
                     .headers(authenticationTestUtil.getLoginTokenHeaders(memberId))
@@ -473,6 +502,13 @@ class FreeBoardControllerTest extends RestDocsHelper {
                     .andDo(restDocs.document(
                             requestHeaders(
                                     headerWithName("Authorization").description("JWT token")
+                            )
+                    ))
+                    .andDo(restDocs.document(
+                            responseFields(
+                                    fieldWithPath("freeBoardId").description("생성한 게시글 식별자"),
+                                    fieldWithPath("fileResult.successes").description("저장 성공한 파일들"),
+                                    fieldWithPath("fileResult.fails").description("저장 실패한 파일들")
                             )
                     ));
         }
@@ -602,15 +638,29 @@ class FreeBoardControllerTest extends RestDocsHelper {
             params.add("content", "content");
             params.add("category", "category");
 
-            MockMultipartFile file = new MockMultipartFile("files", "fileBytes".getBytes());
+            MockMultipartFile file1 =
+                    new MockMultipartFile("files", "name1", "", "fileBytes".getBytes());
+            MockMultipartFile file2 =
+                    new MockMultipartFile("files", "name2", "", "fileBytes".getBytes());
+
             MockMultipartFile title = new MockMultipartFile("freeBoard", "",
                     "application/json", mapper.writeValueAsString(params.toSingleValueMap()).getBytes());
-            when(freeBoardService.createFreeBoard(any(), any(), anyLong()))
+            when(freeBoardService.createFreeBoard(any(), anyLong()))
                     .thenReturn(boardId);
 
+            SuccessesAndFails<String> fileSaveResult = SuccessesAndFails.emptyList();
+            fileSaveResult.addSuccess(file1.getOriginalFilename());
+            fileSaveResult.addFail(file2.getOriginalFilename());
+
             //when
+            when(freeBoardService.createFreeBoard(any(), anyLong()))
+                    .thenReturn(boardId);
+            when(fileService.saveFiles(any(), any()))
+                    .thenReturn(fileSaveResult);
+
             ResultActions action = mockMvc.perform(MockMvcRequestBuilders.multipart(CREATE_FREE_BOARD_BY_ADMIN_URL)
-                    .file(file)
+                    .file(file1)
+                    .file(file2)
                     .file(title)
                     .session(LoginTestUtil.getMockAdminSession(memberId))
                     .cookie(LoginTestUtil.getMockSessionCookie())
@@ -642,7 +692,9 @@ class FreeBoardControllerTest extends RestDocsHelper {
                     )))
                     .andDo(restDocs.document(
                             responseFields(
-                                    fieldWithPath("freeBoardId").description("생성한 게시글 식별자")
+                                    fieldWithPath("freeBoardId").description("생성한 게시글 식별자"),
+                                    fieldWithPath("fileResult.successes").description("저장 성공한 파일들"),
+                                    fieldWithPath("fileResult.fails").description("저장 실패한 파일들")
                             )
                     ));
         }
@@ -697,7 +749,7 @@ class FreeBoardControllerTest extends RestDocsHelper {
 
             MockMultipartFile title = new MockMultipartFile("freeBoard", "",
                     "application/json", mapper.writeValueAsString(params).getBytes());
-            when(freeBoardService.createFreeBoard(any(), any(), anyLong()))
+            when(freeBoardService.createFreeBoard(any(), anyLong()))
                     .thenReturn(boardId);
 
             //when
@@ -770,7 +822,11 @@ class FreeBoardControllerTest extends RestDocsHelper {
             dParam.add("deleteFileIds", "2");
             dParam.add("deleteFileIds", "3");
 
-            MockMultipartFile file = new MockMultipartFile("saveFiles", "fdsafds".getBytes());
+            MockMultipartFile file1 =
+                    new MockMultipartFile("saveFiles", "name1", "", "fileBytes".getBytes());
+            MockMultipartFile file2 =
+                    new MockMultipartFile("saveFiles", "name2", "", "fileBytes".getBytes());
+
             MockMultipartFile freeBoard = new MockMultipartFile(
                     "freeBoard",
                     "",
@@ -781,10 +837,18 @@ class FreeBoardControllerTest extends RestDocsHelper {
                     "",
                     "application/json",
                     mapper.writeValueAsString(dParam).getBytes());
+
+            SuccessesAndFails<String> fileSaveResult = SuccessesAndFails.emptyList();
+            fileSaveResult.addSuccess(file1.getOriginalFilename());
+            fileSaveResult.addFail(file2.getOriginalFilename());
+
             //when
+            when(fileService.saveFiles(any(), any()))
+                    .thenReturn(fileSaveResult);
 
             ResultActions action = mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT, EDIT_FREE_BOARD_BY_ADMIN_URL, freeBoardId)
-                    .file(file)
+                    .file(file1)
+                    .file(file2)
                     .file(freeBoard)
                     .file(deleteIds)
                     .session(LoginTestUtil.getMockAdminSession(memberId))
@@ -816,7 +880,14 @@ class FreeBoardControllerTest extends RestDocsHelper {
                     .andDo(restDocs.document(requestCookies(
                             CookieDocumentation.cookieWithName("JSESSIONID")
                                     .description("세션 쿠키")
-                    )));
+                    )))
+                    .andDo(restDocs.document(
+                            responseFields(
+                                    fieldWithPath("freeBoardId").description("생성한 게시글 식별자"),
+                                    fieldWithPath("fileResult.successes").description("저장 성공한 파일들"),
+                                    fieldWithPath("fileResult.fails").description("저장 실패한 파일들")
+                            )
+                    ));
         }
 
         @DisplayName("삭제할 파일이 없을때")

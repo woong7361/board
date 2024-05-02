@@ -17,11 +17,10 @@ public interface FreeBoardService {
      * 자유게시판 게시글 생성
      *
      * @param freeBoard 게시글 생성 인자
-     * @param files 게시글 첨부파일들
      * @param memberId 게시글 생성자
      * @return 자유게시판 게시글 식별자
      */
-    Long createFreeBoard(FreeBoard freeBoard, List<MultipartFile> files, Long memberId);
+    Long createFreeBoard(FreeBoard freeBoard, Long memberId);
 
     /**
      * 자유게시판 게시글 조회
@@ -52,12 +51,10 @@ public interface FreeBoardService {
      * 자유게시판 게시글 수정
      *
      * @param freeBoard 게시글 수정 파라미터
-     * @param saveFiles 추가할 첨부파일들
-     * @param deleteFileIds 삭제할 첨부파일 식별자들
      * @param freeBoardId 게시글 식별자
      * @param memberId 수정 요청하는 회원 식별자
      */
-    void updateFreeBoardById(FreeBoard freeBoard, List<MultipartFile> saveFiles, List<Long> deleteFileIds, Long freeBoardId, Long memberId);
+    void updateFreeBoardById(FreeBoard freeBoard, Long freeBoardId, Long memberId);
 
     /**
      * 관리자의 자유게시판 게시글 삭제

@@ -3,6 +3,7 @@ package com.example.notice.entity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,8 +23,10 @@ public class InquireBoard {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
+    @Size(min = 1, max = 100)
     @NotBlank
     private String title;
+    @Size(min = 1, max = 4000)
     @NotBlank
     private String content;
     @NotNull
