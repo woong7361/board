@@ -20,34 +20,243 @@
 ### 주요 개발 사항
 
 <details>
-    <summary> threadLocal과 Spring Interceptor를 통한 spring Security 따라잡기</summary>
-    
-1. Thread Local이 Thread Safe를 확인하기 위해 test 진행
-   https://github.com/woong7361/board/blob/5ac16d321fcd836cf585a918006657608bbc8c0e/src/test/java/com/example/notice/auth/AuthenticationHolderTest.java#L60C1-L99C10
-    - test 코드 링크 or 사진
-2. Thread Local을 사용하기 위해 wrapping 저장소인 AuthenticationHolder 생성과 인증 wrapper 객체 생성
-    - 링크
-3. intercepter와 JWT를 사용해 인증과 인가 구현
-    - 링크
-4. 기존 interceptor와의 통일성을 고려해 config 에서 patter 추가
-    - 링크
-5. 사용하기 위해 resolveHandler를 통해 parameter 주입 사용
-    - 링크
+    <summary style="font-size: 20px"> threadLocal을 통한 인증&인가 구현하기</summary>
+
+프레임워크 없이 인증 과정을 구현하다보니 Spring Security에서 영감을 얻어 ThreadLocal을 사용해  내가 필요한 부분까지 Security와 비슷하게 구현하게 되었다.
+
+1. #### Thread Local을 사용하기 위해 wrapping 저장소인 AuthenticationHolder 생성과 인증 wrapper 객체 생성
+   ```
+    /**
+     * 인증된 회원 보관소
+     */
+     public class AuthenticationHolder {
+     private static final ThreadLocal<Principal> threadLocal = ThreadLocal.withInitial(() -> null);
+
+       /**
+        * 인증된 회원 주입
+        *
+        * @param principal 인증된 회원
+        */
+       public static void setPrincipal(Principal principal) {
+           threadLocal.set(principal);
+       }
+
+       /**
+        * 인증된 회원 가져오기
+        *
+        * @return 인증된 회원
+        */
+       public static Principal getPrincipal() {
+           return threadLocal.get();
+       }
+   
+      ...
+   }
+   ```   
+
+   - [AuthenticationHolder - threadLocal Wrapping Class](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/AuthenticationHolder.java)
+   - [Principal - Holder에 저장되는 인증 객체](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/principal/Principal.java)
+   
+2. #### Thread Local이 Thread Safe를 확인하기 위해 Thread test 진행
+
+   ```
+   @DisplayName("로컬 스레드마다 다른 값 확인")
+        @Test
+        public void multiThread() throws Exception{
+            //given
+            ## 100개의 스레드풀
+            ExecutorService executorService = Executors.newFixedThreadPool(100);
+
+            ## 10000번의 작업 진행
+            int threadCount = 10000; 
+            CountDownLatch latch = new CountDownLatch(threadCount);
+
+            List<Long> memberIds = new ArrayList<>();
+            List<Long> results = new CopyOnWriteArrayList<>();
+
+            //when
+            for (long i = 0; i < threadCount; i++) {
+                memberIds.add(i);
+
+                Member member = Member.builder()
+                        .memberId(i)
+                        .build();
+                Principal<Member> principal = new MemberPrincipal(member);
+
+                executorService.submit(() -> {
+                    try {
+                        AuthenticationHolder.setPrincipal(principal);
+                        Principal<Member> savedPrincipal = AuthenticationHolder.getPrincipal();
+                        long savedMemberId = savedPrincipal.getAuthentication().getMemberId();
+
+                        results.add(savedMemberId);
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+            }
+            latch.await();
+
+            //then
+            memberIds.sort((t1, t2) -> (int) (t1 - t2));
+            results.sort((t1, t2) -> (int) (t1 - t2));
+            assertThat(memberIds).usingRecursiveComparison().isEqualTo(results);
+        }
+   ```
+   [test code 링크](https://github.com/woong7361/board/blob/5ac16d321fcd836cf585a918006657608bbc8c0e/src/test/java/com/example/notice/auth/AuthenticationHolderTest.java#L60C1-L99C10)
+
+3. #### intercepter와 JWT를 사용해 인증과 인가 구현
+   ```
+   인증 과정
+    /**
+     * JWT를 통해 인증 과정을 진행한다.
+     * @apiNote token이 없다면 비회원으로, 있다면 회원으로 다음 interceptor로 진행한다.
+     */
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (request.getMethod().equals(PathMethod.OPTIONS.name())) {
+            return true;
+        }
+
+        String bearerToken = request.getHeader(AUTHORIZATION);
+
+        AuthenticationHolder.clear();
+        if (bearerToken == null) {
+            setGuest();
+        } else {
+            setMember(bearerToken);
+        }
+
+        return true;
+    }
+   ```
+   ```
+   인가 과정
+    /**
+     * AuthenticationRole에 따라 인가 과정을 진행한다.
+     */
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (request.getMethod().equals(PathMethod.OPTIONS.name())) {
+            return true;
+        }
+
+        if (pathContainer.match(request.getRequestURI(), PathMethod.valueOf(request.getMethod()), AuthenticationHolder.getRole())) {
+            return true;
+        }
+        throw new AuthorizationException(ErrorMessageConstant.AUTHORIZATION_EXCEPTION_MESSAGE);
+    }
+   ```
+    - [인증 Interceptor Class](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/filter/JwtTokenInterceptor.java)
+    - [인가 Interceptor Class](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/filter/AuthorizationInterceptor.java)
+
+4. #### urlPattern, HttpMethod, Role을 갖춘 pathContainer 구현
+   - [pathContainer class](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/path/PathContainer.java)
+
+5. #### 기존 interceptor와의 통일성을 고려해 config 에서 patter 추가
+    - [WebConfig Class](https://github.com/woong7361/board/blob/07ffefaeca7192eb97c6ea21774cda8d62fe870a/src/main/java/com/example/notice/config/WebConfig.java#L53C1-L80C6)
+
+6. #### 사용하기 위해 resolveHandler를 통해 parameter 주입 사용
+    - [Resolve Handler](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/resolvehandler/AuthenticationHolderResolveHandler.java)
+    - [Annotation](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/resolvehandler/AuthenticationPrincipal.java)
 </details>
 
 <details>
-    <summary> Pyhsical File Repository와 DB File Repository의 분리 </summary>
+    <summary style="font-size: 20px"> 파일 저장 실패시 정책사항 </summary>
 
-물리적 파일과 DB 파일을 같이 다루고 있었는데 DB와는 달리 물리적 파일은 저장 위치나 저장 방법이 달라질
-가능성이 크기 때문에 분리를 결정하였다.
+> Disk 오류 또는 다른 사항들에 파일 저장이 실패했을때(일부라도) 의해 내가 작성한 모든 사항이 'Rollback' 된다는 사항이 사용자 입장에서 
+> 받아들이기 힘들다고 생각하여 파일 저장이 실패하여도 transaction은 정상적으로 진행되도록 결정하였다.  
 
-- 구조 사진
-- interface는 확장이 가능할 수 있도록 multipartfile이 아닌 byte[]로 받기로 결정하였다.
+- 결과화면
+![file_save.png](assets%2Ffile_save.png)
+
+Checked Exception은 Transaction Rollback을 일으키지 않는 성질을 이용하여 file save에 실패할경우 throw와 catch를 통해 정책을 수행한다. 
+
+   - throw 부분
+   ```
+   @Override
+    public String save(byte[] bytes, String originalFileName) throws FileSaveCheckedException {
+        String fullPath = configurationService.getFilePath() + "/" + getNewFilename(getExtension(originalFileName));
+
+        try (OutputStream outputStream = new FileOutputStream(fullPath))
+        {
+            outputStream.write(bytes);
+        } catch (IOException e) {
+            log.info("file save failed  fileName: {},  stackTrace{}", originalFileName, e);
+            
+            **error가 발생하면 checked Exception으로 먹어준다**
+            throw new FileSaveCheckedException(e.getMessage());
+        }
+
+        return fullPath;
+    }
+   ```
+   - catch 부분
+   ```
+       @Transactional
+    @Override
+    public SuccessesAndFails<String> saveFiles(List<MultipartFile> multipartFiles, Long freeBoardId) {
+        SuccessesAndFails<String> results = SuccessesAndFails.emptyList();
+
+        for (MultipartFile multipartFile : multipartFiles) {
+            try {
+                fileUtil.checkAllowFileExtension(multipartFile);
+                AttachmentFile attachmentFile = saveFile(multipartFile, freeBoardId);
+                
+                **성공사례 저장**
+                results.addSuccess(attachmentFile.getOriginalName());
+            } catch (FileSaveCheckedException e) {
+                String originalFilename = multipartFile.getOriginalFilename();
+               
+                **실패사례 저장**
+                results.addFail(multipartFile.getOriginalFilename());
+            }
+        }
+
+        return results;
+    }
+   ```
+
 
 </details>
 
 <details>
-    <summary> 파일 저장시 정책사항 </summary>
+    <summary style="font-size: 20px"> Pyhsical File Repository와 DB File Repository의 분리 </summary>
+
+물리적 파일과 DB 파일을 같이 다루고 있었는데 서로 다른 유형의 데이터를 저장하기에 분리를 결정하였다.
+또한 DB와 File은 저장소의 확장이나 변경에 다르게 반응해야하므로 분리를 결정하게되었다.
+
+   ```
+   /**
+    * 물리적 파일 저장소
+    */
+   public interface PhysicalFileRepository {
+   
+       /**
+        * 파일 저장
+        *
+        * @param bytes 파일 bytes
+        * @param originalFileName 파일 원본 이름
+        * @return 저장된 파일 경로
+        */
+       String save(byte[] bytes, String originalFileName) throws FileSaveCheckedException;
+   
+       /**
+        * 파일 삭제
+        *
+        * @param fileId 파일 식별자
+        */
+       void delete(Long fileId);
+   
+       /**
+        * 물리적 파일을 조회
+        *
+        * @param path 파일의 이름을 포함한 경로
+        * @return 물리적 파일
+        */
+       File getFile(String path);
+   }
+   ```
 </details>
 
 
@@ -59,15 +268,17 @@ test는 Spring의 단위테스트와 Controller테스트만 진행하였습니�
 
 ![test coverage.png](assets%2Ftest%20coverage.png)
 
-비어있는 테스트 커버리지는 접근을 제한하고자 작성한 코드나 @SpringBootApplication 같은
+> 비어있는 테스트 커버리지는 접근을 제한하고자 작성한 코드나 @SpringBootApplication 같은
 단위테스트에 쓰지지 않는 코드라 무리하게 커버리지를 높이고자 작성하지 않았습니다.
 
 <details>
     <summary> test code 진행 예시</summary>
 
 ![test_example.png](assets%2Ftest_example.png)
+
 </details>
 
+[test code src folder](https://github.com/woong7361/board/tree/main/src/test/java/com/example/notice)
 
 
 ## 문서화
