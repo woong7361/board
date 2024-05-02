@@ -28,13 +28,20 @@ class DiskFileRepositoryTest {
             byte[] saveData = "content".getBytes();
             String originalFileName = "fileSaveTest.txt";
 
+            File file = null;
+
             //when
             Mockito.when(configurationService.getFilePath())
                     .thenReturn(path);
 
-            String fullPath = fileRepository.save(saveData, originalFileName);
-            File file = new File(fullPath);
-            file.deleteOnExit();
+            try {
+                String fullPath = fileRepository.save(saveData, originalFileName);
+                file = new File(fullPath);
+            }finally {
+                if (file != null) {
+                    file.deleteOnExit();
+                }
+            }
 
             //then
             Assertions.assertThat(file.exists()).isTrue();

@@ -19,7 +19,7 @@ import static com.example.notice.constant.ResponseConstant.TOKEN_PARAM;
 import static com.example.notice.constant.SessionConstant.ADMIN_SESSION_KEY;
 
 /**
- * 인증에 관련 컨트롤러
+ * 인증 관련 컨트롤러
  */
 @RestController
 @RequiredArgsConstructor
