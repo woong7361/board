@@ -7,9 +7,6 @@
 범용적으로 가장 많이 쓰이는 개발 요소인 게시판을 구현하였습니다. 
 세가지 게시판이 존재하고 그것을 관리할 수 있는 관리자 페이지또한 구현하였습니다.
 
-![demo.gif](assets%2Fdemo.gif)
-
-
 https://github.com/woong7361/board/assets/87160021/9cc6b1a9-e168-4d08-a959-b56deb1e8ea5
 
 
