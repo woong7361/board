@@ -8,7 +8,10 @@
 세가지 게시판이 존재하고 그것을 관리할 수 있는 관리자 페이지또한 구현하였습니다.
 
 ![demo.gif](assets%2Fdemo.gif)
-[demo.mp4](assets%2Fdemo.mp4)
+
+
+https://github.com/woong7361/board/assets/87160021/9cc6b1a9-e168-4d08-a959-b56deb1e8ea5
+
 
 ## Getting Started
 <a href="http://13.125.211.168/" target="_blank">프로젝트 새창으로 열기</a>
