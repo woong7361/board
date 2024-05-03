@@ -4,9 +4,11 @@
 **[프로젝트 시연]**  
 이 프로젝트는 Spring 과 Vue.js를 통해 만들어졌습니다.
 
-범용적으로 가장 많이 쓰이는 개발 요소인 게시판을 구현하였고, 특색을 살리기 위해 조금의 정책사항을 부여하였습니다.
+범용적으로 가장 많이 쓰이는 개발 요소인 게시판을 구현하였습니다. 
+세가지 게시판이 존재하고 그것을 관리할 수 있는 관리자 페이지또한 구현하였습니다.
 
-[영상 예정]
+![demo.gif](assets%2Fdemo.gif)
+[demo.mp4](assets%2Fdemo.mp4)
 
 ## Getting Started
 <a href="http://13.125.211.168/" target="_blank">프로젝트 새창으로 열기</a>
@@ -52,10 +54,10 @@
    
       ...
    }
-   ```   
-
-   - [AuthenticationHolder - threadLocal Wrapping Class](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/AuthenticationHolder.java)
-   - [Principal - Holder에 저장되는 인증 객체](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/principal/Principal.java)
+   ```
+   
+   - <a href="https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/AuthenticationHolder.java" target="_blank">AuthenticationHolder - threadLocal Wrapping Class</a>
+   - <a href="https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/principal/Principal.java" target="_blank">Principal - Holder에 저장되는 인증 객체</a>
    
 2. #### Thread Local이 Thread Safe를 확인하기 위해 Thread test 진행
 
@@ -103,7 +105,7 @@
             assertThat(memberIds).usingRecursiveComparison().isEqualTo(results);
         }
    ```
-   [test code 링크](https://github.com/woong7361/board/blob/5ac16d321fcd836cf585a918006657608bbc8c0e/src/test/java/com/example/notice/auth/AuthenticationHolderTest.java#L60C1-L99C10)
+   - <a href="https://github.com/woong7361/board/blob/5ac16d321fcd836cf585a918006657608bbc8c0e/src/test/java/com/example/notice/auth/AuthenticationHolderTest.java#L60C1-L99C10" target="_blank">test code 링크</a>
 
 3. #### intercepter와 JWT를 사용해 인증과 인가 구현
    ```
@@ -147,18 +149,20 @@
         throw new AuthorizationException(ErrorMessageConstant.AUTHORIZATION_EXCEPTION_MESSAGE);
     }
    ```
-    - [인증 Interceptor Class](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/filter/JwtTokenInterceptor.java)
-    - [인가 Interceptor Class](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/filter/AuthorizationInterceptor.java)
+    - <a href="https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/filter/JwtTokenInterceptor.java" target="_blank">인증 Interceptor Class</a>
+    - <a href="https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/filter/AuthorizationInterceptor.java" target="_blank">인가 Interceptor Class</a>
 
 4. #### urlPattern, HttpMethod, Role을 갖춘 pathContainer 구현
-   - [pathContainer class](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/path/PathContainer.java)
+   - <a href="https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/path/PathContainer.java" target="_blank">pathContainer class</a>
 
 5. #### 기존 interceptor와의 통일성을 고려해 config 에서 patter 추가
-    - [WebConfig Class](https://github.com/woong7361/board/blob/07ffefaeca7192eb97c6ea21774cda8d62fe870a/src/main/java/com/example/notice/config/WebConfig.java#L53C1-L80C6)
+   - <a href="https://github.com/woong7361/board/blob/07ffefaeca7192eb97c6ea21774cda8d62fe870a/src/main/java/com/example/notice/config/WebConfig.java#L53C1-L80C6" target="_blank">WebConfig Class</a>
 
 6. #### 사용하기 위해 resolveHandler를 통해 parameter 주입 사용
-    - [Resolve Handler](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/resolvehandler/AuthenticationHolderResolveHandler.java)
-    - [Annotation](https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/resolvehandler/AuthenticationPrincipal.java)
+    - <a href="https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/resolvehandler/AuthenticationHolderResolveHandler.java" target="_blank">Resolve Handler</a>
+    - <a href="https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/auth/resolvehandler/AuthenticationPrincipal.java" target="_blank">Annotation</a>
+    
+
 </details>
 
 <details>
@@ -217,6 +221,9 @@ Checked Exception은 Transaction Rollback을 일으키지 않는 성질을 이�
     }
    ```
 
+<a href="https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/files/DiskFileRepository.java" target="_blank">Physical file repository</a>
+
+<a href="https://github.com/woong7361/board/blob/022ab9e11ec150085f93acfe5aea11ba53b44668/src/main/java/com/example/notice/service/FileServiceImpl.java#L52C1-L71C6" target="_blank">파일 저장 로직</a>
 
 </details>
 
@@ -259,6 +266,8 @@ Checked Exception은 Transaction Rollback을 일으키지 않는 성질을 이�
    ```
 </details>
 
+<a href="https://github.com/woong7361/board/blob/main/src/main/java/com/example/notice/files/PhysicalFileRepository.java" target="_blank">Physical file repository</a>
+
 
 ### test code
 test는 Spring의 단위테스트와 Controller테스트만 진행하였습니다.
@@ -278,13 +287,19 @@ test는 Spring의 단위테스트와 Controller테스트만 진행하였습니�
 
 </details>
 
-[test code src folder](https://github.com/woong7361/board/tree/main/src/test/java/com/example/notice)
+<a href="https://github.com/woong7361/board/tree/main/src/test/java/com/example/notice" target="_blank">test code src folder</a>
 
 
 ## 문서화
 API문서화는 spring restdocs를 이용하여 진행하였습니다.
 
-[Spring Restdocs 링크](assets%2Findex.html)
+<a href="http://13.125.211.168:8888/docs/index.html" target="_blank">Spring Restdocs 링크</a>
+
+<details>
+    <summary> spring restdocs 진행 예시</summary>
+
+![restdocs.png](assets%2Frestdocs.png)
+</details>
 
 코드 문서화는 java docs를 이용하여 진행하였습니다.
 
@@ -296,19 +311,14 @@ class와 interface의 모든 public 메서드에 작성하였고, 추가적인 �
 ![java_docs_example.png](assets%2Fjava_docs_example.png)
 </details>
 
+
 ### 개발 스택
 - Spring boot
 - mysql
 - JWT
-- Spring Restdocs 
-
-
-### ERD 다이어그램
-[erd 사진]
-
+- Spring Restdocs
 
 
 ### 프론트 엔드 GITHUB 링크
-[Vue.js 프론트 링크],,,
-
+<a href="https://github.com/woong7361/board_front" target="_blank">Vue.js 프론트 링크</a>
 
