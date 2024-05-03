@@ -13,9 +13,6 @@ https://github.com/woong7361/board/assets/87160021/9cc6b1a9-e168-4d08-a959-b56de
 ## Getting Started
 <a href="http://13.125.211.168/" target="_blank">프로젝트 새창으로 열기</a>
 
-<a href="https://www.google.co.kr/" target="_blank"> 구글로 이동하기 </a>
-
-
 회원 아이디: abc123   
 회원 비밀번호: qwe123
 
