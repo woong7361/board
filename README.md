@@ -11,7 +11,7 @@ https://github.com/woong7361/board/assets/87160021/9cc6b1a9-e168-4d08-a959-b56de
 
 
 ## Getting Started
-<a href="http://3.36.100.48/" target="_blank">프로젝트로 이동</a>
+<a href="http://15.165.133.6/" target="_blank">프로젝트로 이동</a>
 
 회원 아이디: abc123   
 회원 비밀번호: qwe123
@@ -293,7 +293,7 @@ test는 Spring의 단위테스트와 Controller테스트만 진행하였습니�
 ## 문서화
 API문서화는 spring restdocs를 이용하여 진행하였습니다.
 
-<a href="http://3.36.100.48:8888/docs/index.html" target="_blank">Spring Restdocs 링크</a>
+<a href="http://15.165.133.6:8888/docs/index.html" target="_blank">Spring Restdocs 링크</a>
 
 <details>
     <summary> spring restdocs 진행 예시</summary>
