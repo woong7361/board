@@ -484,6 +484,10 @@ java docs 진행 예시
 ![java_docs_example.png](assets%2Fjava_docs_example.png)
 
 
+## ERD diagram
+![포트폴리오 (1)](https://github.com/woong7361/board/assets/87160021/a1ec69fd-eed9-4be9-b5b2-e9450d012458)
+
+
 
 ## 개발 스택
 - Spring boot
